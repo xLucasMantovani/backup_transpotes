@@ -1,0 +1,27 @@
+
+# Credenciais e configurações locais
+.env
+.env.*
+!.env.example
+config.local.php
+dbConnect.php
+*credentials*.json
+
+# Backups e exportações de banco de dados
+*.sql
+*.sql.gz
+*.bak
+*.dump
+
+# Logs e arquivos temporários
+*.log
+*.tmp
+*.cache
+
+# Dependências instaladas localmente
+/vendor/
+/node_modules/
+
+# Arquivos do sistema operacional
+Thumbs.db
+.DS_Store

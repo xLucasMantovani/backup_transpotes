@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Ivan Transportes — App do Motorista v7.4 (Tema Big Tech)</title>
+
+<!-- Ícone do app na tela inicial ao instalar (Android/iOS) -->
+<link rel="icon" type="image/jpeg" href="https://media.base44.com/images/public/69153b6c9abbcdb5459c4c72/267da6630_logo_marca_jpeg.jpg">
+<link rel="apple-touch-icon" href="https://media.base44.com/images/public/69153b6c9abbcdb5459c4c72/267da6630_logo_marca_jpeg.jpg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Ivan Transportes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Ivan Transportes">
+<meta name="theme-color" content="#1a73e8">
+<link rel="manifest" id="pwaManifest">
+
+<style>
+  :root{
+    --primary:#1a73e8;
+    --primary-dark:#1765cc;
+    --primary-light:#e8f0fe;
+    --accent:#1a73e8;
+    --accent-bg:#e8f0fe;
+    --danger:#d93025;
+    --danger-bg:#fce8e6;
+    --warn:#f9ab00;
+    --warn-bg:#fef7e0;
+    --ok:#188038;
+    --ok-bg:#e6f4ea;
+    --bg:#f8f9fa;
+    --card:#ffffff;
+    --text:#202124;
+    --muted:#5f6368;
+    --border:#dadce0;
+    --radius:12px;
+    --shell:#f1f3f4;
+    --shadow-sm:0 1px 2px rgba(0,0,0,0.08);
+    --shadow-md:0 4px 8px rgba(0,0,0,0.1);
+    --transition:all 0.2s ease;
+  }
+  html[data-theme="dark"]{
+    --primary:#8ab4f8;
+    --primary-dark:#aecbfa;
+    --primary-light:#1a2a3a;
+    --accent:#8ab4f8;
+    --accent-bg:#1a2a3a;
+    --danger:#f28b82;
+    --danger-bg:#3a1d1d;
+    --warn:#fdd663;
+    --warn-bg:#3a2e10;
+    --ok:#81c995;
+    --ok-bg:#16342a;
+    --bg:#202124;
+    --card:#2d2e30;
+    --text:#e8eaed;
+    --muted:#9aa0a6;
+    --border:#3c4043;
+    --shell:#17181a;
+    --shadow-sm:0 1px 2px rgba(0,0,0,0.4);
+    --shadow-md:0 4px 8px rgba(0,0,0,0.5);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--shell);color:var(--text);}
+  .phone{max-width:430px;margin:0 auto;min-height:100vh;background:var(--bg);display:flex;flex-direction:column;position:relative;box-shadow:0 0 40px rgba(0,0,0,.08);overflow:hidden;}
+  .muted{color:var(--muted);font-size:13px;}
+  .center{text-align:center;}
+  .hidden-file{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;}
+
+  .watermark{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:0;opacity:.03;max-width:430px;margin:0 auto;}
+  .watermark img{width:220px;}
+
+  .login-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 22px;background:var(--bg);color:var(--text);text-align:center;position:relative;z-index:1;}
+  .login-screen img.logo{width:88px;height:88px;object-fit:contain;border-radius:20px;background:#fff;padding:8px;margin-bottom:14px;box-shadow:var(--shadow-sm);}
+  .login-screen h1{font-size:20px;margin:0 0 4px;color:var(--primary-dark);}
+  .login-screen p.sub{font-size:13px;color:var(--muted);margin:0 0 18px;}
+  .login-card{background:var(--card);color:var(--text);border-radius:var(--radius);padding:20px;width:100%;text-align:left;box-shadow:var(--shadow-sm);border:1px solid var(--border);}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px;}
+  select, input[type=text], input[type=password], input[type=number], input[type=date], input[type=time], textarea{
+    width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:8px;font-size:15px;background:var(--card);color:var(--text);transition:var(--transition);
+  }
+  select:focus, input:focus, textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 2px rgba(26,115,232,0.2);}
+  input[inputmode=numeric]{letter-spacing:4px;text-align:center;font-size:20px;}
+  .btn{cursor:pointer;border:none;border-radius:8px;padding:12px 14px;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;transition:var(--transition);}
+  .btn:active{transform:scale(0.98);}
+  .btn-block{width:100%;}
+  .btn-primary{background:var(--primary);color:#fff;}
+  .btn-primary:hover{background:var(--primary-dark);}
+  .btn-secondary{background:var(--primary-light);color:var(--primary-dark);}
+  .btn-secondary:hover{background:#d2e3fc;}
+  .btn-danger{background:var(--danger);color:#fff;}
+  .btn-danger:hover{background:#b3261e;}
+  .btn-ghost{background:transparent;color:var(--muted);text-decoration:underline;font-weight:500;padding:8px;}
+  .link-btn{background:none;border:none;color:var(--primary);text-decoration:underline;font-size:13px;margin-top:10px;cursor:pointer;}
+  .hint-box{background:var(--primary-light);border:1px dashed var(--primary);color:var(--text);padding:10px 12px;border-radius:8px;font-size:12px;text-align:left;margin-top:14px;line-height:1.5;}
+  .version-tag{margin-top:14px;font-size:11px;color:var(--muted);}
+  .theme-toggle-fab{position:absolute;top:14px;right:14px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;color:var(--text);z-index:2;box-shadow:var(--shadow-sm);}
+
+  .app-shell{flex:1;display:none;flex-direction:column;height:100vh;position:relative;z-index:1;}
+  header.topbar{background:var(--card);color:var(--text);padding:12px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+  header.topbar img{width:34px;height:34px;border-radius:8px;background:#fff;padding:3px;object-fit:contain;border:1px solid var(--border);}
+  .topbar-info{flex:1;min-width:0;}
+  .topbar-info .line1{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--primary-dark);cursor:pointer;}
+  .topbar-info .line2{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .icon-btn{background:var(--primary-light);border:none;border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;color:var(--primary-dark);cursor:pointer;flex-shrink:0;font-size:15px;transition:var(--transition);}
+  .icon-btn:hover{background:#d2e3fc;}
+  .status-strip{background:var(--primary-light);color:var(--primary-dark);font-size:11.5px;padding:7px 14px;display:flex;justify-content:space-between;gap:8px;align-items:center;}
+
+  .banner{padding:10px 14px;font-size:13px;display:flex;align-items:center;gap:8px;font-weight:600;}
+  .banner-danger{background:var(--danger-bg);color:var(--danger);}
+  .banner-warn{background:var(--warn-bg);color:var(--warn);}
+  .banner-info{background:var(--accent-bg);color:var(--accent);}
+
+  main.content{flex:1;overflow-y:auto;padding:14px 14px 104px;}
+  .page{display:none;}
+  .page.active{display:block;}
+
+  .greeting{font-size:15px;font-weight:700;margin:2px 0 14px;}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow-sm);}
+  .card .label{font-size:11.5px;color:var(--muted);font-weight:600;}
+  .card .value{font-size:20px;font-weight:800;margin:2px 0;}
+  .card .unit{font-size:11px;color:var(--muted);}
+
+  .section-title{font-size:14px;font-weight:700;margin:18px 0 8px;}
+  .qa-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:6px;}
+  .qa-btn{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 6px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--text);cursor:pointer;text-align:center;transition:var(--transition);box-shadow:var(--shadow-sm);}
+  .qa-btn span:first-child{font-size:22px;}
+  .qa-btn:hover{background:var(--primary-light);border-color:var(--primary);}
+
+  .list-block{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:14px;box-shadow:var(--shadow-sm);}
+  .list-block-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .list-block-head h3{font-size:14px;margin:0;}
+  .list-block-head p{margin:2px 0 0;font-size:12px;color:var(--muted);}
+
+  .hist-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:var(--transition);}
+  .hist-item:hover{background:var(--primary-light);}
+  .hist-item:last-child{border-bottom:none;}
+  .hist-icon{width:34px;height:34px;border-radius:8px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;}
+  .hist-info{flex:1;min-width:0;}
+  .hist-info strong{display:block;font-size:13.5px;}
+  .tag{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap;}
+  .tag-ok{background:var(--ok-bg);color:var(--ok);}
+  .tag-warn{background:var(--warn-bg);color:var(--warn);}
+  .tag-crit{background:var(--danger-bg);color:var(--danger);}
+  .tag-low{background:var(--primary-light);color:#5f6368;}
+  .tag-mid{background:var(--warn-bg);color:var(--warn);}
+  .tag-high{background:#fce8e6;color:#c5221f;}
+
+  .chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px;}
+  .chip{flex-shrink:0;padding:7px 12px;border-radius:20px;border:1px solid var(--border);background:var(--card);font-size:12px;font-weight:600;cursor:pointer;color:var(--muted);transition:var(--transition);}
+  .chip.active{background:var(--primary);border-color:var(--primary);color:#fff;}
+
+  .cl-item{border-bottom:1px solid var(--border);padding:12px 0;}
+  .cl-item:last-child{border-bottom:none;}
+  .cl-item-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:14px;}
+  .cl-mech-tag{font-size:10px;background:var(--accent-bg);color:var(--accent);padding:2px 6px;border-radius:8px;font-weight:700;margin-left:auto;}
+  .cl-options{display:flex;gap:14px;font-size:13px;margin-bottom:6px;}
+  .cl-options label{display:flex;align-items:center;gap:5px;cursor:pointer;}
+  .cl-nc-fields{background:var(--warn-bg);border:1px solid var(--warn);border-radius:8px;padding:10px;margin-top:8px;}
+  .cl-nc-fields textarea{margin-bottom:8px;min-height:60px;}
+  .cl-nc-fields select{margin-bottom:8px;}
+  .photo-btn{display:flex;align-items:center;gap:8px;background:var(--primary-light);border-radius:8px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;justify-content:center;position:relative;color:var(--text);transition:var(--transition);}
+  .photo-btn:hover{background:#d2e3fc;}
+  .progress-wrap{background:var(--primary-light);border-radius:20px;height:8px;overflow:hidden;margin:8px 0 14px;}
+  .progress-bar{background:var(--primary);height:100%;width:0%;transition:width .2s;}
+
+  .bottomnav{display:flex;border-top:1px solid var(--border);background:var(--card);position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;padding-bottom:env(safe-area-inset-bottom);z-index:2;box-shadow:0 -2px 5px rgba(0,0,0,0.05);}
+  .nav-btn{flex:1;border:none;background:none;padding:10px 2px 8px;min-height:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;color:var(--muted);font-weight:600;cursor:pointer;transition:var(--transition);}
+  .nav-btn span:first-child{font-size:22px;}
+  .nav-btn.active{color:var(--primary);position:relative;}
+  .nav-btn.active::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:28px;height:3px;background:var(--primary);border-radius:0 0 3px 3px;}
+
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:flex-end;justify-content:center;z-index:50;}
+  .modal-overlay.show{display:flex;}
+  .modal{display:none;flex-direction:column;background:var(--card);width:100%;max-width:430px;max-height:88vh;border-radius:16px 16px 0 0;overflow:hidden;box-shadow:var(--shadow-md);}
+  .modal.show{display:flex;}
+  .modal-head{padding:16px;display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:15px;background:var(--primary);color:#fff;}
+  .modal-head.danger{background:var(--danger);}
+  .modal-head.warn{background:var(--warn);color:#202124;}
+  .modal-head button{background:rgba(255,255,255,.2);border:none;color:#fff;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:14px;}
+  .modal-body{padding:16px;overflow-y:auto;}
+  .occ-list{list-style:none;padding:0;margin:0 0 14px;}
+  .occ-list li{background:var(--bg);border-radius:8px;padding:10px;margin-bottom:8px;font-size:13px;border:1px solid var(--border);}
+  .kv{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--border);font-size:13.5px;}
+  .kv strong{font-size:14px;text-align:right;margin-left:10px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .form-scroll{max-height:62vh;overflow-y:auto;padding-right:2px;}
+  .audit-item{border-bottom:1px solid var(--border);padding:10px 0;font-size:12.5px;}
+  .audit-top{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:2px;}
+  .audit-details{background:var(--bg);border-radius:6px;padding:8px;font-size:11px;white-space:pre-wrap;word-break:break-word;margin:4px 0 0;color:var(--text);}
+  .qa-note{font-size:11px;color:var(--muted);background:var(--warn-bg);border:1px dashed var(--warn);border-radius:8px;padding:8px;margin-top:10px;}
+
+  .toast{position:fixed;left:50%;bottom:80px;transform:translate(-50%,20px);background:#323232;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;max-width:85%;opacity:0;pointer-events:none;transition:all .25s;z-index:80;box-shadow:var(--shadow-md);}
+  .toast.show{opacity:1;transform:translate(-50%,0);}
+  .toast-warn{background:#f9ab00;color:#202124;}
+  .toast-error{background:var(--danger);}
+  .toast-success{background:var(--ok);}
+  .toast-info{background:var(--primary);}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="watermark"><img src="https://media.base44.com/images/public/69153b6c9abbcdb5459c4c72/267da6630_logo_marca_jpeg.jpg" alt=""></div>
+
+  <!-- ===== LOGIN ===== -->
+  <div id="loginScreen" class="login-screen">
+    <button class="theme-toggle-fab" id="btnThemeLogin">🌓 Tema</button>
+    <img class="logo" src="https://media.base44.com/images/public/69153b6c9abbcdb5459c4c72/267da6630_logo_marca_jpeg.jpg" alt="Ivan Transportes">
+    <h1>Ivan Transportes</h1>
+    <p class="sub">Selecione seu nome e informe seu PIN</p>
+    <div class="login-card">
+      <div class="field">
+        <label>Selecione seu nome</label>
+        <select id="loginDriver"></select>
+      </div>
+      <div class="field">
+        <label>PIN (4 dígitos)</label>
+        <input type="password" id="loginPin" inputmode="numeric" maxlength="4" placeholder="••••">
+      </div>
+      <button class="btn btn-primary btn-block" id="btnLogin">Entrar</button>
+    </div>
+    <button class="link-btn" id="btnForgotPin">Esqueci ou bloqueei meu PIN</button>
+    <div class="hint-box">
+      <strong>Credenciais de teste:</strong><br>
+      João da Silva → PIN 1234<br>
+      Pedro Souza → PIN 9876<br>
+      Senha Master (Alterar Veículo): MASTER2026
+    </div>
+    <div class="version-tag">Versão 7.4 · Dados fictícios</div>
+  </div>
+
+  <!-- ===== APP SHELL ===== -->
+  <div id="appShell" class="app-shell">
+    <header class="topbar">
+      <img src="https://media.base44.com/images/public/69153b6c9abbcdb5459c4c72/267da6630_logo_marca_jpeg.jpg" alt="logo">
+      <div class="topbar-info">
+        <div class="line1" id="hdrVeiculo">Caminhão —</div>
+        <div class="line2"><span id="hdrMotorista">—</span> · <span id="hdrCentro">—</span></div>
+      </div>
+      <button class="icon-btn" id="btnAudit">📋</button>
+      <button class="icon-btn" id="btnConfig">⚙️</button>
+    </header>
+    <div class="status-strip">
+      <span id="gpsStatus">📍 Localização ativa</span>
+      <span id="turnoLabel">🕒 Turno: —</span>
+    </div>
+    <div id="bannerArea"></div>
+
+    <main class="content">
+      <!-- HOME -->
+      <div class="page active" id="page-home">
+        <p class="greeting" id="greetingText">Bom dia! 👋</p>
+        <div class="cards" id="cardsProducao">
+          <div class="card"><div class="label">Viagens hoje</div><div class="value" id="sumViagens">0</div><div class="unit">apontamentos</div></div>
+          <div class="card"><div class="label">Cana hoje (t)</div><div class="value" id="sumToneladas">0,0</div><div class="unit">toneladas</div></div>
+        </div>
+        <div class="cards">
+          <div class="card"><div class="label">Pendentes</div><div class="value" id="sumPendentes">0</div><div class="unit">para sincronizar</div></div>
+          <div class="card"><div class="label">OS Abertas</div><div class="value" id="sumOS">0</div><div class="unit">ordens de serviço</div></div>
+        </div>
+        <div class="section-title">Ações Rápidas</div>
+        <div class="qa-grid" id="quickActions"></div>
+        <div class="section-title">Últimas viagens</div>
+        <div class="list-block"><div id="historicoResumo"></div></div>
+      </div>
+
+      <!-- PRODUÇÃO -->
+      <div class="page" id="page-producao">
+        <div class="list-block-head">
+          <div><h3>Produção de Cana</h3><p>Apontamento de viagens</p></div>
+          <button class="btn btn-secondary" id="btnNovaViagemTop">+ Nova</button>
+        </div>
+        <div id="viagensList"></div>
+      </div>
+
+      <!-- CHECKLIST -->
+      <div class="page" id="page-checklist">
+        <div class="list-block-head">
+          <div><h3>Checklist</h3><p>Inspeção pré-viagem obrigatória</p></div>
+        </div>
+        <div class="progress-wrap"><div class="progress-bar" id="clProgressBar"></div></div>
+        <div class="section-title">Itens de Inspeção</div>
+        <div id="checklistItems"></div>
+        <div class="section-title">Fotos da inspeção</div>
+        <label class="photo-btn">📷 Anexar Fotos <span id="clFotoLabel" style="margin-left:6px;"></span>
+          <input class="hidden-file" type="file" accept="image/*" capture="environment" multiple id="clFotoInput">
+        </label>
+        <div class="field" style="margin-top:12px;"><label>Observações</label><textarea id="clObs" rows="2"></textarea></div>
+        <button class="btn btn-primary btn-block" id="btnConcluirChecklist" style="margin-top:10px;">Concluir Checklist</button>
+      </div>
+
+      <!-- OCORRÊNCIAS -->
+      <div class="page" id="page-ocorrencias">
+        <div class="list-block-head">
+          <div><h3>Ocorrências</h3><p>Registre incidentes e problemas</p></div>
+          <button class="btn btn-secondary" id="btnNovaOcorrenciaTop">+ Nova</button>
+        </div>
+        <div id="ocorrenciasList"></div>
+      </div>
+
+      <!-- ABASTECIMENTO -->
+      <div class="page" id="page-abastecimento">
+        <div class="list-block-head">
+          <div><h3>Abastecimento</h3><p>Registre abastecimentos</p></div>
+          <button class="btn btn-secondary" id="btnNovoAbastecimentoTop">+ Novo</button>
+        </div>
+        <div id="abastecimentosList"></div>
+      </div>
+
+      <!-- HISTÓRICO -->
+      <div class="page" id="page-historico">
+        <div class="list-block-head"><div><h3>Histórico</h3><p>Todos os registros do veículo</p></div></div>
+        <div class="chips" id="histChips">
+          <div class="chip active" data-tipo="Todos">Todos</div>
+          <div class="chip" data-tipo="Produção">Produção</div>
+          <div class="chip" data-tipo="Checklist">Checklist</div>
+          <div class="chip" data-tipo="Ocorrências">Ocorrências</div>
+          <div class="chip" data-tipo="Abastecimento">Abastec.</div>
+          <div class="chip" data-tipo="OS">OS</div>
+          <div class="chip" data-tipo="Alertas">Alertas</div>
+        </div>
+        <div class="field"><label>Motorista</label><select id="histMotoristaFiltro"><option value="Todos">Todos</option></select></div>
+        <div id="historicoList"></div>
+      </div>
+    </main>
+
+    <nav class="bottomnav">
+      <button class="nav-btn active" data-page="home"><span>🏠</span>Início</button>
+      <button class="nav-btn" data-page="producao"><span>🌾</span>Produção</button>
+      <button class="nav-btn" data-page="checklist"><span>✅</span>Checklist</button>
+      <button class="nav-btn" data-page="ocorrencias"><span>⚠️</span>Ocorrências</button>
+      <button class="nav-btn" data-page="abastecimento"><span>⛽</span>Abast.</button>
+      <button class="nav-btn" data-page="historico"><span>🗂️</span>Hist.</button>
+    </nav>
+  </div>
+
+  <!-- ===== MODAIS ===== -->
+  <div class="modal-overlay" id="modalOverlay">
+
+    <!-- Ocorrências no Veículo -->
+    <div class="modal" id="modalOcorrenciasVeiculo">
+      <div class="modal-head warn">⚠️ Ocorrências no Veículo</div>
+      <div class="modal-body">
+        <ul class="occ-list" id="ocvLista"></ul>
+        <button class="btn btn-primary btn-block" id="btnOcvCiente" style="margin-bottom:8px;">Estou ciente e vou verificar</button>
+        <button class="btn btn-secondary btn-block" id="btnOcvDetalhes" style="margin-bottom:8px;">Ver ocorrências detalhadas</button>
+        <button class="btn btn-danger btn-block" id="btnOcvRecusar">Não posso operar este veículo</button>
+      </div>
+    </div>
+
+    <!-- Trocar Motorista -->
+    <div class="modal" id="modalTrocarMotorista">
+      <div class="modal-head">🔄 Trocar Motorista <button data-close>✕</button></div>
+      <div class="modal-body">
+        <div class="field"><label>Veículo (fixo)</label><div id="trocarVeiculoFixo" class="muted"></div></div>
+        <div class="field"><label>Selecione o novo motorista</label><select id="trocarNovoMotorista"></select></div>
+        <div class="field"><label>PIN</label><input type="password" id="trocarPin" inputmode="numeric" maxlength="4"></div>
+        <button class="btn btn-primary btn-block" id="btnConfirmarTroca">Confirmar Troca</button>
+      </div>
+    </div>
+
+    <!-- Alterar Veículo (Admin) -->
+    <div class="modal" id="modalAlterarVeiculo">
+      <div class="modal-head danger">🔐 Alterar Veículo (Admin) <button data-close>✕</button></div>
+      <div class="modal-body">
+        <div class="field"><label>Senha Master</label><input type="password" id="masterPass"></div>
+        <div class="muted" id="avLockMsg" style="color:var(--danger);margin-bottom:8px;"></div>
+        <button class="btn btn-secondary btn-block" id="btnValidarMaster" style="margin-bottom:12px;">Validar</button>
+        <div id="avStep2" style="display:none;">
+          <div class="field"><label>Novo Veículo</label><select id="novoVeiculoAdmin"></select></div>
+          <div class="field"><label>Motivo</label><textarea id="motivoTroca" rows="2"></textarea></div>
+          <button class="btn btn-danger btn-block" id="btnConfirmarTroca2">Confirmar Alteração</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Config -->
+    <div class="modal" id="modalConfig">
+      <div class="modal-head">⚙️ Configurações do Dispositivo <button data-close>✕</button></div>
+      <div class="modal-body">
+        <button class="btn btn-secondary btn-block" id="btnCfgAlterarVeiculo" style="margin-bottom:10px;">🔐 Alterar Veículo (Admin)</button>
+        <button class="btn btn-secondary btn-block" id="btnCfgAuditoria" style="margin-bottom:10px;">📋 Ver Auditoria</button>
+        <button class="btn btn-secondary btn-block" id="btnThemeConfig" style="margin-bottom:10px;">🌓 Alternar Tema Claro/Escuro</button>
+        <button class="btn btn-secondary btn-block" id="btnCfgSair" style="margin-bottom:10px;">🚪 Sair (Logout Manual)</button>
+        <div class="qa-note">Ferramenta de teste (QA): força o encerramento do turno imediatamente, sem esperar o horário real.</div>
+        <button class="btn btn-ghost btn-block" id="btnCfgForcarFimTurno">(QA) Forçar fim de turno</button>
+      </div>
+    </div>
+
+    <!-- Auditoria -->
+    <div class="modal" id="modalAuditoria">
+      <div class="modal-head">📋 Auditoria <button data-close>✕</button></div>
+      <div class="modal-body"><div id="auditList"></div></div>
+    </div>
+
+    <!-- Nova Viagem -->
+    <div class="modal" id="modalNovaViagem">
+      <div class="modal-head">🌾 Nova Viagem de Cana <button data-close>✕</button></div>
+      <div class="modal-body form-scroll">
+        <div class="grid2">
+          <div class="field"><label>Data</label><input type="date" id="vgData"></div>
+          <div class="field"><label>Nº Viagem</label><input type="text" id="vgNumero"></div>
+        </div>
+        <div class="field"><label>Ticket/Romaneio</label><input type="text" id="vgTicket"></div>
+        <div class="field"><label>Usina de Destino *</label>
+          <select id="vgUsina">
+            <option value="">Selecione...</option>
+            <option>Usina São Martinho</option>
+            <option>Usina Guarani</option>
+            <option>Usina Santa Adélia</option>
+          </select>
+        </div>
+        <div class="field"><label>Peso Líquido (t) *</label><input type="number" step="0.01" id="vgPesoLiquido"></div>
+        <div class="section-title">Mais detalhes (opcional)</div>
+        <div class="grid2">
+          <div class="field"><label>Fazenda</label><input type="text" id="vgFazenda"></div>
+          <div class="field"><label>Talhão</label><input type="text" id="vgTalhao"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Peso Bruto (t)</label><input type="number" step="0.01" id="vgBruto"></div>
+          <div class="field"><label>Tara (t)</label><input type="number" step="0.01" id="vgTara"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Distância (km)</label><input type="number" id="vgDist"></div>
+          <div class="field"><label>Hora Saída</label><input type="time" id="vgHoraSaida"></div>
+        </div>
+        <div class="field"><label>Hora Chegada</label><input type="time" id="vgHoraChegada"></div>
+        <div class="field"><label>Observações</label><textarea id="vgObs" rows="2"></textarea></div>
+        <label class="photo-btn">📷 Anexar Fotos <span id="vgFotoLabel" style="margin-left:6px;"></span>
+          <input class="hidden-file" type="file" accept="image/*" capture="environment" multiple id="vgFotoInput">
+        </label>
+        <button class="btn btn-primary btn-block" id="btnRegistrarViagem" style="margin-top:14px;">Registrar Viagem</button>
+      </div>
+    </div>
+
+    <!-- Nova Ocorrência -->
+    <div class="modal" id="modalNovaOcorrencia">
+      <div class="modal-head">⚠️ Nova Ocorrência <button data-close>✕</button></div>
+      <div class="modal-body form-scroll">
+        <div class="field"><label>Motivo *</label>
+          <select id="ocorrenciaMotivo">
+            <option value="">Selecione...</option>
+            <option>Pneu furado</option>
+            <option>Problema mecânico</option>
+            <option>Acidente de trânsito</option>
+            <option>Veículo parado na estrada</option>
+            <option>Atraso na balança</option>
+            <option>Atraso no carregamento</option>
+            <option>Condição da estrada</option>
+            <option>Problema com documentação</option>
+            <option>Outro</option>
+          </select>
+        </div>
+        <div class="field"><label>Descrição</label><textarea id="ocorrenciaDesc" rows="2"></textarea></div>
+        <div class="grid2">
+          <div class="field"><label>Local</label><input type="text" id="ocorrenciaLocal"></div>
+          <div class="field"><label>Gravidade *</label>
+            <select id="ocorrenciaGravidade">
+              <option value="">Selecione...</option>
+              <option>Baixa</option><option>Média</option><option>Alta</option><option>Crítica</option>
+            </select>
+          </div>
+        </div>
+        <label class="photo-btn">📷 Anexar Fotos <span id="ocorrenciaFotoLabel" style="margin-left:6px;"></span>
+          <input class="hidden-file" type="file" accept="image/*" capture="environment" multiple id="ocorrenciaFotoInput">
+        </label>
+        <button class="btn btn-primary btn-block" id="btnRegistrarOcorrencia" style="margin-top:14px;">Registrar Ocorrência</button>
+      </div>
+    </div>
+
+    <!-- Abastecimento -->
+    <div class="modal" id="modalAbastecimento">
+      <div class="modal-head">⛽ Registrar Abastecimento <button data-close>✕</button></div>
+      <div class="modal-body form-scroll">
+        <div class="grid2">
+          <div class="field"><label>Data</label><input type="date" id="abData"></div>
+          <div class="field"><label>Hora</label><input type="time" id="abHora"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>KM Atual</label><input type="number" id="abKm"></div>
+          <div class="field"><label>Litros</label><input type="number" step="0.01" id="abLitros"></div>
+        </div>
+        <div class="field"><label>Combustível</label>
+          <select id="abCombustivel"><option>Diesel</option><option>Gasolina</option><option>Etanol</option></select>
+        </div>
+        <div class="field"><label>Posto *</label>
+          <select id="abPosto">
+            <option value="">Selecione o posto</option>
+            <option>Posto Ipiranga BR-101</option>
+            <option>Posto Shell Rodovia</option>
+            <option>Posto Fazenda Central</option>
+            <option value="outro">Outro posto (não cadastrado)</option>
+          </select>
+        </div>
+        <div id="abOutroPostoBox" style="display:none;">
+          <div class="field"><label>Nome do posto</label><input type="text" id="abPostoNome"></div>
+          <div class="field"><label>Cidade</label><input type="text" id="abPostoCidade"></div>
+          <div class="field"><label>Justificativa (posto não cadastrado)</label><textarea id="abJustificativaPosto" rows="2"></textarea></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Valor Total (R$)</label><input type="number" step="0.01" id="abValor"></div>
+          <div class="field"><label>Preço/litro</label><input type="number" step="0.01" id="abPrecoLitro"></div>
+        </div>
+        <div class="field"><label>Nº do cupom/nota</label><input type="text" id="abCupom"></div>
+        <label class="photo-btn">📷 Foto do Odômetro <span id="abOdometroFotoLabel" style="margin-left:6px;"></span>
+          <input class="hidden-file" type="file" accept="image/*" capture="environment" id="abOdometroFotoInput">
+        </label>
+        <label class="photo-btn" style="margin-top:8px;">📷 Foto do Comprovante <span id="abComprovanteFotoLabel" style="margin-left:6px;"></span>
+          <input class="hidden-file" type="file" accept="image/*" capture="environment" id="abComprovanteFotoInput">
+        </label>
+        <div class="field" style="margin-top:12px;"><label>Observações</label><textarea id="abObs" rows="2"></textarea></div>
+        <button class="btn btn-primary btn-block" id="btnRegistrarAbastecimento" style="margin-top:14px;">Registrar Abastecimento</button>
+      </div>
+    </div>
+
+    <!-- Alerta genérico -->
+    <div class="modal" id="modalAlerta">
+      <div class="modal-head danger">🚨 ALERTA! <button data-close>✕</button></div>
+      <div class="modal-body">
+        <div id="alertaValores"></div>
+        <div id="alertaJustificativaBox" style="display:none;margin-top:10px;">
+          <div class="field"><label>Informe a justificativa</label><textarea id="alertaJustificativaTxt" rows="2"></textarea></div>
+          <button class="btn btn-secondary btn-block" id="btnConfirmarJustificativa" style="margin-top:8px; display:none;">Confirmar com Justificativa</button>
+        </div>
+        <div id="alertaBotoes" style="display:flex;flex-direction:column;gap:8px;margin-top:12px;"></div>
+      </div>
+    </div>
+
+    <!-- Detalhe Histórico -->
+    <div class="modal" id="modalHistDetalhe">
+      <div class="modal-head">Detalhes do Registro <button data-close>✕</button></div>
+      <div class="modal-body"><div id="histDetalheBody"></div></div>
+    </div>
+
+  </div>
+
+  <div class="toast" id="toastBox"></div>
+</div>
+
+<script>
+/* ========================= BANCO DE DADOS MOCK ========================= */
+var DB = {
+  masterPassword: 'MASTER2026',
+  device: { vehicleId:'V1' },
+  vehiclesList: [
+    { id:'V1', placa:'ABC-1234', costCenterId:'CC_CANA', capMin:8, capMax:100 },  // Peso máximo aumentado para 100t
+    { id:'V2', placa:'XYZ-5678', costCenterId:'CC_RESIDUOS', capMin:0, capMax:0 }
+  ],
+  vehicles: {},
+  costCenters: {
+    CC_CANA: { nome:'Transporte de Cana', producao:true,
+      turnoDia:{ini:'05:00', fim:'17:00'}, turnoNoite:{ini:'17:00', fim:'05:00'} },
+    CC_RESIDUOS: { nome:'Transporte de Resíduos', producao:false,
+      turnoDia:{ini:'06:00', fim:'18:00'}, turnoNoite:{ini:'18:00', fim:'06:00'} }
+  },
+  drivers: [
+    { id:'D1', nome:'João da Silva', cpf:'12345678900', veiculos:['V1','V2'] },
+    { id:'D2', nome:'Pedro Souza', cpf:'98765432100', veiculos:['V1','V2'] },
+    { id:'D3', nome:'Marcos Lima', cpf:'45612378900', veiculos:['V1'] }
+  ],
+  postosAtivos: ['Posto Ipiranga BR-101','Posto Shell Rodovia','Posto Fazenda Central'],
+  consumoMinKmL: 2.0, consumoMaxKmL: 4.5,
+
+  /* Classificação: itens de checklist mecânicos x não mecânicos */
+  checklistItems: [
+    { id:'freios', label:'Freios', mecanico:true },
+    { id:'pneus', label:'Pneus e calibragem', mecanico:true },
+    { id:'oleo', label:'Nível de óleo', mecanico:true },
+    { id:'luzes', label:'Luzes e sinalização', mecanico:true },
+    { id:'suspensao', label:'Suspensão', mecanico:true },
+    { id:'extintor', label:'Extintor de incêndio', mecanico:false },
+    { id:'triangulo', label:'Triângulo de sinalização', mecanico:false },
+    { id:'epi', label:'EPIs do motorista', mecanico:false },
+    { id:'docs', label:'Documentação do veículo', mecanico:false },
+    { id:'cinto', label:'Cinto de segurança', mecanico:false }
+  ],
+  /* Classificação: motivos de ocorrência mecânicos x não mecânicos */
+  ocorrenciaMecanica: {
+    'Pneu furado': true,
+    'Problema mecânico': true,
+    'Veículo parado na estrada': true,
+    'Acidente de trânsito': false,
+    'Atraso na balança': false,
+    'Atraso no carregamento': false,
+    'Condição da estrada': false,
+    'Problema com documentação': false,
+    'Outro': false
+  }
+};
+DB.vehiclesList.forEach(function(v){ DB.vehicles[v.id] = v; });
+
+/* Ocorrência de demonstração já aberta no veículo V1 */
+var seedOccurrences = {
+  V1: [
+    { id:'O1', motivo:'Pneu furado', descricao:'Pneu dianteiro direito com desgaste irregular', gravidade:'Média', status:'Aberta', data:'29/08/2026 14:20', registradoPor:'Pedro Souza' }
+  ],
+  V2: []
+};
+
+/* ========================= ESTADO ========================= */
+var state = {
+  session:null,
+  loginAttempts:{},
+  vehicleChangeAttempts:0,
+  vehicleChangeLockUntil:0,
+  history: [],
+  osList: [],
+  auditLog: [],
+  vehicleOccurrences: seedOccurrences,
+  histFiltroTipo:'Todos',
+  histFiltroMotorista:'Todos',
+  timers:{ warn15:null, warn5:null, checkInterval:null, gpsInterval:null },
+  occAckThisSession:false,
+  vehicleBlocked:false,
+  checklistAnswers:{},
+  pendingAlerta:null
+};
+
+/* ========================= HELPERS ========================= */
+function $(id){ return document.getElementById(id); }
+function pad(n){ return n<10 ? '0'+n : ''+n; }
+function formatNow(){
+  var d = new Date();
+  return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear()+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+}
+function getCurrentDate(){
+  var d = new Date();
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+}
+function getCurrentTime(){
+  var d = new Date();
+  return pad(d.getHours())+':'+pad(d.getMinutes());
+}
+function getDriverName(id){ var n='—'; DB.drivers.forEach(function(d){ if(d.id===id) n=d.nome; }); return n; }
+function gravClass(g){ return {Baixa:'low',Média:'mid',Alta:'high',Crítica:'crit'}[g] || 'low'; }
+function isToday(iso){
+  if(!iso) return true;
+  var a = new Date(iso), b = new Date();
+  return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+}
+/* Persistência com suporte a ultimoKmVeiculo */
+var ultimoKmVeiculo = { V1: 45210, V2: 12030 };
+function persist(){
+  try{
+    localStorage.setItem('ivan_history', JSON.stringify(state.history));
+    localStorage.setItem('ivan_os', JSON.stringify(state.osList));
+    localStorage.setItem('ivan_audit', JSON.stringify(state.auditLog));
+    localStorage.setItem('ivan_occ', JSON.stringify(state.vehicleOccurrences));
+    localStorage.setItem('ivan_ultimoKm', JSON.stringify(ultimoKmVeiculo));
+  }catch(e){}
+}
+function loadPersisted(){
+  try{
+    var h = localStorage.getItem('ivan_history'); if(h) state.history = JSON.parse(h);
+    var o = localStorage.getItem('ivan_os'); if(o) state.osList = JSON.parse(o);
+    var a = localStorage.getItem('ivan_audit'); if(a) state.auditLog = JSON.parse(a);
+    var oc = localStorage.getItem('ivan_occ'); if(oc) state.vehicleOccurrences = JSON.parse(oc);
+    var km = localStorage.getItem('ivan_ultimoKm'); if(km) ultimoKmVeiculo = JSON.parse(km);
+  }catch(e){}
+}
+function audit(action, details){
+  state.auditLog.push({ ts:Date.now(), action:action, actor: state.session ? getDriverName(state.session.driverId) : 'Sistema', details:details||{} });
+  persist();
+}
+function toast(msg, type, duration){
+  var box = $('toastBox');
+  box.textContent = msg;
+  box.className = 'toast show' + (type ? ' toast-'+type : '');
+  clearTimeout(box._t);
+  box._t = setTimeout(function(){ box.className='toast'; }, duration||3000);
+}
+function openModal(id){
+  document.querySelectorAll('.modal').forEach(function(m){ m.classList.remove('show'); });
+  $(id).classList.add('show');
+  $('modalOverlay').classList.add('show');
+}
+function closeModal(){
+  document.querySelectorAll('.modal').forEach(function(m){ m.classList.remove('show'); });
+  $('modalOverlay').classList.remove('show');
+  // Resetar possíveis botões de justificativa pendentes
+  var btnJust = $('btnConfirmarJustificativa');
+  if(btnJust) btnJust.style.display = 'none';
+  $('alertaJustificativaBox').style.display = 'none';
+  $('alertaJustificativaTxt').value = '';
+}
+
+/* ========================= TEMA ========================= */
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('ivan_theme', t);
+}
+function toggleTheme(){
+  var cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  applyTheme(cur);
+}
+$('btnThemeLogin').addEventListener('click', toggleTheme);
+$('btnThemeConfig').addEventListener('click', toggleTheme);
+
+/* Manifest PWA via Blob — garante ícone/logo da empresa ao instalar na tela inicial */
+(function setupManifest(){
+  var manifest = {
+    name: 'Ivan Transportes - App do Motorista',
+    short_name: 'Ivan Transportes',
+    start_url: '.',
+    display: 'standalone',
+    background_color: '#1a73e8',
+    theme_color: '#1a73e8',
+    icons: [
+      { src:'https://media.base44.com/images/public/69153b6c9abbcdb5459c4c72/267da6630_logo_marca_jpeg.jpg', sizes:'192x192', type:'image/jpeg' },
+      { src:'https://media.base44.com/images/public/69153b6c9abbcdb5459c4c72/267da6630_logo_marca_jpeg.jpg', sizes:'512x512', type:'image/jpeg' }
+    ]
+  };
+  var blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+  $('pwaManifest').setAttribute('href', URL.createObjectURL(blob));
+})();
+
+/* ========================= TURNO ========================= */
+function computeTurno(costCenterId){
+  var cc = DB.costCenters[costCenterId];
+  var now = new Date();
+  var horaAtual = now.getHours()*60 + now.getMinutes();
+  function toMin(hhmm){ var p = hhmm.split(':'); return parseInt(p[0])*60+parseInt(p[1]); }
+  var iniDia = toMin(cc.turnoDia.ini), fimDia = toMin(cc.turnoDia.fim);
+  var isDia = horaAtual >= iniDia && horaAtual < fimDia;
+  var turnoAtual = isDia ? cc.turnoDia : cc.turnoNoite;
+  var fim = new Date(now);
+  var fp = turnoAtual.fim.split(':');
+  fim.setHours(parseInt(fp[0]), parseInt(fp[1]), 0, 0);
+  if(fim.getTime() <= now.getTime()) fim.setDate(fim.getDate()+1);
+  return { label:(isDia?'Diurno':'Noturno')+' '+turnoAtual.ini+'–'+turnoAtual.fim, fimTs:fim.getTime() };
+}
+
+/* ========================= LOGIN ========================= */
+function populateDriverSelect(){
+  var vehId = DB.device.vehicleId;
+  var list = DB.drivers.filter(function(d){ return d.veiculos.indexOf(vehId) !== -1; });
+  var opts = '';
+  list.forEach(function(d){ opts += '<option value="'+d.id+'">'+d.nome+'</option>'; });
+  $('loginDriver').innerHTML = opts;
+}
+$('btnForgotPin').addEventListener('click', function(){ toast('Entre em contato com seu gestor para redefinir o PIN.', 'info', 4000); });
+
+$('btnLogin').addEventListener('click', function(){
+  var driverId = $('loginDriver').value;
+  var pin = $('loginPin').value.trim();
+  if(!driverId || !/^\d{4}$/.test(pin)){ toast('Selecione seu nome e informe um PIN de 4 dígitos.', 'warn'); return; }
+  var att = state.loginAttempts[driverId] = state.loginAttempts[driverId] || {count:0, lockUntil:0};
+  if(Date.now() < att.lockUntil){ toast('Acesso bloqueado temporariamente. Tente novamente em instantes.', 'error'); return; }
+  var driver = null; DB.drivers.forEach(function(d){ if(d.id===driverId) driver = d; });
+  if(pin !== driver.cpf.substring(0,4)){
+    att.count++;
+    if(att.count>=3){ att.lockUntil = Date.now()+60000; att.count=0; toast('3 tentativas incorretas. Bloqueado por 60 segundos.', 'error', 4000); }
+    else{ toast('PIN incorreto. Tentativa '+att.count+' de 3.', 'error'); }
+    return;
+  }
+  att.count=0;
+  startSession(driverId);
+});
+
+function startSession(driverId){
+  var vehId = DB.device.vehicleId;
+  state.session = { driverId:driverId, vehicleId:vehId, turno: computeTurno(DB.vehicles[vehId].costCenterId) };
+  audit('LOGIN', { motorista:getDriverName(driverId), veiculo:DB.vehicles[vehId].placa });
+  $('loginScreen').style.display='none';
+  $('appShell').style.display='flex';
+  $('loginPin').value='';
+  state.occAckThisSession=false;
+  state.vehicleBlocked=false;
+  state.checklistAnswers={};
+  renderHeader();
+  renderQuickActions();
+  renderSummary();
+  renderHistorico();
+  renderBanner();
+  setupShiftWatcher();
+  setupGpsSimulation();
+  checkVehicleOccurrencesOnEntry();
+  var h = new Date().getHours();
+  $('greetingText').textContent = (h<12?'Bom dia!':(h<18?'Boa tarde!':'Boa noite!')) + ' 👋';
+}
+
+function renderHeader(){
+  var veh = DB.vehicles[state.session.vehicleId];
+  var cc = DB.costCenters[veh.costCenterId];
+  $('hdrVeiculo').textContent = 'Caminhão ' + veh.placa;
+  $('hdrMotorista').textContent = getDriverName(state.session.driverId);
+  $('hdrCentro').textContent = cc.nome;
+  $('turnoLabel').textContent = '🕒 Turno: ' + state.session.turno.label;
+  renderNavVisibility();
+}
+function renderNavVisibility(){
+  var cc = DB.costCenters[DB.vehicles[state.session.vehicleId].costCenterId];
+  var navProd = document.querySelector('.nav-btn[data-page="producao"]');
+  navProd.style.display = cc.producao ? 'flex' : 'none';
+}
+
+function renderBanner(){
+  var area = $('bannerArea');
+  var htmlB = '';
+  if(state.vehicleBlocked){
+    htmlB += '<div class="banner banner-danger">🚫 Veículo bloqueado — aguardando revisão do gestor. Ações limitadas.</div>';
+  } else if(!state.occAckThisSession && (state.vehicleOccurrences[state.session.vehicleId]||[]).filter(function(o){return o.status==='Aberta';}).length){
+    htmlB += '<div class="banner banner-warn">⚠️ Existem ocorrências abertas neste veículo. Toque para revisar.</div>';
+  }
+  var pend = state.history.filter(function(h){ return h.status==='Pendente' || h.status==='Aguardando análise'; }).length;
+  if(pend>0){ htmlB += '<div class="banner banner-info">📶 '+pend+' registro(s) aguardando sincronização.</div>'; }
+  area.innerHTML = htmlB;
+}
+
+function checkVehicleOccurrencesOnEntry(){
+  var list = state.vehicleOccurrences[state.session.vehicleId] || [];
+  var abertas = list.filter(function(o){ return o.status==='Aberta'; });
+  if(abertas.length && !state.occAckThisSession){
+    $('ocvLista').innerHTML = abertas.map(function(o){
+      return '<li><strong>'+o.motivo+'</strong><br><span class="muted">Gravidade: '+o.gravidade+' · '+o.data+' · Registrado por '+o.registradoPor+'</span></li>';
+    }).join('');
+    openModal('modalOcorrenciasVeiculo');
+  } else {
+    renderBanner();
+  }
+}
+$('btnOcvCiente').addEventListener('click', function(){
+  state.occAckThisSession = true;
+  audit('OCORRENCIA_RECONHECIDA', { veiculo:DB.vehicles[state.session.vehicleId].placa });
+  closeModal();
+  renderBanner();
+  toast('Ciente. Boa viagem e atenção redobrada.', 'success');
+});
+$('btnOcvDetalhes').addEventListener('click', function(){ closeModal(); showPage('ocorrencias'); });
+$('btnOcvRecusar').addEventListener('click', function(){
+  state.vehicleBlocked = true;
+  audit('OPERACAO_RECUSADA', { motivo:'Motorista optou por não operar o veículo com ocorrência aberta', veiculo:DB.vehicles[state.session.vehicleId].placa });
+  closeModal();
+  renderBanner();
+  toast('Registrado. Aguarde contato do gestor antes de iniciar a operação.', 'error', 5000);
+});
+
+/* ========================= AÇÕES RÁPIDAS ========================= */
+function guardedAction(fn){
+  if(state.vehicleBlocked){ toast('Veículo bloqueado. Aguarde liberação do gestor.', 'error'); return; }
+  if(!state.occAckThisSession && (state.vehicleOccurrences[state.session.vehicleId]||[]).filter(function(o){return o.status==='Aberta';}).length){
+    checkVehicleOccurrencesOnEntry();
+    return;
+  }
+  fn();
+}
+function renderQuickActions(){
+  var cc = DB.costCenters[DB.vehicles[state.session.vehicleId].costCenterId];
+  var box = $('quickActions');
+  var htmlQ = '';
+  if(cc.producao){
+    htmlQ += '<div class="qa-btn" id="qaViagem"><span>🌾</span>Nova Viagem de Cana</div>';
+  }
+  htmlQ += '<div class="qa-btn" id="qaChecklist"><span>✅</span>Fazer Checklist</div>';
+  htmlQ += '<div class="qa-btn" id="qaOcorrencia"><span>⚠️</span>Registrar Ocorrência</div>';
+  box.innerHTML = htmlQ;
+  if($('qaViagem')) $('qaViagem').addEventListener('click', function(){ guardedAction(function(){ resetViagemForm(); openModal('modalNovaViagem'); }); });
+  $('qaChecklist').addEventListener('click', function(){ guardedAction(function(){ showPage('checklist'); }); });
+  $('qaOcorrencia').addEventListener('click', function(){ guardedAction(function(){ resetOcorrenciaForm(); openModal('modalNovaOcorrencia'); }); });
+}
+
+/* ========================= OS E ALERTAS ========================= */
+function addAlertaHistorico(rec){
+  addHistorico({ tipo:'Alertas', titulo:rec.titulo, status:rec.status||'Aberta', motorista:getDriverName(state.session.driverId), data:formatNow(), detalhes:rec.detalhes||{} });
+  audit('ALERTA_GESTOR', rec.detalhes||{});
+}
+function addOS(rec){
+  var os = { id:'OS'+Date.now()+Math.random().toString(16).slice(2), motivo:rec.motivo, origem:rec.origem, gravidade:rec.gravidade||'Média', status:'Aberta', destinatario:'Mecânico', data:formatNow(), veiculo:DB.vehicles[state.session.vehicleId].placa, motorista:getDriverName(state.session.driverId) };
+  state.osList.push(os);
+  persist();
+  addHistorico({ tipo:'OS', titulo:'OS ao mecânico: '+rec.motivo, status:'Aberta', motorista:getDriverName(state.session.driverId), data:formatNow(), detalhes:os });
+  audit('OS_GERADA_MECANICO', os);
+}
+
+/* ========================= CHECKLIST ========================= */
+function renderChecklistPage(){
+  var box = $('checklistItems');
+  var htmlC = '';
+  DB.checklistItems.forEach(function(item){
+    var ans = state.checklistAnswers[item.id] || {};
+    htmlC += '<div class="cl-item" data-item="'+item.id+'">' +
+      '<div class="cl-item-head"><span>'+item.label+'</span>' + (item.mecanico ? '<span class="cl-mech-tag">MECÂNICO</span>' : '') + '</div>' +
+      '<div class="cl-options">' +
+        '<label><input type="radio" name="cl_'+item.id+'" value="ok" '+(ans.status==='ok'?'checked':'')+'> Conforme</label>' +
+        '<label><input type="radio" name="cl_'+item.id+'" value="nc" '+(ans.status==='nc'?'checked':'')+'> Não conforme</label>' +
+      '</div>' +
+      '<div class="cl-nc-fields" style="display:'+(ans.status==='nc'?'block':'none')+';" id="ncBox_'+item.id+'">' +
+        '<select id="ncGrav_'+item.id+'">' +
+          '<option value="">Gravidade...</option><option '+(ans.gravidade==='Baixa'?'selected':'')+'>Baixa</option><option '+(ans.gravidade==='Média'?'selected':'')+'>Média</option><option '+(ans.gravidade==='Alta'?'selected':'')+'>Alta</option><option '+(ans.gravidade==='Crítica'?'selected':'')+'>Crítica</option>' +
+        '</select>' +
+        '<textarea id="ncDesc_'+item.id+'" placeholder="Descreva o problema..." rows="2">'+(ans.desc||'')+'</textarea>' +
+      '</div></div>';
+  });
+  box.innerHTML = htmlC;
+  DB.checklistItems.forEach(function(item){
+    var radios = document.querySelectorAll('input[name="cl_'+item.id+'"]');
+    radios.forEach(function(r){
+      r.addEventListener('change', function(){
+        state.checklistAnswers[item.id] = state.checklistAnswers[item.id] || {};
+        state.checklistAnswers[item.id].status = r.value;
+        $('ncBox_'+item.id).style.display = r.value==='nc' ? 'block' : 'none';
+        updateChecklistProgress();
+      });
+    });
+    // Persistir gravidade e descrição conforme o usuário interage
+    var gravSelect = $('ncGrav_'+item.id);
+    var descTextarea = $('ncDesc_'+item.id);
+    if(gravSelect){
+      gravSelect.addEventListener('change', function(){
+        state.checklistAnswers[item.id].gravidade = gravSelect.value;
+      });
+    }
+    if(descTextarea){
+      descTextarea.addEventListener('input', function(){
+        state.checklistAnswers[item.id].desc = descTextarea.value;
+      });
+    }
+  });
+  updateChecklistProgress();
+}
+function updateChecklistProgress(){
+  var total = DB.checklistItems.length;
+  var respondidos = Object.keys(state.checklistAnswers).filter(function(k){ return state.checklistAnswers[k].status; }).length;
+  $('clProgressBar').style.width = Math.round((respondidos/total)*100) + '%';
+}
+$('clFotoInput').addEventListener('change', function(e){ if(e.target.files.length){ $('clFotoLabel').textContent = e.target.files.length+' foto(s) anexada(s)'; audit('FOTO_ANEXADA',{alvo:'checklist'}); } });
+
+$('btnConcluirChecklist').addEventListener('click', function(){
+  var total = DB.checklistItems.length;
+  var respondidos = Object.keys(state.checklistAnswers).filter(function(k){ return state.checklistAnswers[k].status; }).length;
+  if(respondidos < total){ toast('Responda todos os itens do checklist antes de concluir.', 'warn'); return; }
+
+  var bloqueado = false;
+  var geraOSmecanica = false;
+  var itensNC = [];
+
+  DB.checklistItems.forEach(function(item){
+    var ans = state.checklistAnswers[item.id];
+    if(ans.status==='nc'){
+      var grav = $('ncGrav_'+item.id) ? $('ncGrav_'+item.id).value : (ans.gravidade || '');
+      var desc = $('ncDesc_'+item.id) ? $('ncDesc_'+item.id).value : (ans.desc || '');
+      itensNC.push({ item:item.label, mecanico:item.mecanico, gravidade:grav||'Média', desc:desc });
+      if(item.mecanico) geraOSmecanica = true;
+      if(grav==='Alta' || grav==='Crítica') bloqueado = true;
+    }
+  });
+
+  itensNC.forEach(function(nc){
+    addOccurrence({ motivo:'Checklist não conforme: '+nc.item, descricao:nc.desc, gravidade:nc.gravidade });
+    addAlertaHistorico({ titulo:'Checklist não conforme: '+nc.item, status:'Aberta', detalhes:nc });
+  });
+
+  if(geraOSmecanica){
+    var mecanicos = itensNC.filter(function(n){return n.mecanico;}).map(function(n){return n.item;}).join(', ');
+    addOS({ motivo:'Item(ns) mecânico(s) não conforme(s): '+mecanicos, origem:'Checklist', gravidade: bloqueado?'Crítica':'Alta' });
+  }
+
+  addHistorico({ tipo:'Checklist', titulo:'Checklist realizado', status: bloqueado?'Bloqueado':'Sincronizado', motorista:getDriverName(state.session.driverId), data:formatNow(), detalhes:{ itensNC:itensNC, obs:$('clObs').value } });
+
+  if(bloqueado){
+    state.vehicleBlocked = true;
+    renderBanner();
+    toast('Item crítico reprovado. Veículo bloqueado' + (geraOSmecanica?' e OS enviada ao mecânico.':' — gestor notificado.'), 'error', 5500);
+  } else if(itensNC.length){
+    toast('Checklist concluído com pendência(s).' + (geraOSmecanica?' OS enviada ao mecânico.':' Gestor notificado.'), 'warn', 4500);
+  } else {
+    toast('Checklist concluído sem pendências.', 'success');
+  }
+  state.checklistAnswers = {};
+  showPage('home');
+});
+
+function addOccurrence(o){
+  var vehId = state.session.vehicleId;
+  state.vehicleOccurrences[vehId] = state.vehicleOccurrences[vehId] || [];
+  state.vehicleOccurrences[vehId].push({
+    id:'O'+Date.now()+Math.random().toString(16).slice(2),
+    motivo:o.motivo, descricao:o.descricao, gravidade:o.gravidade,
+    status:'Aberta', data:formatNow(), registradoPor:getDriverName(state.session.driverId)
+  });
+  persist();
+  renderOcorrenciasPage();
+}
+
+/* ========================= NOVA VIAGEM ========================= */
+function resetViagemForm(){
+  $('vgData').value = getCurrentDate();  // Preencher com data atual
+  $('vgHoraSaida').value = getCurrentTime(); // Preencher com hora atual
+  $('vgHoraChegada').value = ''; // Deixar vazio
+  $('vgNumero').value=''; $('vgTicket').value=''; $('vgUsina').value='';
+  $('vgPesoLiquido').value=''; $('vgFazenda').value=''; $('vgTalhao').value='';
+  $('vgBruto').value=''; $('vgTara').value=''; $('vgDist').value='';
+  $('vgObs').value=''; $('vgFotoLabel').textContent='';
+}
+$('vgFotoInput').addEventListener('change', function(e){ if(e.target.files.length){ $('vgFotoLabel').textContent = e.target.files.length+' foto(s) anexada(s)'; audit('FOTO_ANEXADA',{alvo:'viagem'}); } });
+
+// Cálculo automático do peso líquido a partir de bruto e tara
+function calcularPesoLiquido(){
+  var bruto = parseFloat($('vgBruto').value);
+  var tara = parseFloat($('vgTara').value);
+  if(!isNaN(bruto) && !isNaN(tara)){
+    var liquido = bruto - tara;
+    if(liquido >= 0){
+      $('vgPesoLiquido').value = liquido.toFixed(2);
+    }
+  }
+}
+$('vgBruto').addEventListener('input', calcularPesoLiquido);
+$('vgTara').addEventListener('input', calcularPesoLiquido);
+
+$('btnRegistrarViagem').addEventListener('click', function(){
+  if(!$('vgUsina').value){ toast('Selecione a usina de destino.', 'warn'); return; }
+  var pesoStr = $('vgPesoLiquido').value.trim();
+  var peso = parseFloat(pesoStr.replace(',','.'));
+  if(isNaN(peso) || peso<=0){ toast('Informe um peso líquido válido.', 'warn'); return; }
+
+  var veh = DB.vehicles[state.session.vehicleId];
+  var rec = { tipo:'Produção', titulo:'Viagem para '+$('vgUsina').value, motorista:getDriverName(state.session.driverId), data:formatNow(),
+    detalhes:{ peso:peso, usina:$('vgUsina').value, ticket:$('vgTicket').value, fazenda:$('vgFazenda').value, talhao:$('vgTalhao').value } };
+
+  if(peso >= 1000){
+    state.pendingAlerta = { tipo:'peso_unidade', rec:rec, peso:peso };
+    abrirAlertaPesoUnidade(peso);
+    return;
+  }
+  if(peso < veh.capMin || peso > veh.capMax){
+    state.pendingAlerta = { tipo:'peso_fora', rec:rec, peso:peso };
+    abrirAlertaPesoFora(peso, veh);
+    return;
+  }
+  finalizarViagem(rec, false);
+});
+
+function abrirAlertaPesoUnidade(peso){
+  $('alertaValores').innerHTML = '<div class="kv"><span>Valor informado</span><strong>'+peso+'</strong></div>' +
+    '<div class="kv"><span>Provável unidade</span><strong>Quilogramas (kg)</strong></div>' +
+    '<div class="kv"><span>Convertido para toneladas</span><strong>'+(peso/1000).toFixed(2)+' t</strong></div>';
+  $('alertaJustificativaBox').style.display='none';
+  $('btnConfirmarJustificativa').style.display='none';
+  var botoes = $('alertaBotoes');
+  botoes.innerHTML='';
+  botoes.appendChild(criarBotaoAlerta('Converter para '+(peso/1000).toFixed(2)+' t', 'btn-primary', function(){
+    $('vgPesoLiquido').value = (peso/1000).toFixed(2);
+    closeModal(); openModal('modalNovaViagem');
+  }));
+  botoes.appendChild(criarBotaoAlerta('Corrigir manualmente', 'btn-secondary', function(){
+    closeModal(); openModal('modalNovaViagem'); $('vgPesoLiquido').focus();
+  }));
+  botoes.appendChild(criarBotaoAlerta('Justificar e confirmar', 'btn-secondary', function(){
+    $('alertaJustificativaBox').style.display='block';
+    $('btnConfirmarJustificativa').style.display='block';
+    $('btnConfirmarJustificativa').onclick = function(){
+      var just = $('alertaJustificativaTxt').value.trim();
+      if(!just){ toast('Informe uma justificativa para confirmar.', 'warn'); return; }
+      var rec = state.pendingAlerta.rec;
+      rec.detalhes.justificativa = just;
+      finalizarViagem(rec, true);
+    };
+  }));
+  botoes.appendChild(criarBotaoAlerta('Cancelar Registro', 'btn-danger', function(){ closeModal(); }));
+  openModal('modalAlerta');
+}
+function abrirAlertaPesoFora(peso, veh){
+  $('alertaValores').innerHTML = '<div class="kv"><span>Peso informado</span><strong>'+peso+' t</strong></div>' +
+    '<div class="kv"><span>Faixa esperada do veículo</span><strong>'+veh.capMin+' a '+veh.capMax+' t</strong></div>';
+  $('alertaJustificativaBox').style.display='none';
+  $('btnConfirmarJustificativa').style.display='none';
+  var botoes = $('alertaBotoes');
+  botoes.innerHTML='';
+  botoes.appendChild(criarBotaoAlerta('Corrigir manualmente', 'btn-primary', function(){
+    closeModal(); openModal('modalNovaViagem'); $('vgPesoLiquido').focus();
+  }));
+  botoes.appendChild(criarBotaoAlerta('Informar justificativa', 'btn-secondary', function(){
+    $('alertaJustificativaBox').style.display='block';
+    $('btnConfirmarJustificativa').style.display='block';
+    $('btnConfirmarJustificativa').onclick = function(){
+      var just = $('alertaJustificativaTxt').value.trim();
+      if(!just){ toast('Informe uma justificativa para confirmar.', 'warn'); return; }
+      var rec = state.pendingAlerta.rec;
+      rec.detalhes.justificativa = just;
+      finalizarViagem(rec, true);
+    };
+  }));
+  botoes.appendChild(criarBotaoAlerta('Salvar para análise', 'btn-secondary', function(){
+    var rec = state.pendingAlerta.rec;
+    rec.detalhes.justificativa = $('alertaJustificativaTxt').value || '(sem justificativa)';
+    finalizarViagem(rec, true);
+  }));
+  botoes.appendChild(criarBotaoAlerta('Cancelar Registro', 'btn-danger', function(){ closeModal(); }));
+  openModal('modalAlerta');
+}
+function criarBotaoAlerta(label, cls, onClick){
+  var b = document.createElement('button');
+  b.className = 'btn '+cls+' btn-block';
+  b.textContent = label;
+  b.addEventListener('click', onClick);
+  return b;
+}
+function finalizarViagem(rec, irregularidade){
+  rec.status = rec.status || 'Sincronizado';
+  addHistorico(rec);
+  if(irregularidade){
+    addAlertaHistorico({ titulo:'Peso de viagem fora do padrão', status:'Aguardando análise', detalhes:rec.detalhes });
+  }
+  closeModal();
+  if(irregularidade){ toast('Viagem registrada. Alerta enviado ao gestor para análise.', 'warn', 4500); }
+  else{ toast('Viagem registrada.', 'success'); }
+}
+
+/* ========================= NOVA OCORRÊNCIA ========================= */
+function resetOcorrenciaForm(){
+  $('ocorrenciaDesc').value=''; $('ocorrenciaLocal').value='';
+  $('ocorrenciaMotivo').value=''; $('ocorrenciaGravidade').value='';
+  $('ocorrenciaFotoLabel').textContent = '';
+}
+$('ocorrenciaFotoInput').addEventListener('change', function(e){ if(e.target.files.length){ $('ocorrenciaFotoLabel').textContent = e.target.files.length+' foto(s) anexada(s)'; audit('FOTO_ANEXADA',{alvo:'ocorrencia'}); } });
+
+$('btnRegistrarOcorrencia').addEventListener('click', function(){
+  if(!$('ocorrenciaMotivo').value || !$('ocorrenciaGravidade').value){ toast('Selecione o motivo e a gravidade.', 'warn'); return; }
+  var grav = $('ocorrenciaGravidade').value;
+  var motivo = $('ocorrenciaMotivo').value;
+  var mecanico = !!DB.ocorrenciaMecanica[motivo];
+
+  addOccurrence({ motivo:motivo, descricao:$('ocorrenciaDesc').value, gravidade:grav });
+
+  addAlertaHistorico({ titulo:'Ocorrência registrada: '+motivo, status:'Aberta', detalhes:{motivo:motivo, gravidade:grav, mecanico:mecanico} });
+
+  if(mecanico){
+    addOS({ motivo:'Ocorrência mecânica: '+motivo, origem:'Ocorrência', gravidade:grav });
+  }
+
+  closeModal();
+  resetOcorrenciaForm();
+  if(mecanico){
+    toast('Ocorrência registrada. Alerta ao gestor e OS ao mecânico enviados.', 'warn', 4500);
+  } else {
+    toast('Ocorrência registrada. Alerta enviado ao gestor.', 'warn', 4000);
+  }
+});
+
+/* ========================= ABASTECIMENTO ========================= */
+function resetAbastecimentoForm(){
+  $('abData').value = getCurrentDate(); // Preencher com data atual
+  $('abHora').value = getCurrentTime(); // Preencher com hora atual
+  $('abKm').value=''; $('abLitros').value='';
+  $('abPosto').value=''; $('abOutroPostoBox').style.display='none';
+  $('abPostoNome').value=''; $('abPostoCidade').value=''; $('abJustificativaPosto').value='';
+  $('abValor').value=''; $('abPrecoLitro').value=''; $('abCupom').value=''; $('abObs').value='';
+  $('abOdometroFotoLabel').textContent=''; $('abComprovanteFotoLabel').textContent='';
+}
+$('abPosto').addEventListener('change', function(){
+  $('abOutroPostoBox').style.display = $('abPosto').value==='outro' ? 'block' : 'none';
+});
+$('abOdometroFotoInput').addEventListener('change', function(e){ if(e.target.files.length){ $('abOdometroFotoLabel').textContent='Foto anexada'; audit('FOTO_ANEXADA',{alvo:'odometro'}); } });
+$('abComprovanteFotoInput').addEventListener('change', function(e){ if(e.target.files.length){ $('abComprovanteFotoLabel').textContent='Foto anexada'; audit('FOTO_ANEXADA',{alvo:'comprovante'}); } });
+
+$('btnRegistrarAbastecimento').addEventListener('click', function(){
+  if(!$('abPosto').value){ toast('Selecione o posto.', 'warn'); return; }
+  if($('abPosto').value==='outro' && (!$('abPostoNome').value || !$('abPostoCidade').value || !$('abJustificativaPosto').value)){
+    toast('Preencha nome, cidade e justificativa do posto não cadastrado.', 'warn'); return;
+  }
+  var kmNovo = parseInt($('abKm').value);
+  if(isNaN(kmNovo)){ toast('Informe o KM atual.', 'warn'); return; }
+  var vehId = state.session.vehicleId;
+  var kmAnterior = ultimoKmVeiculo[vehId] || 0;
+  var litros = parseFloat($('abLitros').value) || 0;
+
+  var rec = { tipo:'Abastecimento', titulo:'Abastecimento — '+$('abCombustivel').value, motorista:getDriverName(state.session.driverId), data:formatNow(),
+    detalhes:{ kmAnterior:kmAnterior, kmNovo:kmNovo, litros:litros, posto: $('abPosto').value==='outro' ? $('abPostoNome').value+' ('+$('abPostoCidade').value+')' : $('abPosto').value } };
+
+  if(kmNovo < kmAnterior){
+    state.pendingAlerta = { tipo:'km_inconsistente', rec:rec, kmNovo:kmNovo, kmAnterior:kmAnterior };
+    abrirAlertaKm(kmNovo, kmAnterior, false);
+    return;
+  }
+  var km_rodado = kmNovo - kmAnterior;
+  var consumo = (km_rodado>0 && litros>0) ? (km_rodado/litros) : null;
+  if(consumo !== null && (consumo < DB.consumoMinKmL || consumo > DB.consumoMaxKmL)){
+    rec.detalhes.consumo = consumo.toFixed(2);
+    state.pendingAlerta = { tipo:'consumo_fora', rec:rec, consumo:consumo };
+    abrirAlertaKm(kmNovo, kmAnterior, true, consumo);
+    return;
+  }
+  if(consumo !== null) rec.detalhes.consumo = consumo.toFixed(2);
+  finalizarAbastecimento(rec, kmNovo, false);
+});
+
+function abrirAlertaKm(kmNovo, kmAnterior, isConsumo, consumo){
+  if(isConsumo){
+    $('alertaValores').innerHTML = '<div class="kv"><span>KM rodado</span><strong>'+(kmNovo-kmAnterior)+' km</strong></div>' +
+      '<div class="kv"><span>Consumo calculado</span><strong>'+consumo.toFixed(2)+' km/l</strong></div>' +
+      '<div class="kv"><span>Faixa esperada</span><strong>'+DB.consumoMinKmL+' a '+DB.consumoMaxKmL+' km/l</strong></div>';
+  } else {
+    $('alertaValores').innerHTML = '<div class="kv"><span>KM informado agora</span><strong>'+kmNovo+'</strong></div>' +
+      '<div class="kv"><span>Último KM registrado</span><strong>'+kmAnterior+'</strong></div>';
+  }
+  $('alertaJustificativaBox').style.display='none';
+  $('btnConfirmarJustificativa').style.display='none';
+  var botoes = $('alertaBotoes');
+  botoes.innerHTML='';
+  botoes.appendChild(criarBotaoAlerta('Corrigir Dados', 'btn-primary', function(){
+    closeModal(); openModal('modalAbastecimento'); $('abKm').focus();
+  }));
+  botoes.appendChild(criarBotaoAlerta('Tirar Foto do Odômetro', 'btn-secondary', function(){
+    closeModal(); openModal('modalAbastecimento'); $('abOdometroFotoInput').click();
+  }));
+  botoes.appendChild(criarBotaoAlerta('Informar Justificativa', 'btn-secondary', function(){
+    $('alertaJustificativaBox').style.display='block';
+    $('btnConfirmarJustificativa').style.display='block';
+    $('btnConfirmarJustificativa').onclick = function(){
+      var just = $('alertaJustificativaTxt').value.trim();
+      if(!just){ toast('Informe uma justificativa para confirmar.', 'warn'); return; }
+      var rec = state.pendingAlerta.rec;
+      rec.detalhes.justificativa = just;
+      finalizarAbastecimento(rec, kmNovo, true);
+    };
+  }));
+  botoes.appendChild(criarBotaoAlerta('Confirmar mesmo assim', 'btn-secondary', function(){
+    var rec = state.pendingAlerta.rec;
+    rec.detalhes.justificativa = $('alertaJustificativaTxt').value || '(confirmado sem justificativa)';
+    finalizarAbastecimento(rec, kmNovo, true);
+  }));
+  botoes.appendChild(criarBotaoAlerta('Cancelar Registro', 'btn-danger', function(){ closeModal(); }));
+  openModal('modalAlerta');
+}
+
+function finalizarAbastecimento(rec, kmNovo, irregularidade){
+  ultimoKmVeiculo[state.session.vehicleId] = kmNovo;
+  persist();
+  rec.status = irregularidade ? 'Aguardando análise' : 'Sincronizado';
+  addHistorico(rec);
+  if(irregularidade){
+    addAlertaHistorico({ titulo:'Inconsistência de KM/consumo no abastecimento', status:'Aguardando análise', detalhes:rec.detalhes });
+    addOS({ motivo:'Verificar possível causa mecânica de consumo/KM fora do padrão', origem:'Abastecimento', gravidade:'Média' });
+  }
+  closeModal();
+  if(irregularidade){ toast('Abastecimento registrado. Alerta ao gestor e OS ao mecânico enviados.', 'warn', 4500); }
+  else{ toast('Abastecimento registrado.', 'success'); }
+}
+
+/* ========================= TROCAR MOTORISTA ========================= */
+function openTrocarMotorista(){
+  var vehId = state.session.vehicleId;
+  $('trocarVeiculoFixo').textContent = 'Caminhão ' + DB.vehicles[vehId].placa;
+  var list = DB.drivers.filter(function(d){ return d.veiculos.indexOf(vehId) !== -1; });
+  var opts = '';
+  list.forEach(function(d){ opts += '<option value="'+d.id+'" '+(d.id===state.session.driverId?'selected':'')+'>'+d.nome+'</option>'; });
+  $('trocarNovoMotorista').innerHTML = opts;
+  $('trocarPin').value='';
+  openModal('modalTrocarMotorista');
+}
+
+$('btnConfirmarTroca').addEventListener('click', function(){
+  var novoId = $('trocarNovoMotorista').value;
+  var pin = $('trocarPin').value.trim();
+  if(!novoId || !/^\d{4}$/.test(pin)){ toast('Selecione o motorista e informe o PIN.', 'warn'); return; }
+  var att = state.loginAttempts[novoId] = state.loginAttempts[novoId] || {count:0, lockUntil:0};
+  if(Date.now() < att.lockUntil){ toast('Acesso bloqueado temporariamente.', 'error'); return; }
+  var driver = null; DB.drivers.forEach(function(d){ if(d.id===novoId) driver = d; });
+  if(pin !== driver.cpf.substring(0,4)){
+    att.count++;
+    if(att.count>=3){ att.lockUntil=Date.now()+60000; att.count=0; toast('3 tentativas incorretas. Bloqueado por 60s.', 'error'); }
+    else toast('PIN incorreto.', 'error');
+    return;
+  }
+  att.count=0;
+  audit('TROCA_MOTORISTA', { de:getDriverName(state.session.driverId), para:driver.nome, veiculo:DB.vehicles[state.session.vehicleId].placa });
+  state.session.driverId = novoId;
+  state.session.turno = computeTurno(DB.vehicles[state.session.vehicleId].costCenterId);
+  state.checklistAnswers = {};
+  state.occAckThisSession = false; // RESETADO
+  closeModal();
+  renderHeader();
+  setupShiftWatcher();
+  checkVehicleOccurrencesOnEntry();
+  toast('Motorista trocado com sucesso.', 'success');
+});
+
+/* ========================= ALTERAR VEÍCULO (ADMIN, Senha Master) ========================= */
+function openAlterarVeiculo(){
+  $('avStep2').style.display='none';
+  $('masterPass').value=''; $('avLockMsg').textContent='';
+  openModal('modalAlterarVeiculo');
+}
+$('btnValidarMaster').addEventListener('click', function(){
+  if(Date.now() < state.vehicleChangeLockUntil){ toast('Bloqueado temporariamente. Tente mais tarde.', 'error'); return; }
+  if($('masterPass').value === DB.masterPassword){
+    state.vehicleChangeAttempts=0;
+    $('avStep2').style.display='block';
+    var opts = '';
+    DB.vehiclesList.forEach(function(v){ opts += '<option value="'+v.id+'">'+v.placa+'</option>'; });
+    $('novoVeiculoAdmin').innerHTML = opts;
+    audit('SENHA_MASTER_VALIDADA', {});
+  } else {
+    state.vehicleChangeAttempts++;
+    if(state.vehicleChangeAttempts>=3){
+      state.vehicleChangeLockUntil = Date.now()+120000; state.vehicleChangeAttempts=0;
+      audit('SENHA_MASTER_BLOQUEADA', {});
+      $('avLockMsg').textContent = 'Bloqueado por 2 minutos após 3 tentativas incorretas.';
+    } else {
+      $('avLockMsg').textContent = 'Senha Master incorreta.';
+    }
+  }
+});
+$('btnConfirmarTroca2').addEventListener('click', function(){
+  var novoId = $('novoVeiculoAdmin').value;
+  var motivo = $('motivoTroca').value.trim();
+  if(!motivo){ toast('Informe o motivo da alteração.', 'warn'); return; }
+  var anterior = DB.device.vehicleId;
+  DB.device.vehicleId = novoId;
+  audit('VEICULO_ALTERADO', { anterior:DB.vehicles[anterior].placa, novo:DB.vehicles[novoId].placa, motivo:motivo, autorizadoPor:'Senha Master' });
+  toast('Veículo alterado. Realize o login novamente.', 'success', 4000);
+  closeModal();
+  doManualLogout();
+});
+
+/* ========================= CONFIG / AUDITORIA / LOGOUT ========================= */
+$('btnAudit').addEventListener('click', function(){ renderAudit(); openModal('modalAuditoria'); });
+$('btnConfig').addEventListener('click', function(){ openModal('modalConfig'); });
+$('btnCfgAlterarVeiculo').addEventListener('click', function(){ closeModal(); openAlterarVeiculo(); });
+$('btnCfgAuditoria').addEventListener('click', function(){ renderAudit(); openModal('modalAuditoria'); });
+$('btnCfgSair').addEventListener('click', doManualLogout);
+$('btnCfgForcarFimTurno').addEventListener('click', function(){ closeModal(); performAutoLogout(); });
+
+function renderAudit(){
+  var box = $('auditList');
+  if(state.auditLog.length===0){ box.innerHTML = '<p class="muted center">Nenhum evento registrado.</p>'; return; }
+  var reversed = state.auditLog.slice().reverse();
+  box.innerHTML = reversed.map(function(a){
+    return '<div class="audit-item"><div class="audit-top"><strong>'+a.action+'</strong><span class="muted">'+new Date(a.ts).toLocaleString('pt-BR')+'</span></div>' +
+      '<div class="muted">Ator: '+a.actor+'</div><pre class="audit-details">'+JSON.stringify(a.details)+'</pre></div>';
+  }).join('');
+}
+
+function doManualLogout(){
+  if(state.session){ audit('LOGOUT_MANUAL', { motorista:getDriverName(state.session.driverId) }); }
+  clearTimersShift(); clearInterval(state.timers.gpsInterval);
+  state.session=null;
+  $('appShell').style.display='none';
+  $('loginScreen').style.display='flex';
+  populateDriverSelect();
+  closeModal();
+}
+
+/* ========================= TURNO / LOGOUT AUTOMÁTICO ========================= */
+function clearTimersShift(){ clearTimeout(state.timers.warn15); clearTimeout(state.timers.warn5); clearInterval(state.timers.checkInterval); }
+function setupShiftWatcher(){
+  clearTimersShift();
+  var fimTs = state.session.turno.fimTs;
+  var msRestantes = fimTs - Date.now();
+  if(msRestantes > 15*60000){ state.timers.warn15 = setTimeout(function(){ toast('Fim do turno em 15 minutos. Finalize os registros em andamento.', 'warn', 6000); }, msRestantes - 15*60000); }
+  if(msRestantes > 5*60000){ state.timers.warn5 = setTimeout(function(){ toast('Fim do turno em 5 minutos.', 'warn', 6000); }, msRestantes - 5*60000); }
+  state.timers.checkInterval = setInterval(function(){
+    if(state.session && Date.now() >= state.session.turno.fimTs){ performAutoLogout(); }
+  }, 15000);
+}
+function performAutoLogout(){
+  if(!state.session) return;
+  var driver = getDriverName(state.session.driverId);
+  audit('LOGOUT_AUTOMATICO_FIM_TURNO', { motorista:driver, veiculo:DB.vehicles[state.session.vehicleId].placa });
+  addHistorico({ tipo:'Checklist', titulo:'Formulários salvos como rascunho (fim de turno)', status:'Pendente', motorista:driver, data:formatNow() });
+  clearTimersShift(); clearInterval(state.timers.gpsInterval);
+  state.session=null;
+  $('appShell').style.display='none';
+  $('loginScreen').style.display='flex';
+  populateDriverSelect();
+  toast('Sessão de '+driver+' encerrada automaticamente (fim de turno).', 'info', 5000);
+}
+
+/* ========================= GPS SIMULADO ========================= */
+function setupGpsSimulation(){
+  clearInterval(state.timers.gpsInterval);
+  $('gpsStatus').textContent = '📍 Localização ativa — enviando a cada 30s';
+  state.timers.gpsInterval = setInterval(function(){
+    $('gpsStatus').textContent = '📍 Localização ativa — último ponto ' + new Date().toLocaleTimeString('pt-BR');
+  }, 30000);
+}
+
+/* ========================= HISTÓRICO ========================= */
+function addHistorico(rec){
+  rec.id = 'H'+Date.now()+Math.random().toString(16).slice(2);
+  if(!rec.dateISO) rec.dateISO = new Date().toISOString();
+  state.history.unshift(rec);
+  persist();
+  renderHistorico();
+  renderSummary();
+  renderBanner();
+}
+function histIconEmoji(tipo){ return {Produção:'🌾',Checklist:'✅',Ocorrências:'⚠️',Abastecimento:'⛽',Alertas:'🚨',OS:'🔧'}[tipo] || '📄'; }
+function statusClass(s){ return {Sincronizado:'ok','Aguardando análise':'warn',Bloqueado:'crit',Pendente:'warn','Aberta':'crit'}[s] || 'ok'; }
+
+function renderHistorico(){
+  var list = state.history.slice();
+  if(state.histFiltroTipo!=='Todos'){
+    list = list.filter(function(h){ return h.tipo===state.histFiltroTipo; });
+  }
+  if(state.histFiltroMotorista!=='Todos'){ list = list.filter(function(h){ return h.motorista===state.histFiltroMotorista; }); }
+  var box = $('historicoList');
+  box.innerHTML = list.length ? list.map(renderHistItem).join('') : '<p class="muted center">Nenhum registro encontrado.</p>';
+  var items = document.querySelectorAll('#historicoList .hist-item');
+  items.forEach(function(el){ el.addEventListener('click', function(){ openHistDetalhe(el.getAttribute('data-id')); }); });
+
+  var nomes = [];
+  state.history.forEach(function(h){ if(h.motorista && nomes.indexOf(h.motorista)===-1) nomes.push(h.motorista); });
+  var motSel = $('histMotoristaFiltro');
+  var optsM = '<option value="Todos">Todos</option>';
+  nomes.forEach(function(n){ optsM += '<option '+(n===state.histFiltroMotorista?'selected':'')+'>'+n+'</option>'; });
+  motSel.innerHTML = optsM;
+
+  var resumo = $('historicoResumo');
+  if(resumo){
+    var top4 = state.history.slice(0,4);
+    resumo.innerHTML = top4.length ? top4.map(renderHistItem).join('') : '<p class="muted center">Nenhum registro ainda.</p>';
+    var itemsR = resumo.querySelectorAll('.hist-item');
+    itemsR.forEach(function(el){ el.addEventListener('click', function(){ openHistDetalhe(el.getAttribute('data-id')); }); });
+  }
+}
+function renderHistItem(h){
+  return '<div class="hist-item" data-id="'+h.id+'"><div class="hist-icon">'+histIconEmoji(h.tipo)+'</div>' +
+    '<div class="hist-info"><strong>'+h.titulo+'</strong><span class="muted">'+h.data+' · '+(h.motorista||'')+'</span></div>' +
+    '<span class="tag tag-'+statusClass(h.status)+'">'+h.status+'</span></div>';
+}
+function openHistDetalhe(id){
+  var rec = null;
+  state.history.forEach(function(h){ if(h.id===id) rec = h; });
+  if(!rec) return;
+  var body = '<div class="kv"><span>Tipo</span><strong>'+rec.tipo+'</strong></div>' +
+    '<div class="kv"><span>Status</span><strong>'+rec.status+'</strong></div>' +
+    '<div class="kv"><span>Data</span><strong>'+rec.data+'</strong></div>' +
+    '<div class="kv"><span>Motorista</span><strong>'+(rec.motorista||'—')+'</strong></div>' +
+    '<pre class="audit-details">'+JSON.stringify(rec.detalhes||{})+'</pre>';
+  $('histDetalheBody').innerHTML = body;
+  openModal('modalHistDetalhe');
+}
+$('histChips').addEventListener('click', function(e){
+  var chip = e.target.closest('.chip'); if(!chip) return;
+  var chips = document.querySelectorAll('#histChips .chip');
+  chips.forEach(function(c){c.classList.remove('active');});
+  chip.classList.add('active');
+  state.histFiltroTipo = chip.getAttribute('data-tipo');
+  renderHistorico();
+});
+$('histMotoristaFiltro').addEventListener('change', function(e){ state.histFiltroMotorista = e.target.value; renderHistorico(); });
+
+/* ========================= RESUMO / PÁGINAS ========================= */
+function renderSummary(){
+  var cc = DB.costCenters[DB.vehicles[state.session.vehicleId].costCenterId];
+  $('cardsProducao').style.display = cc.producao ? 'grid' : 'none';
+  if(cc.producao){
+    var viagensHoje = state.history.filter(function(h){ return h.tipo==='Produção' && isToday(h.dateISO); });
+    var toneladas = viagensHoje.reduce(function(s,h){ return s + (h.detalhes && typeof h.detalhes.peso==='number' ? h.detalhes.peso : 0); }, 0);
+    $('sumViagens').textContent = viagensHoje.length;
+    $('sumToneladas').textContent = toneladas.toFixed(1).replace('.',',');
+  }
+  var pend = state.history.filter(function(h){ return h.status==='Pendente' || h.status==='Aguardando análise'; }).length;
+  $('sumPendentes').textContent = pend;
+  $('sumOS').textContent = state.osList.filter(function(o){ return o.status==='Aberta'; }).length;
+  renderViagensPage(); renderOcorrenciasPage(); renderAbastecimentosPage();
+}
+function renderViagensPage(){
+  var list = state.history.filter(function(h){return h.tipo==='Produção';});
+  $('viagensList').innerHTML = list.length ? list.map(renderHistItem).join('') : '<p class="muted center">Nenhuma viagem registrada.</p>';
+  var items = document.querySelectorAll('#viagensList .hist-item');
+  items.forEach(function(el){ el.addEventListener('click', function(){ openHistDetalhe(el.getAttribute('data-id')); }); });
+}
+function renderOcorrenciasPage(){
+  var vehId = state.session ? state.session.vehicleId : null;
+  var list = vehId ? (state.vehicleOccurrences[vehId] || []) : [];
+  $('ocorrenciasList').innerHTML = list.length ? list.map(function(o){
+    return '<div class="hist-item"><div class="hist-icon">⚠️</div>' +
+      '<div class="hist-info"><strong>'+o.motivo+'</strong><span class="muted">'+o.data+' · '+o.registradoPor+'</span></div>' +
+      '<span class="tag tag-'+gravClass(o.gravidade)+'">'+o.status+'</span></div>';
+  }).join('') : '<p class="muted center">Nenhuma ocorrência registrada.</p>';
+}
+function renderAbastecimentosPage(){
+  var list = state.history.filter(function(h){return h.tipo==='Abastecimento';});
+  $('abastecimentosList').innerHTML = list.length ? list.map(renderHistItem).join('') : '<p class="muted center">Nenhum abastecimento registrado.</p>';
+  var items = document.querySelectorAll('#abastecimentosList .hist-item');
+  items.forEach(function(el){ el.addEventListener('click', function(){ openHistDetalhe(el.getAttribute('data-id')); }); });
+}
+
+/* ========================= NAVEGAÇÃO ========================= */
+function showPage(id){
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  $('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-page')===id); });
+  if(id==='checklist') renderChecklistPage();
+}
+document.querySelectorAll('.nav-btn').forEach(function(b){
+  b.addEventListener('click', function(){ showPage(b.getAttribute('data-page')); });
+});
+
+/* BOTÕES "+ Nova/Novo" DENTRO DAS PÁGINAS */
+$('btnNovaViagemTop').addEventListener('click', function(){ guardedAction(function(){ resetViagemForm(); openModal('modalNovaViagem'); }); });
+$('btnNovaOcorrenciaTop').addEventListener('click', function(){ guardedAction(function(){ resetOcorrenciaForm(); openModal('modalNovaOcorrencia'); }); });
+$('btnNovoAbastecimentoTop').addEventListener('click', function(){ guardedAction(function(){ resetAbastecimentoForm(); openModal('modalAbastecimento'); }); });
+
+/* HEADER — abrir Trocar Motorista clicando no nome do veículo */
+$('hdrVeiculo').addEventListener('click', function(){ openTrocarMotorista(); });
+
+/* FECHAR MODAIS */
+document.querySelectorAll('[data-close]').forEach(function(btn){
+  btn.addEventListener('click', closeModal);
+});
+$('modalOverlay').addEventListener('click', function(e){
+  if(e.target === $('modalOverlay')){ closeModal(); }
+});
+
+/* ========================= INICIALIZAÇÃO ========================= */
+document.addEventListener('DOMContentLoaded', function(){
+  loadPersisted();
+  populateDriverSelect();
+  applyTheme(localStorage.getItem('ivan_theme') || 'light');
+});
+</script>
+</body>
+</html>

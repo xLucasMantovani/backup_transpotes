@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CANA CONTROL — Admin</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="estilo.css">
+
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="brand-login">
+      <i class="fas fa-truck"></i>
+      <h1>CANA CONTROL — ADMIN</h1>
+    </div>
+    <div class="form-group">
+      <label>CPF</label>
+      <input type="text" id="loginCpf" placeholder="000.000.000-00">
+    </div>
+    <div class="form-group">
+      <label>Senha</label>
+      <input type="password" id="loginSenha" placeholder="••••••••">
+    </div>
+    <button id="loginBtn"><i class="fas fa-sign-in-alt"></i> Entrar</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none;">
+  <aside id="sidebar">
+    <div class="brand"><i class="fas fa-truck"></i><span>CANA CONTROL</span></div>
+    <button class="toggle-btn" id="sidebarToggle"><i class="fas fa-chevron-left"></i></button>
+    <nav class="menu">
+      <div class="group-label">Visão Geral</div>
+      <a href="#" data-page="dashboard" class="active"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+
+      <div class="group-label">Operação</div>
+      <a href="#" data-page="fretes"><i class="fas fa-route"></i><span>Fretes</span></a>
+      <a href="#" data-page="abastecimentos"><i class="fas fa-gas-pump"></i><span>Abastecimentos</span></a>
+      <a href="#" data-page="checklists"><i class="fas fa-clipboard-check"></i><span>Checklists</span></a>
+
+      <div class="group-label">Manutenção</div>
+      <a href="#" data-page="manutencoes"><i class="fas fa-tools"></i><span>Manutenções</span></a>
+      <a href="#" data-page="arquivos"><i class="fas fa-paperclip"></i><span>Arquivos</span></a>
+
+      <div class="group-label">Cadastros</div>
+      <a href="#" data-page="veiculos"><i class="fas fa-truck"></i><span>Veículos</span></a>
+      <a href="#" data-page="documentos"><i class="fas fa-file-alt"></i><span>Documentos</span></a>
+      <a href="#" data-page="motoristas"><i class="fas fa-user-tie"></i><span>Motoristas</span></a>
+      <a href="#" data-page="tecnicos"><i class="fas fa-user-cog"></i><span>Técnicos</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <i class="fas fa-circle" style="color:#27ae60;font-size:.5rem;"></i>
+      <span id="sideStatus">Sistema operacional</span>
+    </div>
+  </aside>
+
+  <div id="main">
+    <header id="topbar">
+      <div class="topbar-left">
+        <button id="mobileMenuToggle" style="background:transparent;border:none;color:rgba(255,255,255,.8);font-size:1.2rem;display:none;cursor:pointer;">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+      <div class="topbar-right">
+        <div class="user-avatar">
+          <div class="avatar-icon" id="userInitial">A</div>
+          <span id="userName">Administrador</span>
+        </div>
+        <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sair</button>
+      </div>
+    </header>
+
+    <div id="page-content">
+
+      <!-- DASHBOARD -->
+      <section id="page-dashboard" class="page-section active">
+        <h2 class="section-title">Dashboard</h2>
+        <p class="section-subtitle">Visão geral da operação</p>
+
+        <div class="filters-bar">
+          <div class="filter-group">
+            <label>Data início</label>
+            <input type="date" id="dbDataInicio">
+          </div>
+          <div class="filter-group">
+            <label>Data fim</label>
+            <input type="date" id="dbDataFim">
+          </div>
+          <div class="filter-group">
+            <label>Veículo</label>
+            <select id="dbVeiculo"><option value="">Todos</option></select>
+          </div>
+          <div class="filter-actions">
+            <button class="btn btn-primary" id="dbAplicar"><i class="fas fa-filter"></i> Aplicar</button>
+            <button class="btn btn-outline" id="dbLimpar"><i class="fas fa-undo"></i> Limpar</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="kpi-icon"><i class="fas fa-route"></i></div><div class="kpi-label">Fretes</div><div class="kpi-value" id="kpiFretes">0</div></div>
+          <div class="kpi-card red"><div class="kpi-icon"><i class="fas fa-dollar-sign"></i></div><div class="kpi-label">Faturamento</div><div class="kpi-value" id="kpiFaturamento">R$ 0</div></div>
+          <div class="kpi-card purple"><div class="kpi-icon"><i class="fas fa-weight-hanging"></i></div><div class="kpi-label">Toneladas</div><div class="kpi-value" id="kpiToneladas">0</div></div>
+          <div class="kpi-card orange"><div class="kpi-icon"><i class="fas fa-gas-pump"></i></div><div class="kpi-label">Litros abastecidos</div><div class="kpi-value" id="kpiLitros">0</div></div>
+          <div class="kpi-card"><div class="kpi-icon"><i class="fas fa-tools"></i></div><div class="kpi-label">Manutenções</div><div class="kpi-value" id="kpiManutencoes">0</div></div>
+          <div class="kpi-card green"><div class="kpi-icon"><i class="fas fa-clipboard-check"></i></div><div class="kpi-label">Checklists</div><div class="kpi-value" id="kpiChecklists">0</div></div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-card"><div class="chart-header"><h4>Fretes por status</h4></div><canvas id="chartFretesStatus"></canvas></div>
+          <div class="chart-card"><div class="chart-header"><h4>Abastecimentos por veículo</h4></div><canvas id="chartAbastVeiculo"></canvas></div>
+          <div class="chart-card"><div class="chart-header"><h4>Manutenções por veículo</h4></div><canvas id="chartManutVeiculo"></canvas></div>
+          <div class="chart-card"><div class="chart-header"><h4>Fretes por mês</h4></div><canvas id="chartFretesMes"></canvas></div>
+        </div>
+
+        <div class="card mt-16">
+          <div class="card-header"><h3>Documentos a vencer (próximos 30 dias)</h3></div>
+          <div class="table-wrapper"><table><thead><tr><th>Placa</th><th>Documento</th><th>Validade</th><th>Status</th></tr></thead><tbody id="docsAVencerBody"></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- FRETES -->
+      <section id="page-fretes" class="page-section">
+        <h2 class="section-title">Fretes</h2>
+        <p class="section-subtitle">Gestão de fretes</p>
+        <div class="filters-bar">
+          <div class="filter-group"><label>Status</label><select id="freteStatus"><option value="">Todos</option><option>Agendado</option><option>Em andamento</option><option>Concluído</option><option>Cancelado</option></select></div>
+          <div class="filter-group"><label>Placa</label><input type="text" id="fretePlaca" placeholder="ABC-1234"></div>
+          <div class="filter-actions">
+            <button class="btn btn-primary" id="freteFiltrar"><i class="fas fa-filter"></i> Filtrar</button>
+            <button class="btn btn-success" id="freteNovo"><i class="fas fa-plus"></i> Novo Frete</button>
+          </div>
+        </div>
+        <div class="table-wrapper"><table><thead><tr><th>ID</th><th>Data</th><th>Placa</th><th>Motorista</th><th>Origem</th><th>Destino</th><th>Peso</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead><tbody id="fretesBody"></tbody></table></div>
+      </section>
+
+      <!-- ABASTECIMENTOS -->
+      <section id="page-abastecimentos" class="page-section">
+        <h2 class="section-title">Abastecimentos</h2>
+        <p class="section-subtitle">Registro de abastecimentos</p>
+        <div class="filters-bar">
+          <div class="filter-group"><label>Placa</label><input type="text" id="abastPlaca" placeholder="ABC-1234"></div>
+          <div class="filter-actions">
+            <button class="btn btn-primary" id="abastFiltrar"><i class="fas fa-filter"></i> Filtrar</button>
+            <button class="btn btn-success" id="abastNovo"><i class="fas fa-plus"></i> Novo</button>
+          </div>
+        </div>
+        <div class="table-wrapper"><table><thead><tr><th>ID</th><th>Placa</th><th>Motorista</th><th>Km</th><th>Litros</th><th>Ações</th></tr></thead><tbody id="abastBody"></tbody></table></div>
+      </section>
+
+      <!-- CHECKLISTS -->
+      <section id="page-checklists" class="page-section">
+        <h2 class="section-title">Checklists</h2>
+        <p class="section-subtitle">Checklists diários dos veículos</p>
+        <div class="filters-bar">
+          <div class="filter-group"><label>Placa</label><input type="text" id="chkPlaca" placeholder="ABC-1234"></div>
+          <div class="filters-bar filter-actions">
+            <button class="btn btn-primary" id="chkFiltrar"><i class="fas fa-filter"></i> Filtrar</button>
+          </div>
+        </div>
+        <div class="table-wrapper"><table><thead><tr><th>Data/Hora</th><th>Placa</th><th>Motorista</th><th>Resumo</th><th>Ações</th></tr></thead><tbody id="chkBody"></tbody></table></div>
+      </section>
+
+      <!-- MANUTENÇÕES -->
+      <section id="page-manutencoes" class="page-section">
+        <h2 class="section-title">Manutenções</h2>
+        <p class="section-subtitle">Ordens de manutenção</p>
+        <div class="filters-bar">
+          <div class="filter-group"><label>Status</label><select id="manutStatus"><option value="">Todas</option><option value="aberta">Aberta</option><option value="concluida">Concluída</option></select></div>
+          <div class="filter-group"><label>Placa</label><input type="text" id="manutPlaca" placeholder="ABC-1234"></div>
+          <div class="filter-actions">
+            <button class="btn btn-primary" id="manutFiltrar"><i class="fas fa-filter"></i> Filtrar</button>
+            <button class="btn btn-success" id="manutNovo"><i class="fas fa-plus"></i> Nova</button>
+          </div>
+        </div>
+        <div class="table-wrapper"><table><thead><tr><th>ID</th><th>Placa</th><th>Técnico</th><th>Início</th><th>Fim</th><th>Descrição</th><th>Ações</th></tr></thead><tbody id="manutBody"></tbody></table></div>
+      </section>
+
+      <!-- ARQUIVOS -->
+      <section id="page-arquivos" class="page-section">
+        <h2 class="section-title">Arquivos de Manutenção</h2>
+        <p class="section-subtitle">Anexos vinculados às manutenções</p>
+        <div class="filters-bar">
+          <div class="filter-group"><label>ID Manutenção</label><input type="number" id="arqManutId" placeholder="Ex: 1"></div>
+          <div class="filter-actions">
+            <button class="btn btn-primary" id="arqBuscar"><i class="fas fa-search"></i> Buscar</button>
+          </div>
+        </div>
+        <div class="table-wrapper"><table><thead><tr><th>ID</th><th>Manutenção</th><th>Descrição</th><th>Link</th><th>Possui blob</th><th>Ações</th></tr></thead><tbody id="arqBody"></tbody></table></div>
+      </section>
+
+      <!-- VEÍCULOS -->
+      <section id="page-veiculos" class="page-section">
+        <h2 class="section-title">Veículos</h2>
+        <p class="section-subtitle">Frota cadastrada</p>
+        <button class="btn btn-success" id="veicNovo"><i class="fas fa-plus"></i> Novo Veículo</button>
+        <div class="table-wrapper"><table><thead><tr><th>Placa</th><th>Modelo</th><th>Ano</th><th>Tipo</th><th>Capacidade</th><th>Ações</th></tr></thead><tbody id="veicBody"></tbody></table></div>
+      </section>
+
+      <!-- DOCUMENTOS -->
+      <section id="page-documentos" class="page-section">
+        <h2 class="section-title">Documentos de Veículos</h2>
+        <p class="section-subtitle">CRLV, seguros, tacógrafo, etc.</p>
+        <div class="filters-bar">
+          <div class="filter-group"><label>Placa</label><input type="text" id="docPlaca" placeholder="ABC-1234"></div>
+          <div class="filter-actions">
+            <button class="btn btn-primary" id="docFiltrar"><i class="fas fa-filter"></i> Filtrar</button>
+            <button class="btn btn-success" id="docNovo"><i class="fas fa-plus"></i> Novo</button>
+          </div>
+        </div>
+        <div class="table-wrapper"><table><thead><tr><th>Placa</th><th>Documento</th><th>Validade</th><th>Status</th><th>Ações</th></tr></thead><tbody id="docBody"></tbody></table></div>
+      </section>
+
+      <!-- MOTORISTAS -->
+      <section id="page-motoristas" class="page-section">
+        <h2 class="section-title">Motoristas</h2>
+        <p class="section-subtitle">Motoristas cadastrados</p>
+        <button class="btn btn-success" id="motNovo"><i class="fas fa-plus"></i> Novo Motorista</button>
+        <div class="table-wrapper"><table><thead><tr><th>ID</th><th>Nome</th><th>CPF</th><th>Status</th><th>Funções</th><th>Ações</th></tr></thead><tbody id="motBody"></tbody></table></div>
+      </section>
+
+      <!-- TÉCNICOS -->
+      <section id="page-tecnicos" class="page-section">
+        <h2 class="section-title">Técnicos</h2>
+        <p class="section-subtitle">Técnicos cadastrados</p>
+        <button class="btn btn-success" id="tecNovo"><i class="fas fa-plus"></i> Novo Técnico</button>
+        <div class="table-wrapper"><table><thead><tr><th>ID</th><th>Nome</th><th>CPF</th><th>Tipo</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tecBody"></tbody></table></div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Título</h2>
+      <button class="close-modal" id="modalClose"><i class="fas fa-times"></i></button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+/* =========================================================
+   CONFIG
+   ========================================================= */
+const API_BASE = 'http://127.0.0.1/Transportes/public/api/v1'; // ajuste conforme o endereço da sua API
+
+/* =========================================================
+   AUTH STATE
+   ========================================================= */
+const TOKEN_KEY = 'canaControlToken';
+const USER_KEY = 'canaControlUser';
+
+function getToken() { return localStorage.getItem(TOKEN_KEY); }
+function setToken(t) { localStorage.setItem(TOKEN_KEY, t); }
+function clearToken() { localStorage.removeItem(TOKEN_KEY); localStorage.removeItem(USER_KEY); }
+function getUser() {
+  try { return JSON.parse(localStorage.getItem(USER_KEY) || 'null'); } catch { return null; }
+}
+function setUser(u) { localStorage.setItem(USER_KEY, JSON.stringify(u)); }
+
+/* =========================================================
+   HTTP HELPER
+   ========================================================= */
+async function api(method, path, body = null) {
+  const headers = { 'Content-Type': 'application/json' };
+  const tk = getToken();
+  if (tk) headers['Authorization'] = 'Bearer ' + tk;
+
+  const opts = { method, headers };
+  if (body !== null) opts.body = JSON.stringify(body);
+
+  let res, data;
+  try {
+    res = await fetch(API_BASE + path, opts);
+    data = await res.json().catch(() => ({}));
+  } catch (e) {
+    return { ok: false, status: 0, message: 'Erro de conexão com a API.' };
+  }
+
+  if (res.status === 401) {
+    clearToken();
+    showLogin();
+    toast('Sessão expirada. Faça login novamente.', 'warning');
+    return { ok: false, status: 401, message: 'Não autenticado' };
+  }
+
+  return {
+    ok: res.ok,
+    status: res.status,
+    data: data.data ?? null,
+    message: data.message || null,
+    errors: data.errors || null,
+  };
+}
+
+/* =========================================================
+   UI HELPERS
+   ========================================================= */
+function toast(message, type = 'info') {
+  const c = document.getElementById('toast-container');
+  const div = document.createElement('div');
+  div.className = 'toast ' + type;
+  const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+  div.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i><span>${message}</span><button class="toast-close"><i class="fas fa-times"></i></button>`;
+  c.appendChild(div);
+  div.querySelector('.toast-close').addEventListener('click', () => div.remove());
+  setTimeout(() => div.remove(), 5000);
+}
+
+function openModal(title, bodyHTML, onConfirm) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = bodyHTML + `
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="modalCancel">Cancelar</button>
+      ${onConfirm ? '<button class="btn btn-primary" id="modalConfirm">Confirmar</button>' : '<button class="btn btn-primary" id="modalConfirm">Fechar</button>'}
+    </div>`;
+  document.getElementById('modalOverlay').classList.add('active');
+  document.getElementById('modalCancel').addEventListener('click', closeModal);
+  document.getElementById('modalConfirm').addEventListener('click', () => {
+    if (onConfirm) { if (onConfirm() !== false) closeModal(); }
+    else closeModal();
+  });
+}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalOverlay').addEventListener('click', e => { if (e.target.id === 'modalOverlay') closeModal(); });
+
+function esc(s) { return s == null ? '' : String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fmtMoney(v) { return 'R$ ' + Number(v || 0).toFixed(2).replace('.', ','); }
+function fmtNum(v) { return Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function statusBadge(s) {
+  const map = { 'Concluído': 'success', 'Aprovada': 'success', 'Válido': 'success',
+                'Em andamento': 'info', 'Agendado': 'warning', 'A vencer': 'warning',
+                'Cancelado': 'danger', 'Vencido': 'danger', 'Reprovado': 'danger' };
+  const cls = map[s] || 'info';
+  return `<span class="badge badge-${cls}">${esc(s || '-')}</span>`;
+}
+
+/* =========================================================
+   NAVEGAÇÃO
+   ========================================================= */
+document.querySelectorAll('#sidebar .menu a').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const page = a.dataset.page;
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    document.querySelectorAll('#sidebar .menu a').forEach(x => x.classList.remove('active'));
+    a.classList.add('active');
+    if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('mobile-open');
+    loadPage(page);
+  });
+});
+
+document.getElementById('sidebarToggle').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('collapsed');
+});
+document.getElementById('mobileMenuToggle').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('mobile-open');
+});
+
+function loadPage(page) {
+  switch (page) {
+    case 'dashboard': loadDashboard(); break;
+    case 'fretes': loadFretes(); break;
+    case 'abastecimentos': loadAbastecimentos(); break;
+    case 'checklists': loadChecklists(); break;
+    case 'manutencoes': loadManutencoes(); break;
+    case 'arquivos': /* aguarda ação do usuário */ break;
+    case 'veiculos': loadVeiculos(); break;
+    case 'documentos': loadDocumentos(); break;
+    case 'motoristas': loadMotoristas(); break;
+    case 'tecnicos': loadTecnicos(); break;
+  }
+}
+
+/* =========================================================
+   LOGIN / LOGOUT
+   ========================================================= */
+function showLogin() {
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('app').style.display = 'none';
+}
+function showApp() {
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('app').style.display = 'flex';
+  const u = getUser();
+  if (u) {
+    document.getElementById('userName').textContent = u.nome || u.tipo_usuario || 'Usuário';
+    document.getElementById('userInitial').textContent = (u.nome || 'A').charAt(0).toUpperCase();
+  }
+}
+
+document.getElementById('loginBtn').addEventListener('click', async () => {
+  const cpf = document.getElementById('loginCpf').value.trim();
+  const senha = document.getElementById('loginSenha').value;
+  if (!cpf || !senha) { toast('Informe CPF e senha.', 'error'); return; }
+  const r = await api('POST', '/auth/login', { cpf, senha });
+  if (!r.ok) { toast(r.message || 'Falha no login.', 'error'); return; }
+  setToken(r.data.token);
+  setUser({ tipo_usuario: r.data.tipo_usuario });
+  toast('Login realizado!', 'success');
+  showApp();
+  loadDashboard();
+});
+
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await api('POST', '/auth/logout');
+  clearToken();
+  toast('Sessão encerrada.', 'info');
+  showLogin();
+});
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+let charts = {};
+
+async function loadDashboard() {
+  // Popula select de veículos
+  const rv = await api('GET', '/veiculos');
+  const sel = document.getElementById('dbVeiculo');
+  sel.innerHTML = '<option value="">Todos</option>';
+  if (rv.ok && Array.isArray(rv.data)) {
+    rv.data.forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v.placa;
+      const modelo = v.dados_veiculo?.modelo || '';
+      opt.textContent = v.placa + (modelo ? ' — ' + modelo : '');
+      sel.appendChild(opt);
+    });
+  }
+  await refreshDashboard();
+}
+
+document.getElementById('dbAplicar').addEventListener('click', refreshDashboard);
+document.getElementById('dbLimpar').addEventListener('click', () => {
+  document.getElementById('dbDataInicio').value = '';
+  document.getElementById('dbDataFim').value = '';
+  document.getElementById('dbVeiculo').value = '';
+  refreshDashboard();
+});
+
+async function refreshDashboard() {
+  const filtroPlaca = document.getElementById('dbVeiculo').value;
+  const filtroIni = document.getElementById('dbDataInicio').value;
+  const filtroFim = document.getElementById('dbDataFim').value;
+
+  const [rFretes, rAbast, rManut, rCheck, rDocs] = await Promise.all([
+    api('GET', '/fretes'),
+    api('GET', '/abastecimentos'),
+    api('GET', '/manutencoes'),
+    api('GET', '/checklists'),
+    api('GET', '/documentos-veiculo'),
+  ]);
+
+  const fretes = (rFretes.data || []).filter(f => matchesFilter(f, 'placa', filtroPlaca, 'data_frete', filtroIni, filtroFim));
+  const abast = (rAbast.data || []).filter(f => matchesFilter(f, 'placa', filtroPlaca, null, null, null));
+  const manut = (rManut.data || []).filter(m => matchesFilter(m, 'placa', filtroPlaca, 'data_ini_manutencao', filtroIni, filtroFim));
+  const check = (rCheck.data || []).filter(c => matchesFilter(c, 'placa', filtroPlaca, 'data_hora', filtroIni, filtroFim));
+  const docs = rDocs.data || [];
+
+  // KPIs
+  const totalTon = fretes.reduce((s, f) => s + Number(f.peso || 0), 0);
+  const totalValor = fretes.reduce((s, f) => s + Number(f.valor || 0), 0);
+  const totalLitros = abast.reduce((s, f) => s + Number(f.litros || 0), 0);
+
+  document.getElementById('kpiFretes').textContent = fretes.length;
+  document.getElementById('kpiFaturamento').textContent = fmtMoney(totalValor);
+  document.getElementById('kpiToneladas').textContent = fmtNum(totalTon) + ' t';
+  document.getElementById('kpiLitros').textContent = fmtNum(totalLitros) + ' L';
+  document.getElementById('kpiManutencoes').textContent = manut.length;
+  document.getElementById('kpiChecklists').textContent = check.length;
+
+  // Gráficos
+  renderChartStatus(fretes);
+  renderChartAbastPorVeiculo(abast);
+  renderChartManutPorVeiculo(manut);
+  renderChartFretesMes(fretes);
+
+  // Documentos a vencer
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const limite = new Date(hoje); limite.setDate(limite.getDate() + 30);
+  const aVencer = docs.filter(d => {
+    const dt = new Date(d.validade);
+    return dt >= hoje && dt <= limite;
+  });
+  const tbody = document.getElementById('docsAVencerBody');
+  tbody.innerHTML = '';
+  if (aVencer.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="text-muted text-center">Nenhum documento a vencer nos próximos 30 dias.</td></tr>';
+  } else {
+    aVencer.forEach(d => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${esc(d.placa)}</td><td>${esc(d.descricao)}</td><td>${esc(d.validade)}</td><td>${statusBadge(d.status_documento)}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+}
+
+function matchesFilter(item, campoPlaca, valorPlaca, campoData, ini, fim) {
+  if (valorPlaca && item[campoPlaca] !== valorPlaca) return false;
+  if (campoData && ini) {
+    const d = (item[campoData] || '').substring(0, 10);
+    if (d < ini) return false;
+  }
+  if (campoData && fim) {
+    const d = (item[campoData] || '').substring(0, 10);
+    if (d > fim) return false;
+  }
+  return true;
+}
+
+function renderChartStatus(fretes) {
+  const ctx = document.getElementById('chartFretesStatus');
+  if (!ctx) return;
+  if (charts.status) charts.status.destroy();
+  const grouped = {};
+  fretes.forEach(f => { grouped[f.status_frete] = (grouped[f.status_frete] || 0) + 1; });
+  charts.status = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(grouped),
+      datasets: [{ data: Object.values(grouped), backgroundColor: ['#2e86c1','#e67e22','#27ae60','#e74c3c','#8e44ad'] }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#5e7a93' } } } }
+  });
+}
+
+function renderChartAbastPorVeiculo(abast) {
+  const ctx = document.getElementById('chartAbastVeiculo');
+  if (!ctx) return;
+  if (charts.abast) charts.abast.destroy();
+  const grouped = {};
+  abast.forEach(a => { grouped[a.placa] = (grouped[a.placa] || 0) + Number(a.litros || 0); });
+  charts.abast = new Chart(ctx, {
+    type: 'bar',
+    data: { labels: Object.keys(grouped), datasets: [{ label: 'Litros', data: Object.values(grouped), backgroundColor: '#1a5276' }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#5e7a93' } }, y: { ticks: { color: '#5e7a93' } } } }
+  });
+}
+
+function renderChartManutPorVeiculo(manut) {
+  const ctx = document.getElementById('chartManutVeiculo');
+  if (!ctx) return;
+  if (charts.manut) charts.manut.destroy();
+  const grouped = {};
+  manut.forEach(m => { grouped[m.placa] = (grouped[m.placa] || 0) + 1; });
+  charts.manut = new Chart(ctx, {
+    type: 'bar',
+    data: { labels: Object.keys(grouped), datasets: [{ label: 'Manutenções', data: Object.values(grouped), backgroundColor: '#e67e22' }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#5e7a93' } }, y: { ticks: { color: '#5e7a93' } } } }
+  });
+}
+
+function renderChartFretesMes(fretes) {
+  const ctx = document.getElementById('chartFretesMes');
+  if (!ctx) return;
+  if (charts.mes) charts.mes.destroy();
+  const grouped = {};
+  fretes.forEach(f => {
+    const mes = (f.data_frete || '').substring(0, 7);
+    if (mes) grouped[mes] = (grouped[mes] || 0) + 1;
+  });
+  const labels = Object.keys(grouped).sort();
+  charts.mes = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: [{ label: 'Fretes', data: labels.map(l => grouped[l]), borderColor: '#2e86c1', backgroundColor: 'rgba(46,134,193,.15)', fill: true, tension: .3 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#5e7a93' } }, y: { ticks: { color: '#5e7a93' } } } }
+  });
+}
+
+/* =========================================================
+   FRETES
+   ========================================================= */
+document.getElementById('freteFiltrar').addEventListener('click', loadFretes);
+document.getElementById('freteNovo').addEventListener('click', novoFrete);
+
+async function loadFretes() {
+  const params = new URLSearchParams();
+  const status = document.getElementById('freteStatus').value;
+  const placa = document.getElementById('fretePlaca').value.trim();
+  if (status) params.append('status', status);
+  if (placa) params.append('placa', placa);
+  const r = await api('GET', '/fretes' + (params.toString() ? '?' + params : ''));
+  const tbody = document.getElementById('fretesBody');
+  tbody.innerHTML = '';
+  if (!r.ok) { toast(r.message || 'Erro ao carregar fretes.', 'error'); return; }
+  const list = r.data || [];
+  if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="10" class="text-muted text-center">Nenhum frete encontrado.</td></tr>'; return; }
+  list.forEach(f => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${f.id_frete}</td>
+      <td>${esc((f.data_frete || '').replace('T', ' ').substring(0, 16))}</td>
+      <td>${esc(f.placa)}</td>
+      <td>${esc(f.nome_motorista || f.id_motorista)}</td>
+      <td>${esc(f.origem)}</td>
+      <td>${esc(f.destino)}</td>
+      <td>${fmtNum(f.peso)} t</td>
+      <td>${fmtMoney(f.valor)}</td>
+      <td>${statusBadge(f.status_frete)}</td>
+      <td class="actions">
+        <button title="Excluir" onclick="excluirFrete(${f.id_frete})"><i class="fas fa-trash"></i></button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+window.excluirFrete = async function(id) {
+  openModal('Excluir Frete', `<p>Deseja realmente excluir o frete #${id}?</p>`, async () => {
+    const r = await api('DELETE', '/fretes/' + id);
+    if (!r.ok) { toast(r.message || 'Erro ao excluir.', 'error'); return false; }
+    toast('Frete excluído.', 'warning');
+    loadFretes();
+  });
+};
+
+function novoFrete() {
+  const html = `
+    <div class="form-row">
+      <div class="form-group"><label>Placa</label><input type="text" id="fPlaca" placeholder="ABC-1234"></div>
+      <div class="form-group"><label>ID do Motorista</label><input type="number" id="fMotorista"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Origem</label><input type="text" id="fOrigem"></div>
+      <div class="form-group"><label>Destino</label><input type="text" id="fDestino"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Distância (km)</label><input type="number" id="fDist" step="0.1"></div>
+      <div class="form-group"><label>Peso (t)</label><input type="number" id="fPeso" step="0.1"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Valor (R$)</label><input type="number" id="fValor" step="0.01"></div>
+      <div class="form-group"><label>Status</label><select id="fStatus"><option>Agendado</option><option>Em andamento</option><option>Concluído</option><option>Cancelado</option></select></div>
+    </div>`;
+  openModal('Novo Frete', html, async () => {
+    const body = {
+      placa: document.getElementById('fPlaca').value.trim(),
+      id_motorista: parseInt(document.getElementById('fMotorista').value),
+      origem: document.getElementById('fOrigem').value.trim(),
+      destino: document.getElementById('fDestino').value.trim(),
+      distancia: parseFloat(document.getElementById('fDist').value) || 0,
+      peso: parseFloat(document.getElementById('fPeso').value) || 0,
+      valor: parseFloat(document.getElementById('fValor').value) || 0,
+      status_frete: document.getElementById('fStatus').value
+    };
+    if (!body.placa || !body.origem || !body.destino) { toast('Preencha os campos obrigatórios.', 'error'); return false; }
+    const r = await api('POST', '/fretes', body);
+    if (!r.ok) { toast(r.message || 'Erro ao criar frete.', 'error'); return false; }
+    toast('Frete criado! '+ r.message, 'success');
+    loadFretes();
+  });
+}
+
+/* =========================================================
+   ABASTECIMENTOS
+   ========================================================= */
+document.getElementById('abastFiltrar').addEventListener('click', loadAbastecimentos);
+document.getElementById('abastNovo').addEventListener('click', novoAbastecimento);
+
+async function loadAbastecimentos() {
+  const placa = document.getElementById('abastPlaca').value.trim();
+  const params = placa ? '?placa=' + encodeURIComponent(placa) : '';
+  const r = await api('GET', '/abastecimentos' + params);
+  const tbody = document.getElementById('abastBody');
+  tbody.innerHTML = '';
+  if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
+  const list = r.data || [];
+  if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center">Nenhum abastecimento.</td></tr>'; return; }
+  list.forEach(a => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${a.id_abastecimento}</td>
+      <td>${esc(a.placa)}</td>
+      <td>${esc(a.nome_motorista || a.id_motorista)}</td>
+      <td>${a.km}</td>
+      <td>${fmtNum(a.litros)} L</td>
+      <td class="actions"><button onclick="excluirAbast(${a.id_abastecimento})"><i class="fas fa-trash"></i></button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+window.excluirAbast = function(id) {
+  openModal('Excluir Abastecimento', `<p>Excluir abastecimento #${id}?</p>`, async () => {
+    const r = await api('DELETE', '/abastecimentos/' + id);
+    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
+    toast('Abastecimento excluído.', 'warning');
+    loadAbastecimentos();
+  });
+};
+
+function novoAbastecimento() {
+  const html = `
+    <div class="form-row">
+      <div class="form-group"><label>Placa</label><input type="text" id="aPlaca"></div>
+      <div class="form-group"><label>ID Motorista</label><input type="number" id="aMotorista"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Km</label><input type="number" id="aKm"></div>
+      <div class="form-group"><label>Litros</label><input type="number" id="aLitros" step="0.1"></div>
+    </div>`;
+  openModal('Novo Abastecimento', html, async () => {
+    const body = {
+      placa: document.getElementById('aPlaca').value.trim(),
+      id_motorista: parseInt(document.getElementById('aMotorista').value),
+      km: parseInt(document.getElementById('aKm').value) || 0,
+      litros: parseFloat(document.getElementById('aLitros').value) || 0
+    };
+    if (!body.placa || !body.litros) { toast('Preencha os campos.', 'error'); return false; }
+    const r = await api('POST', '/abastecimentos', body);
+    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
+    toast('Abastecimento criado!', 'success');
+    loadAbastecimentos();
+  });
+}
+
+/* =========================================================
+   CHECKLISTS
+   ========================================================= */
+document.getElementById('chkFiltrar').addEventListener('click', loadChecklists);
+
+async function loadChecklists() {
+  const placa = document.getElementById('chkPlaca').value.trim();
+  const params = placa ? '?placa=' + encodeURIComponent(placa) : '';
+  const r = await api('GET', '/checklists' + params);
+  const tbody = document.getElementById('chkBody');
+  tbody.innerHTML = '';
+  if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
+  const list = r.data || [];
+  if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-muted text-center">Nenhum checklist.</td></tr>'; return; }
+  list.forEach(c => {
+    const resumo = typeof c.dados_check === 'object' ? JSON.stringify(c.dados_check).substring(0, 60) + '...' : String(c.dados_check || '').substring(0, 60);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${esc((c.data_hora || '').replace('T', ' ').substring(0, 16))}</td>
+      <td>${esc(c.placa)}</td>
+      <td>${esc(c.nome_motorista || c.id_motorista)}</td>
+      <td class="text-muted" style="font-size:.78rem;">${esc(resumo)}</td>
+      <td class="actions">
+        <button title="Ver" onclick='verChecklist(${JSON.stringify(JSON.stringify(c))})'><i class="fas fa-eye"></i></button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+window.verChecklist = function(jsonStr) {
+  const c = JSON.parse(jsonStr);
+  const dados = typeof c.dados_check === 'object' ? c.dados_check : (() => { try { return JSON.parse(c.dados_check); } catch { return {}; } })();
+  const html = `<pre style="background:var(--bg-body);padding:12px;border-radius:8px;font-size:.82rem;overflow:auto;max-height:400px;">${esc(JSON.stringify(dados, null, 2))}</pre>`;
+  openModal('Checklist — ' + c.placa, html, null);
+};
+
+/* =========================================================
+   MANUTENÇÕES
+   ========================================================= */
+document.getElementById('manutFiltrar').addEventListener('click', loadManutencoes);
+document.getElementById('manutNovo').addEventListener('click', novaManutencao);
+
+async function loadManutencoes() {
+  const status = document.getElementById('manutStatus').value;
+  const placa = document.getElementById('manutPlaca').value.trim();
+  const params = new URLSearchParams();
+  if (status) params.append('status', status);
+  if (placa) params.append('placa', placa);
+  const r = await api('GET', '/manutencoes' + (params.toString() ? '?' + params : ''));
+  const tbody = document.getElementById('manutBody');
+  tbody.innerHTML = '';
+  if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
+  const list = r.data || [];
+  if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="text-muted text-center">Nenhuma manutenção.</td></tr>'; return; }
+  list.forEach(m => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${m.id_manutencao}</td>
+      <td>${esc(m.placa)}</td>
+      <td>${esc(m.nome_tecnico || m.id_tecnico)}</td>
+      <td>${esc((m.data_ini_manutencao || '').replace('T', ' ').substring(0, 16))}</td>
+      <td>${m.data_fim_manutencao ? esc(m.data_fim_manutencao.replace('T', ' ').substring(0, 16)) : '<span class="badge badge-warning">Em aberto</span>'}</td>
+      <td>${esc(m.descricao)}</td>
+      <td class="actions">
+        <button title="Finalizar" onclick="finalizarManut(${m.id_manutencao})"><i class="fas fa-check"></i></button>
+        <button title="Excluir" onclick="excluirManut(${m.id_manutencao})"><i class="fas fa-trash"></i></button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+window.finalizarManut = function(id) {
+  const agora = new Date().toISOString().slice(0, 19).replace('T', ' ');
+  openModal('Finalizar Manutenção', `
+    <div class="form-group"><label>Data/hora de fim</label><input type="text" id="mfFim" value="${agora}"></div>`, async () => {
+    const r = await api('PUT', '/manutencoes/' + id, { data_fim_manutencao: document.getElementById('mfFim').value });
+    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
+    toast('Manutenção finalizada.', 'success');
+    loadManutencoes();
+  });
+};
+
+window.excluirManut = function(id) {
+  openModal('Excluir Manutenção', `<p>Excluir manutenção #${id}?</p>`, async () => {
+    const r = await api('DELETE', '/manutencoes/' + id);
+    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
+    toast('Manutenção excluída.', 'warning');
+    loadManutencoes();
+  });
+};
+
+function novaManutencao() {
+  const html = `
+    <div class="form-row">
+      <div class="form-group"><label>Placa</label><input type="text" id="mPlaca"></div>
+      <div class="form-group"><label>ID Técnico</label><input type="number" id="mTecnico"></div>
+    </div>
+    <div class="form-group"><label>Descrição</label><textarea id="mDesc" rows="3"></textarea></div>`;
+  openModal('Nova Manutenção', html, async () => {
+    const body = {
+      placa: document.getElementById('mPlaca').value.trim(),
+      id_tecnico: parseInt(document.getElementById('mTecnico').value),
+      descricao: document.getElementById('mDesc').value.trim()
+    };
+    if (!body.placa || !body.descricao) { toast('Preencha os campos.', 'error'); return false; }
+    const r = await api('POST', '/manutencoes', body);
+    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
+    toast('Manutenção criada!', 'success');
+    loadManutencoes();
+  });
+}
+
+/* =========================================================
+   ARQUIVOS
+   ========================================================= */
+document.getElementById('arqBuscar').addEventListener('click', async () => {
+  const idManut = document.getElementById('arqManutId').value;
+  if (!idManut) { toast('Informe o ID da manutenção.', 'warning'); return; }
+  const r = await api('GET', '/arquivos-manutencao?id_manutencao=' + idManut);
+  const tbody = document.getElementById('arqBody');
+  tbody.innerHTML = '';
+  if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
+  const list = r.data || [];
+  if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center">Nenhum arquivo.</td></tr>'; return; }
+  list.forEach(a => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${a.id_arq_manu}</td>
+      <td>${a.id_manutencao_veiculo}</td>
+      <td>${esc(a.descricao)}</td>
+      <td>${a.arq_link ? `<a href="${esc(a.arq_link)}" target="_blank">Abrir</a>` : '-'}</td>
+      <td>${a.arq_blob ? 'Sim' : 'Não'}</td>
+      <td class="actions"><button onclick="excluirArquivo(${a.id_arq_manu})"><i class="fas fa-trash"></i></button></td>`;
+    tbody.appendChild(tr);
+  });
+});
+
+window.excluirArquivo = function(id) {
+  openModal('Excluir Arquivo', `<p>Excluir arquivo #${id}?</p>`, async () => {
+    const r = await api('DELETE', '/arquivos-manutencao/' + id);
+    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
+    toast('Arquivo excluído.', 'warning');
+    document.getElementById('arqBuscar').click();
+  });
+};
+
+/* =========================================================
+   VEÍCULOS
+   ========================================================= */
+document.getElementById('veicNovo').addEventListener('click', novoVeiculo);
+
+async function loadVeiculos() {
+  const r = await api('GET', '/veiculos');
+  const tbody = document.getElementById('veicBody');
+  tbody.innerHTML = '';
+  if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
+  const list = r.data || [];
+  if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center">Nenhum veículo.</td></tr>'; return; }
+  list.forEach(v => {
+    const d = v.dados_veiculo || {};
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${esc(v.placa)}</td>
+      <td>${esc(d.modelo)}</td>
+      <td>${esc(d.ano)}</td>
+      <td>${esc(d.tipo)}</td>
+      <td>${esc(d.capacidade)}</td>
+      <td class="actions"><button onclick="excluirVeiculo('${esc(v.placa)}')"><i class="fas fa-trash"></i></button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+window.excluirVeiculo = function(placa) {
+  openModal('Excluir Veículo', `<p>Excluir veículo ${placa}?</p>`, async () => {
+    const r = await api('DELETE', '/veiculos/' + encodeURIComponent(placa));
+    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
+    toast('Veículo excluído.', 'warning');
+    loadVeiculos();
+  });
+};
+
+function novoVeiculo() {
+  const html = `
+    <div class="form-group"><label>Placa</label><input type="text" id="vPlaca"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Modelo</label><input type="text" id="vModelo"></div>
+      <div class="form-group"><label>Ano</label><input type="number" id="vAno"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Tipo</label><input type="text" id="vTipo"></div>
+      <div class="form-group"><label>Capacidade (t)</label><input type="number" id="vCap" step="0.1"></div>
+    </div>`;
+  openModal('Novo Veículo', html, async () => {
+    const placa = document.getElementById('vPlaca').value.trim();
+    if (!placa) { toast('Informe a placa.', 'error'); return false; }
+    const body = {
+      placa,
+      dados_veiculo: {
+        modelo: document.getElementById('vModelo').value.trim(),
+        ano: parseInt(document.getElementById('vAno').value) || null,
+        tipo: document.getElementById('vTipo').value.trim(),
+        capacidade: parseFloat(document.getElementById('vCap').value) || null
+      }
+    };
+    const r = await api('POST', '/veiculos', body);
+    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
+    toast('Veículo criado!', 'success');
+    loadVeiculos();
+  });
+}
+
+/* =========================================================
+   DOCUMENTOS
+   ========================================================= */
+document.getElementById('docFiltrar').addEventListener('click', loadDocumentos);
+document.getElementById('docNovo').addEventListener('click', novoDocumento);
+
+async function loadDocumentos() {
+  const placa = document.getElementById('docPlaca').value.trim();
+  const params = placa ? '?placa=' + encodeURIComponent(placa) : '';
+  const r = await api('GET', '/documentos-veiculo' + params);
+  const tbody = document.getElementById('docBody');
+  tbody.innerHTML = '';
+  if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
+  const list = r.data || [];
+  if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-muted text-center">Nenhum documento.</td></tr>'; return; }
+  list.forEach(d => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${esc(d.placa)}</td>
+      <td>${esc(d.descricao)}</td>
+      <td>${esc(d.validade)}</td>
+      <td>${statusBadge(d.status_documento)}</td>
+      <td class="actions"><button onclick="excluirDocumento('${esc(d.placa)}','${esc(d.descricao)}')"><i class="fas fa-trash"></i></button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+window.excluirDocumento = function(placa, desc) {
+  openModal('Excluir Documento', `<p>Excluir ${desc} de ${placa}?</p>`, async () => {
+    const r = await api('DELETE', `/documentos-veiculo/${encodeURIComponent(placa)}/${encodeURIComponent(desc)}`);
+    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
+    toast('Documento excluído.', 'warning');
+    loadDocumentos();
+  });
+};
+
+function novoDocumento() {
+  const html = `
+    <div class="form-row">
+      <div class="form-group"><label>Placa</label><input type="text" id="dPlaca"></div>
+      <div class="form-group"><label>Descrição</label><input type="text" id="dDesc" placeholder="CRLV, Seguro..."></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Validade</label><input type="date" id="dVal"></div>
+      <div class="form-group"><label>Status</label><select id="dStatus"><option>Válido</option><option>A vencer</option><option>Vencido</option></select></div>
+    </div>`;
+  openModal('Novo Documento', html, async () => {
+    const body = {
+      placa: document.getElementById('dPlaca').value.trim(),
+      descricao: document.getElementById('dDesc').value.trim(),
+      validade: document.getElementById('dVal').value,
+      status_documento: document.getElementById('dStatus').value
+    };
+    if (!body.placa || !body.descricao || !body.validade) { toast('Preencha os campos.', 'error'); return false; }
+    const r = await api('POST', '/documentos-veiculo', body);
+    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
+    toast('Documento criado!', 'success');
+    loadDocumentos();
+  });
+}
+
+/* =========================================================
+   MOTORISTAS
+   ========================================================= */
+document.getElementById('motNovo').addEventListener('click', novoMotorista);
+
+async function loadMotoristas() {
+  const r = await api('GET', '/motoristas');
+  const tbody = document.getElementById('motBody');
+  tbody.innerHTML = '';
+  if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
+  const list = r.data || [];
+  if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center">Nenhum motorista.</td></tr>'; return; }
+  list.forEach(m => {
+    const status = m.status_motorista == 1 ? '<span class="badge badge-success">Ativo</span>' : '<span class="badge badge-danger">Inativo</span>';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${m.id_motorista}</td>
+      <td>${esc(m.nome)}</td>
+      <td>${esc(m.cpf)}</td>
+      <td>${status}</td>
+      <td>${esc(m.funcoes_motorista)}</td>
+      <td class="actions"><button onclick="excluirMotorista(${m.id_motorista})"><i class="fas fa-trash"></i></button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+window.excluirMotorista = function(id) {
+  openModal('Excluir Motorista', `<p>Excluir motorista #${id}?</p>`, async () => {
+    const r = await api('DELETE', '/motoristas/' + id);
+    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
+    toast('Motorista excluído.', 'warning');
+    loadMotoristas();
+  });
+};
+
+function novoMotorista() {
+  const html = `
+    <div class="form-row">
+      <div class="form-group"><label>Nome</label><input type="text" id="moNome"></div>
+      <div class="form-group"><label>CPF</label><input type="text" id="moCpf"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Telefone</label><input type="text" id="moTel"></div>
+      <div class="form-group"><label>Status</label><select id="moStatus"><option value="1">Ativo</option><option value="0">Inativo</option></select></div>
+    </div>
+    <div class="form-group"><label>Funções</label><input type="text" id="moFuncoes"></div>
+    <div class="form-group"><label>Observações</label><input type="text" id="moObs"></div>`;
+  openModal('Novo Motorista', html, async () => {
+    const body = {
+      nome: document.getElementById('moNome').value.trim(),
+      cpf: document.getElementById('moCpf').value.trim(),
+      telefone: document.getElementById('moTel').value.trim(),
+      status_motorista: parseInt(document.getElementById('moStatus').value),
+      funcoes_motorista: document.getElementById('moFuncoes').value.trim(),
+      observacoes: document.getElementById('moObs').value.trim()
+    };
+    if (!body.nome || !body.cpf) { toast('Nome e CPF obrigatórios.', 'error'); return false; }
+    const r = await api('POST', '/motoristas', body);
+    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
+    toast('Motorista cadastrado!', 'success');
+    loadMotoristas();
+  });
+}
+
+/* =========================================================
+   TÉCNICOS
+   ========================================================= */
+document.getElementById('tecNovo').addEventListener('click', novoTecnico);
+
+async function loadTecnicos() {
+  const r = await api('GET', '/tecnicos');
+  const tbody = document.getElementById('tecBody');
+  tbody.innerHTML = '';
+  if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
+  const list = r.data || [];
+  if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center">Nenhum técnico.</td></tr>'; return; }
+  list.forEach(t => {
+    const status = t.status_tecnico == 1 ? '<span class="badge badge-success">Ativo</span>' : '<span class="badge badge-danger">Inativo</span>';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${t.id_tecnico}</td>
+      <td>${esc(t.nome)}</td>
+      <td>${esc(t.cpf)}</td>
+      <td>${esc(t.tipo_tecnico)}</td>
+      <td>${status}</td>
+      <td class="actions"><button onclick="excluirTecnico(${t.id_tecnico})"><i class="fas fa-trash"></i></button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+window.excluirTecnico = function(id) {
+  openModal('Excluir Técnico', `<p>Excluir técnico #${id}?</p>`, async () => {
+    const r = await api('DELETE', '/tecnicos/' + id);
+    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
+    toast('Técnico excluído.', 'warning');
+    loadTecnicos();
+  });
+};
+
+function novoTecnico() {
+  const html = `
+    <div class="form-row">
+      <div class="form-group"><label>Nome</label><input type="text" id="tNome"></div>
+      <div class="form-group"><label>CPF</label><input type="text" id="tCpf"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Telefone</label><input type="text" id="tTel"></div>
+      <div class="form-group"><label>Status</label><select id="tStatus"><option value="1">Ativo</option><option value="0">Inativo</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Tipo</label><input type="text" id="tTipo" placeholder="Mecânico, Elétrico..."></div>
+      <div class="form-group"><label>Observações</label><input type="text" id="tObs"></div>
+    </div>`;
+  openModal('Novo Técnico', html, async () => {
+    const body = {
+      nome: document.getElementById('tNome').value.trim(),
+      cpf: document.getElementById('tCpf').value.trim(),
+      telefone: document.getElementById('tTel').value.trim(),
+      status_tecnico: parseInt(document.getElementById('tStatus').value),
+      tipo_tecnico: document.getElementById('tTipo').value.trim(),
+      observacoes: document.getElementById('tObs').value.trim()
+    };
+    if (!body.nome || !body.cpf) { toast('Nome e CPF obrigatórios.', 'error'); return false; }
+    const r = await api('POST', '/tecnicos', body);
+    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
+    toast('Técnico cadastrado!', 'success');
+    loadTecnicos();
+  });
+}
+
+/* =========================================================
+   INIT
+   ========================================================= */
+(function init() {
+  if (window.innerWidth <= 768) {
+    document.getElementById('mobileMenuToggle').style.display = 'block';
+    document.getElementById('sidebar').classList.add('collapsed');
+  }
+  window.addEventListener('resize', () => {
+    if (window.innerWidth <= 768) {
+      document.getElementById('mobileMenuToggle').style.display = 'block';
+    } else {
+      document.getElementById('mobileMenuToggle').style.display = 'none';
+      document.getElementById('sidebar').classList.remove('mobile-open');
+    }
+  });
+
+  if (getToken()) {
+    showApp();
+    loadDashboard();
+  } else {
+    showLogin();
+  }
+})();
+</script>
+</body>
+</html>
