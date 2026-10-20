@@ -82,36 +82,128 @@ class ManutencaoController {
         JsonResponse::success($manutencao);
     }
 
+    /**
+     * Cria uma manutenção.
+     *
+     * - Admin: usa o id_tecnico informado (ou o próprio id).
+     * - Técnico: usa o próprio id (ou id_tecnico informado se admin).
+     * - Motorista: REGISTRA UMA OCORRÊNCIA.
+     *   → O técnico é escolhido automaticamente (o com menos OS em aberto).
+     *   → A descrição é prefixada com "[OCORRÊNCIA - <tipo>]" para o admin
+     *     distinguir visualmente de uma manutenção agendada.
+     */
     public function store(Request $request) {
-        Auth::requireRole('tecnico');
-        $id_tecnico = $request->input('id_tecnico') ?? $user['id'];
-        $placa = $request->input('placa');
-        $descricao = $request->input('descricao');
-
-        if (!$placa || !$descricao) {
+        $user = Auth::requireAuth();
+    
+        // Defensivo: garante estrutura do $user
+        if (!is_array($user) || !isset($user['tipo'], $user['id'])) {
+            JsonResponse::error('Sessão inválida. Faça login novamente.', 401);
+        }
+    
+        $placa     = trim((string) $request->input('placa'));
+        $descricao = trim((string) $request->input('descricao'));
+    
+        if ($placa === '' || $descricao === '') {
             JsonResponse::error('Placa e descrição são obrigatórias', 422);
         }
-
+    
         $db = Database::getConnection();
-
-        // Verifica se veículo existe
+    
+        // 1) Veículo existe?
         $stmt = $db->prepare("SELECT 1 FROM tb_veiculos WHERE placa = :placa");
         $stmt->execute([':placa' => $placa]);
         if (!$stmt->fetch()) {
             JsonResponse::error('Veículo não encontrado', 404);
         }
+    
+        // 2) Define técnico
+        if ($user['tipo'] === 'motorista') {
+            $id_tecnico = self::escolherTecnicoComMenosOs($db);
+            if ($id_tecnico === null) {
+                JsonResponse::error(
+                    'Nenhum técnico ativo disponível para receber a ocorrência. Tente novamente mais tarde.',
+                    422
+                );
+            }
+            $tipo = trim((string) ($request->input('tipo_ocorrencia') ?: 'Geral'));
+            $descricao = "[OCORRÊNCIA - {$tipo}] {$descricao}";
+        } else {
+            $id_tecnico = (int) ($request->input('id_tecnico') ?? $user['id']);
+        }
+    
+        // 3) Confirma que o técnico existe (evita FK silenciosa)
+        $stmt = $db->prepare("SELECT 1 FROM tb_tecnicos WHERE id_tecnico = :id");
+        $stmt->execute([':id' => $id_tecnico]);
+        if (!$stmt->fetch()) {
+            JsonResponse::error("Técnico #{$id_tecnico} não encontrado. Contate o administrador.", 422);
+        }
+    
+        // 4) INSERT com captura real de erro
+        try {
+            $stmt = $db->prepare(
+                "INSERT INTO tb_manutencao_veiculo (id_tecnico, placa, data_ini_manutencao, descricao)
+                 VALUES (:id_tecnico, :placa, NOW(), :descricao)"
+            );
+            $ok = $stmt->execute([
+                ':id_tecnico' => $id_tecnico,
+                ':placa'      => $placa,
+                ':descricao'  => $descricao,
+            ]);
+        } catch (\PDOException $e) {
+            error_log('[ManutencaoController::store] PDO: ' . $e->getMessage());
+            JsonResponse::error('Erro PDO ao inserir: ' . $e->getMessage(), 500);
+        }
+    
+        if (!$ok) {
+            $errInfo = $stmt->errorInfo();
+            $msg = $errInfo[2] ?? 'erro desconhecido (execute retornou false)';
+            error_log('[ManutencaoController::store] execute=false: ' . $msg);
+            JsonResponse::error('Falha ao inserir manutenção: ' . $msg, 500);
+        }
+    
+        // 5) Confirma que o ID realmente veio de um novo insert
+        $novoId = (int) $db->lastInsertId();
+        if ($novoId <= 0) {
+            error_log('[ManutencaoController::store] lastInsertId inválido após insert: ' . $novoId);
+            JsonResponse::error('Insert não retornou ID válido. Verifique os logs do servidor.', 500);
+        }
+    
+        // 6) Confirma a linha de fato existindo (bypass de cache/erro silencioso)
+        $stmt = $db->prepare("SELECT COUNT(*) AS c FROM tb_manutencao_veiculo WHERE id_manutencao = :id");
+        $stmt->execute([':id' => $novoId]);
+        if ((int) $stmt->fetch()['c'] !== 1) {
+            error_log('[ManutencaoController::store] Linha não encontrada após insert. id=' . $novoId);
+            JsonResponse::error('Registro não confirmado no banco após insert. Verifique os logs.', 500);
+        }
+    
+        JsonResponse::success([
+            'id_manutencao' => $novoId,
+            'id_tecnico'    => (int) $id_tecnico,
+        ], 201);
+    }
 
-        $stmt = $db->prepare(
-            "INSERT INTO tb_manutencao_veiculo (id_tecnico, placa, data_ini_manutencao, descricao)
-             VALUES (:id_tecnico, :placa, NOW(), :descricao)"
-        );
-        $stmt->execute([
-            ':id_tecnico' => $id_tecnico,
-            ':placa' => $placa,
-            ':descricao' => $descricao
-        ]);
+    private static function escolherTecnicoComMenosOs($db) {
+        // Subquery evita dependência de ONLY_FULL_GROUP_BY e do LEFT JOIN com filtro
+        $sql = "SELECT t.id_tecnico,
+                    (SELECT COUNT(*) FROM tb_manutencao_veiculo mv
+                        WHERE mv.id_tecnico = t.id_tecnico
+                        AND mv.data_fim_manutencao IS NULL) AS os_abertas
+                FROM tb_tecnicos t
+                WHERE t.status_tecnico = 1
+                ORDER BY os_abertas ASC, t.id_tecnico ASC
+                LIMIT 1";
 
-        JsonResponse::success(['id_manutencao' => $db->lastInsertId()], 201);
+        try {
+            $row = $db->query($sql)->fetch();
+            if (!$row || empty($row['id_tecnico'])) {
+                error_log('[escolherTecnicoComMenosOs] Nenhum técnico ativo encontrado');
+                return null;
+            }
+            return (int) $row['id_tecnico'];
+        } catch (\PDOException $e) {
+            error_log('[escolherTecnicoComMenosOs] PDO: ' . $e->getMessage());
+            return null;
+        }
     }
 
     public function update(Request $request) {

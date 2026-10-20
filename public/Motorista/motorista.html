@@ -12,9 +12,66 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Cana Motorista">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon.svg" >
+<link rel="apple-touch-icon" href="icon.svg">
 <link rel="stylesheet" href="style-motorista.css">
 
+<style>
+/* ---- Abas roláveis (5 abas no mobile) ---- */
+.tabs{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:1 0 auto;padding:13px 14px;white-space:nowrap}
+
+/* ---- Checklist ---- */
+.chk-counter{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--input,#1c3145);border:1px solid var(--border,#24405a);
+  padding:5px 10px;border-radius:8px;font-size:.78rem;font-weight:600;
+  color:var(--text,#e6f0f9);
+}
+.chk-counter.full{background:#27ae60;border-color:#27ae60;color:#fff}
+.chk-list{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.chk-item{
+  display:flex;align-items:center;gap:10px;
+  background:var(--card,#16283a);border:1px solid var(--border,#24405a);
+  padding:11px 13px;border-radius:10px;cursor:pointer;
+  transition:background .15s,border-color .15s;
+  color:var(--text,#e6f0f9);
+}
+.chk-item:active{background:var(--input,#1c3145)}
+.chk-item input[type=checkbox]{
+  width:20px;height:20px;accent-color:#27ae60;
+  flex:0 0 20px;cursor:pointer;margin:0;
+}
+.chk-item.checked{border-color:#27ae60;background:rgba(39,174,96,.08)}
+.chk-item span{font-size:.9rem;user-select:none}
+.segmented{display:flex;background:var(--input,#1c3145);border-radius:10px;padding:4px;gap:4px}
+.segmented label{flex:1;margin:0}
+.segmented input{position:absolute;opacity:0;pointer-events:none}
+.segmented span{
+  display:block;text-align:center;padding:10px;border-radius:7px;
+  font-size:.85rem;font-weight:600;color:var(--muted,#7d99b3);cursor:pointer;
+  transition:background .15s,color .15s;
+}
+.segmented input:checked + span{background:var(--primary,#2e86c1);color:#fff}
+
+/* ---- Ocorrência ---- */
+.aviso{
+  background:rgba(243,156,18,.08);
+  border:1px solid rgba(243,156,18,.35);
+  color:#f39c12;
+  padding:10px 12px;border-radius:8px;
+  font-size:.78rem;margin-bottom:14px;
+  display:flex;gap:8px;align-items:flex-start;
+}
+.aviso i{margin-top:2px}
+
+textarea{
+  width:100%;padding:11px 12px;background:var(--input,#1c3145);
+  border:1px solid var(--border,#24405a);border-radius:8px;
+  color:var(--text,#e6f0f9);font:inherit;resize:vertical;min-height:70px;
+}
+textarea:focus{outline:none;border-color:var(--primary,#2e86c1)}
+</style>
 </head>
 <body>
 
@@ -50,13 +107,15 @@
     <div class="actions">
       <button id="btnSync" class="outline" title="Sincronizar"><i class="fas fa-sync"></i></button>
       <button id="btnSair" class="outline" title="Sair"><i class="fas fa-sign-out-alt"></i></button>
-      <button id="btnInstall" class="outline" title="Instalar app"><i class="fas fa-download"></i></button>
+      <button id="btnInstall" class="outline hidden" title="Instalar app"><i class="fas fa-download"></i></button>
     </div>
   </header>
 
   <nav class="tabs">
     <button data-tab="frete" class="active"><i class="fas fa-route"></i> Frete</button>
     <button data-tab="abastecimento"><i class="fas fa-gas-pump"></i> Abastecimento</button>
+    <button data-tab="checklist"><i class="fas fa-clipboard-check"></i> Checklist</button>
+    <button data-tab="ocorrencia"><i class="fas fa-exclamation-triangle"></i> Ocorrência</button>
     <button data-tab="fila"><i class="fas fa-cloud-upload-alt"></i> Fila <span id="badgeFila" class="badge-count hidden">0</span></button>
   </nav>
 
@@ -107,6 +166,96 @@
         </div>
         <button type="submit" class="success" style="width:100%;padding:13px">
           <i class="fas fa-save"></i> Salvar Abastecimento
+        </button>
+      </form>
+    </section>
+
+    <section id="pane-checklist" class="tab-pane">
+      <h2>Checklist de Veículo</h2>
+      <form id="formChecklist">
+        <div class="field">
+          <label>Tipo *</label>
+          <div class="segmented">
+            <label>
+              <input type="radio" name="chkTipo" value="Pré-viagem" checked>
+              <span><i class="fas fa-sign-out-alt"></i> Pré-viagem</span>
+            </label>
+            <label>
+              <input type="radio" name="chkTipo" value="Pós-viagem">
+              <span><i class="fas fa-sign-in-alt"></i> Pós-viagem</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Veículo (placa) *</label>
+          <input type="text" id="cPlaca" list="veiculosList" placeholder="ABC-1234" autocomplete="off" required>
+        </div>
+
+        <div class="field">
+          <label>KM atual *</label>
+          <input type="number" id="cKm" min="0" inputmode="numeric" placeholder="Ex: 45200" required>
+        </div>
+
+        <div class="field">
+          <label style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <span>Itens de verificação</span>
+            <span id="chkCounter" class="chk-counter">0/10</span>
+          </label>
+          <div class="chk-list" id="chkList">
+            <label class="chk-item"><input type="checkbox" data-item="nivel_oleo"><span>Nível de óleo</span></label>
+            <label class="chk-item"><input type="checkbox" data-item="nivel_agua"><span>Nível de água</span></label>
+            <label class="chk-item"><input type="checkbox" data-item="pneus"><span>Pneus (pressão e sulco)</span></label>
+            <label class="chk-item"><input type="checkbox" data-item="freios"><span>Freios</span></label>
+            <label class="chk-item"><input type="checkbox" data-item="luzes_farois"><span>Luzes e faróis</span></label>
+            <label class="chk-item"><input type="checkbox" data-item="documentos"><span>Documentos do veículo</span></label>
+            <label class="chk-item"><input type="checkbox" data-item="extintor"><span>Extintor de incêndio</span></label>
+            <label class="chk-item"><input type="checkbox" data-item="triangulo"><span>Triângulo de sinalização</span></label>
+            <label class="chk-item"><input type="checkbox" data-item="limpadores"><span>Limpadores de para-brisa</span></label>
+            <label class="chk-item"><input type="checkbox" data-item="bateria"><span>Bateria</span></label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Observações</label>
+          <textarea id="cObs" placeholder="Descreva problemas, avarias ou observações..."></textarea>
+        </div>
+
+        <button type="submit" class="success" style="width:100%;padding:13px">
+          <i class="fas fa-save"></i> Salvar Checklist
+        </button>
+      </form>
+    </section>
+
+    <!-- NOVO: OCORRÊNCIA -->
+    <section id="pane-ocorrencia" class="tab-pane">
+      <h2>Registrar Ocorrência</h2>
+      <div class="aviso">
+        <i class="fas fa-info-circle"></i>
+        <span>A ocorrência será <b>automaticamente atribuída</b> ao técnico com menos serviços em aberto.</span>
+      </div>
+      <form id="formOcorrencia">
+        <div class="field">
+          <label>Veículo (placa) *</label>
+          <input type="text" id="oPlaca" list="veiculosList" placeholder="ABC-1234" autocomplete="off" required>
+        </div>
+        <div class="field">
+          <label>Tipo de ocorrência *</label>
+          <select id="oTipo" required>
+            <option value="Mecânica">Mecânica</option>
+            <option value="Elétrica">Elétrica</option>
+            <option value="Pneus">Pneus</option>
+            <option value="Freios">Freios</option>
+            <option value="Documentação">Documentação</option>
+            <option value="Geral">Outros / Geral</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Descrição do problema *</label>
+          <textarea id="oDesc" placeholder="Descreva o problema com o máximo de detalhes..." required></textarea>
+        </div>
+        <button type="submit" class="danger" style="width:100%;padding:13px">
+          <i class="fas fa-exclamation-triangle"></i> Registrar Ocorrência
         </button>
       </form>
     </section>
@@ -231,12 +380,33 @@ function renderFila(){
 
   el.innerHTML = lista.map(i=>{
     const p=i.payload||{};
-    const titulo=i.tipo==='frete'
-      ? `<i class="fas fa-route"></i> Frete — ${esc(p.placa||'')}`
-      : `<i class="fas fa-gas-pump"></i> Abastecimento — ${esc(p.placa||'')}`;
-    const resumo=i.tipo==='frete'
-      ? `${esc(p.origem||'')} → ${esc(p.destino||'')} · ${fmtNum(p.peso)} t · ${fmtMoney(p.valor)}`
-      : `Km ${esc(p.km||0)} · ${fmtNum(p.litros)} L`;
+
+    // ---- Título / resumo por tipo ----
+    let titulo, resumo;
+    if(i.tipo==='frete'){
+      titulo = `<i class="fas fa-route"></i> Frete — ${esc(p.placa||'')}`;
+      resumo = `${esc(p.origem||'')} → ${esc(p.destino||'')} · ${fmtNum(p.peso)} t · ${fmtMoney(p.valor)}`;
+    } else if(i.tipo==='abastecimento'){
+      titulo = `<i class="fas fa-gas-pump"></i> Abastecimento — ${esc(p.placa||'')}`;
+      resumo = `Km ${esc(p.km||0)} · ${fmtNum(p.litros)} L`;
+    } else if(i.tipo==='checklist'){
+      const d = p.dados_check || {};
+      const itens = d.itens || {};
+      const marcados = Object.values(itens).filter(Boolean).length;
+      const total = Object.keys(itens).length || 10;
+      titulo = `<i class="fas fa-clipboard-check"></i> Checklist — ${esc(p.placa||'')}`;
+      resumo = `${esc(d.tipo||'')} · Km ${esc(d.km_atual||0)} · ${marcados}/${total} itens`
+             + (d.observacoes ? ` · "${esc(d.observacoes.slice(0,28))}${d.observacoes.length>28?'…':''}"` : '');
+    } else if(i.tipo==='ocorrencia'){
+      const desc = p.descricao || '';
+      titulo = `<i class="fas fa-exclamation-triangle"></i> Ocorrência — ${esc(p.placa||'')}`;
+      resumo = `${esc(p.tipo_ocorrencia||'')} · "${esc(desc.slice(0,40))}${desc.length>40?'…':''}"`
+             + (i.id_tecnico_atribuido ? ` · → técnico #${i.id_tecnico_atribuido}` : '');
+    } else {
+      titulo = `<i class="fas fa-question"></i> ${esc(i.tipo)}`;
+      resumo = '';
+    }
+
     const statusTxt = {pendente:'⏳ Pendente',sincronizando:'⟳ Enviando…',sincronizado:'✓ Sincronizado',erro:'⚠ Erro'}[i.status]||i.status;
     const btnRemover = i.status!=='sincronizando' ? `<button class="outline" data-act="rm" data-id="${i.id}"><i class="fas fa-trash"></i></button>` : '';
     const btnRetry = (i.status==='erro'||i.status==='pendente') ? `<button class="outline" data-act="retry" data-id="${i.id}"><i class="fas fa-redo"></i> Tentar</button>` : '';
@@ -275,16 +445,36 @@ function atualizarBadgeFila(){
 }
 
 /* ============ CSV ============ */
-const CSV_COLS=['id','tipo','placa','origem','destino','distancia','peso','valor','status_frete','km','litros','criado_em','status','erro'];
+const CSV_COLS=['id','tipo','placa','origem','destino','distancia','peso','valor',
+                'status_frete','km','litros','dados_check','tipo_ocorrencia','descricao',
+                'criado_em','status','erro'];
 const csvEsc=v=>{const s=String(v??'');return /[",\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
 
 function gerarCSV(fila){
   const linhas=[CSV_COLS.join(',')];
   for(const i of fila){
     const p=i.payload||{};
+    const kmValue = i.tipo==='checklist'
+      ? (p.dados_check?.km_atual ?? '')
+      : (p.km ?? '');
     linhas.push([
-      i.id,i.tipo,p.placa||'',p.origem||'',p.destino||'',p.distancia??'',p.peso??'',p.valor??'',
-      p.status_frete||'',p.km??'',p.litros??'',i.criado_em||'',i.status||'pendente',i.erro||''
+      i.id,
+      i.tipo,
+      p.placa||'',
+      p.origem||'',
+      p.destino||'',
+      p.distancia??'',
+      p.peso??'',
+      p.valor??'',
+      p.status_frete||'',
+      kmValue,
+      p.litros??'',
+      p.dados_check ? JSON.stringify(p.dados_check) : '',
+      i.tipo==='ocorrencia' ? (p.tipo_ocorrencia||'') : '',
+      i.tipo==='ocorrencia' ? (p.descricao||'') : '',
+      i.criado_em||'',
+      i.status||'pendente',
+      i.erro||''
     ].map(csvEsc).join(','));
   }
   return linhas.join('\n');
@@ -345,6 +535,19 @@ function importarCSV(texto){
         km:parseInt(get('km'))||0,
         litros:parseFloat(get('litros'))||0
       };
+    }else if(tipo==='checklist'){
+      let dc;
+      try { dc = JSON.parse(get('dados_check')); } catch { dc = null; }
+      if(!dc || typeof dc !== 'object') continue;
+      payload = { placa:get('placa'), dados_check: dc };
+    }else if(tipo==='ocorrencia'){
+      const descricao = get('descricao');
+      if(!descricao) continue;
+      payload = {
+        placa:get('placa'),
+        tipo_ocorrencia:get('tipo_ocorrencia')||'Geral',
+        descricao
+      };
     }else continue;
 
     fila.push({
@@ -384,21 +587,43 @@ async function sincronizarFila(){
     setFila(fila);
     renderFila();
 
-    const endpoint=item.tipo==='frete'?'/fretes':'/abastecimentos';
+    // Endpoint por tipo
+    const endpoint =
+      item.tipo === 'frete'         ? '/fretes' :
+      item.tipo === 'abastecimento' ? '/abastecimentos' :
+      item.tipo === 'checklist'     ? '/checklists' :
+      item.tipo === 'ocorrencia'    ? '/manutencoes' :
+      null;
+
+    if (!endpoint) {
+      item.status='erro';
+      item.erro='Tipo desconhecido: '+item.tipo;
+      err++;
+      continue;
+    }
+
     const r=await api('POST',endpoint,item.payload);
     item.tentativas=(item.tentativas||0)+1;
 
     if(r.ok){
       item.status='sincronizado';
       item.erro=null;
-      item.id_servidor=r.data?.id_frete||r.data?.id_abastecimento||null;
+      item.id_servidor =
+        r.data?.id_frete ??
+        r.data?.id_abastecimento ??
+        r.data?.id_manutencao ??
+        (r.data?.data_hora ? `${r.data.data_hora}|${r.data.placa}|${r.data.id_motorista}` : null);
+      // Ocorrência: guarda qual técnico foi atribuído
+      if(item.tipo==='ocorrencia' && r.data?.id_tecnico){
+        item.id_tecnico_atribuido = r.data.id_tecnico;
+      }
       ok++;
     }else if(r.status===401){
       item.status='pendente';
       setFila(fila);
       sincronizando=false;
       $('btnSync').disabled=false;
-      return; // para tudo
+      return;
     }else if(r.status>=400&&r.status<500){
       item.status='erro';
       item.erro=r.message||('Erro '+r.status);
@@ -467,6 +692,93 @@ $('formAbastecimento').addEventListener('submit',e=>{
   if(navigator.onLine&&getToken()) sincronizarFila();
 });
 
+/* ============ CHECKLIST ============ */
+const ITENS_CHECK = ['nivel_oleo','nivel_agua','pneus','freios','luzes_farois',
+                     'documentos','extintor','triangulo','limpadores','bateria'];
+
+function atualizarContadorCheck(){
+  const boxes = document.querySelectorAll('#chkList input[type=checkbox]');
+  if(!boxes.length) return;
+  const marcados = Array.from(boxes).filter(b => b.checked).length;
+  const c = $('chkCounter');
+  if(!c) return;
+  c.textContent = `${marcados}/${ITENS_CHECK.length}`;
+  c.classList.toggle('full', marcados === ITENS_CHECK.length);
+}
+
+document.querySelectorAll('#chkList input[type=checkbox]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    cb.closest('.chk-item').classList.toggle('checked', cb.checked);
+    atualizarContadorCheck();
+  });
+});
+
+function coletarChecklist(){
+  const tipo = document.querySelector('input[name=chkTipo]:checked')?.value || 'Pré-viagem';
+  const placa = $('cPlaca').value.trim().toUpperCase();
+  const kmRaw = $('cKm').value;
+  const km = parseInt(kmRaw);
+  const obs = $('cObs').value.trim();
+
+  if(!placa){ toast('Informe a placa.','error'); return null; }
+  if(!kmRaw || !Number.isFinite(km) || km < 0){ toast('Informe o KM atual.','error'); return null; }
+
+  const itens = {};
+  let marcados = 0;
+  document.querySelectorAll('#chkList input[type=checkbox]').forEach(cb => {
+    itens[cb.dataset.item] = cb.checked;
+    if(cb.checked) marcados++;
+  });
+
+  if(marcados === 0){
+    if(!confirm('Nenhum item foi verificado. Enviar mesmo assim?')) return null;
+  } else if(marcados < ITENS_CHECK.length){
+    if(!confirm(`${ITENS_CHECK.length - marcados} item(ns) não verificado(s). Enviar mesmo assim?`)) return null;
+  }
+
+  return {
+    placa,
+    dados_check: { tipo, km_atual: km, itens, observacoes: obs }
+  };
+}
+
+$('formChecklist').addEventListener('submit', e => {
+  e.preventDefault();
+  const p = coletarChecklist();
+  if(!p) return;
+  adicionarNaFila('checklist', p);
+  toast('Checklist adicionado à fila.','success');
+  e.target.reset();
+  document.querySelectorAll('#chkList .chk-item').forEach(el => el.classList.remove('checked'));
+  atualizarContadorCheck();
+  if(navigator.onLine && getToken()) sincronizarFila();
+});
+
+/* ============ OCORRÊNCIA ============ */
+function coletarOcorrencia(){
+  const placa = $('oPlaca').value.trim().toUpperCase();
+  const tipo_ocorrencia = $('oTipo').value;
+  const descricao = $('oDesc').value.trim();
+
+  if(!placa){ toast('Informe a placa.','error'); return null; }
+  if(!descricao){ toast('Descreva o problema.','error'); return null; }
+  if(descricao.length < 10){
+    if(!confirm('A descrição está bem curta. Enviar mesmo assim?')) return null;
+  }
+
+  return { placa, tipo_ocorrencia, descricao };
+}
+
+$('formOcorrencia').addEventListener('submit', e => {
+  e.preventDefault();
+  const p = coletarOcorrencia();
+  if(!p) return;
+  adicionarNaFila('ocorrencia', p);
+  toast('Ocorrência registrada na fila.','success');
+  e.target.reset();
+  if(navigator.onLine && getToken()) sincronizarFila();
+});
+
 /* ============ VEÍCULOS (datalist + cache) ============ */
 async function carregarVeiculos(){
   let lista=[];
@@ -491,6 +803,7 @@ document.querySelectorAll('.tabs button').forEach(b=>{
     document.querySelectorAll('.tab-pane').forEach(x=>x.classList.remove('active'));
     b.classList.add('active');
     $('pane-'+b.dataset.tab).classList.add('active');
+    if(b.dataset.tab==='checklist') atualizarContadorCheck();
   });
 });
 
@@ -516,6 +829,7 @@ function showApp(){
   if(u) $('userNome').textContent=u.nome||u.tipo_usuario||'Motorista';
   renderFila();
   atualizarBadgeFila();
+  atualizarContadorCheck();
   carregarVeiculos();
 }
 
@@ -578,13 +892,12 @@ $('btnLimparSinc').addEventListener('click',()=>{
   atualizarBadgeFila();
   toast(`${removidos} removido(s).`,'success');
 });
-/* ============ PWA: registro do Service Worker ============ */
+
+/* ============ PWA: Service Worker ============ */
 async function registrarSW() {
   if (!('serviceWorker' in navigator)) return;
   try {
     const reg = await navigator.serviceWorker.register('sw.js', { scope: './' });
-
-    // Detecta nova versão
     reg.addEventListener('updatefound', () => {
       const novo = reg.installing;
       novo?.addEventListener('statechange', () => {
@@ -597,7 +910,6 @@ async function registrarSW() {
     console.warn('[PWA] Falha ao registrar SW:', e);
   }
 
-  // Quando um novo SW assume, recarrega uma única vez
   let recarregando = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (recarregando) return;
@@ -605,7 +917,6 @@ async function registrarSW() {
     location.reload();
   });
 
-  // Verifica updates ao voltar do background
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
       navigator.serviceWorker.getRegistration().then(r => r?.update());
@@ -623,10 +934,11 @@ function mostrarBannerAtualizacao(onAceitar) {
     <button id="btnFecharBanner"><i class="fas fa-times"></i></button>`;
   Object.assign(b.style, {
     position:'fixed', left:'12px', right:'12px', bottom:'12px',
-    background:'var(--card)', border:'1px solid var(--border)',
+    background:'var(--card,#16283a)', border:'1px solid var(--border,#24405a)',
     borderRadius:'12px', padding:'12px 14px',
     display:'flex', alignItems:'center', gap:'10px',
-    fontSize:'.85rem', zIndex:'999', boxShadow:'0 8px 24px rgba(0,0,0,.5)'
+    fontSize:'.85rem', zIndex:'999', boxShadow:'0 8px 24px rgba(0,0,0,.5)',
+    color:'var(--text,#e6f0f9)'
   });
   b.querySelector('#btnAtualizar').style.marginLeft = 'auto';
   document.body.appendChild(b);
@@ -634,7 +946,7 @@ function mostrarBannerAtualizacao(onAceitar) {
   b.querySelector('#btnFecharBanner').onclick = () => b.remove();
 }
 
-/* ============ PWA: prompt de instalação (Android/Chrome) ============ */
+/* ============ PWA: prompt de instalação ============ */
 let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
@@ -661,6 +973,8 @@ $('btnInstall')?.addEventListener('click', async () => {
 /* ============ INIT ============ */
 (function init(){
   atualizarConexao();
+  atualizarContadorCheck();
+  registrarSW();
   if(getToken()){
     showApp();
     setTimeout(sincronizarFila,600);
