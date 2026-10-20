@@ -8,6 +8,19 @@ use Core\Request;
 
 class ChecklistController {
 
+    private const ITENS_LABEL = [
+        'nivel_oleo'   => 'Nível de óleo',
+        'nivel_agua'   => 'Nível de água',
+        'pneus'        => 'Pneus (pressão e sulco)',
+        'freios'       => 'Freios',
+        'luzes_farois' => 'Luzes e faróis',
+        'documentos'   => 'Documentos do veículo',
+        'extintor'     => 'Extintor de incêndio',
+        'triangulo'    => 'Triângulo de sinalização',
+        'limpadores'   => 'Limpadores de para-brisa',
+        'bateria'      => 'Bateria',
+    ];
+
     public function index(Request $request) {
         $user = Auth::requireAuth();
 
@@ -84,41 +97,7 @@ class ChecklistController {
         $checklist['dados_check'] = json_decode($checklist['dados_check'], true);
         JsonResponse::success($checklist);
     }
-
-    public function store(Request $request) {
-        $user = Auth::requireRole('motorista');
-
-        $placa = $request->input('placa');
-        $dadosCheck = $request->input('dados_check'); // espera array
-
-        if (!$placa || !$dadosCheck) {
-            JsonResponse::error('Placa e dados_check são obrigatórios', 422);
-        }
-
-        $db = Database::getConnection();
-
-        // Verifica veículo
-        $stmt = $db->prepare("SELECT 1 FROM tb_veiculos WHERE placa = :placa");
-        $stmt->execute([':placa' => $placa]);
-        if (!$stmt->fetch()) {
-            JsonResponse::error('Veículo não encontrado', 404);
-        }
-
-        $dataHora = date('Y-m-d H:i:s');
-
-        $stmt = $db->prepare(
-            "INSERT INTO tb_checklists (data_hora, placa, id_motorista, dados_check)
-             VALUES (:data_hora, :placa, :id_motorista, :dados_check)"
-        );
-        $stmt->execute([
-            ':data_hora' => $dataHora,
-            ':placa' => $placa,
-            ':id_motorista' => $user['id'],
-            ':dados_check' => json_encode($dadosCheck)
-        ]);
-
-        JsonResponse::success(['data_hora' => $dataHora, 'placa' => $placa, 'id_motorista' => $user['id']], 201);
-    }
+    
 
     public function update(Request $request) {
         $user = Auth::requireAuth();
