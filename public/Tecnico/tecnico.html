@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CANA CONTROL — Técnico</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16283a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cana Técnico">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="stylesheet" href="style-motorista.css">
+
+<style>
+.tabs{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:1 0 auto;padding:13px 14px;white-space:nowrap}
+
+.pane-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px}
+.pane-head h2{margin:0}
+.pane-head button{padding:8px 12px;font-size:.8rem}
+
+.os-card{
+  background:var(--card,#16283a);border:1px solid var(--border,#24405a);
+  border-left:4px solid var(--primary,#2e86c1);
+  border-radius:10px;padding:14px;margin-bottom:10px;
+}
+.os-card.concluida{border-left-color:var(--success,#27ae60);opacity:.82}
+.os-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}
+.os-id{font-weight:700;font-size:.78rem;color:var(--primary,#2e86c1)}
+.os-placa{font-weight:600;font-size:.86rem;text-align:right}
+.os-desc{font-size:.88rem;margin-bottom:10px;line-height:1.45;word-break:break-word;white-space:pre-line}
+.os-meta{font-size:.72rem;color:var(--muted,#7d99b3);display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.os-acoes{display:flex;gap:8px;flex-wrap:wrap}
+.os-acoes button{padding:8px 12px;font-size:.8rem}
+
+.detail-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:7px 0;border-bottom:1px solid var(--border,#24405a);font-size:.85rem;gap:12px;
+}
+.detail-row span{color:var(--muted,#7d99b3);flex:0 0 auto}
+.detail-row b{text-align:right;word-break:break-word;font-weight:600}
+.detail-desc-label{margin-top:12px;font-size:.78rem;color:var(--muted,#7d99b3)}
+.detail-desc{
+  background:var(--bg,#0e1a26);border:1px solid var(--border,#24405a);
+  border-radius:8px;padding:10px 12px;margin-top:4px;
+  font-size:.85rem;line-height:1.5;
+  white-space:pre-wrap;word-break:break-word;
+  max-height:240px;overflow-y:auto;
+}
+.tag{padding:3px 9px;border-radius:20px;font-size:.72rem;font-weight:700;color:#fff}
+.tag-success{background:var(--success,#27ae60)}
+.tag-warning{background:var(--warning,#f39c12);color:#000}
+
+/* ---- Anexos ---- */
+.arquivos-section{margin-top:16px;padding-top:12px;border-top:1px solid var(--border,#24405a)}
+.arquivos-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:.8rem}
+.arquivos-header b{color:var(--text,#e6f0f9);display:flex;align-items:center;gap:6px;font-size:.85rem}
+.arquivos-header .btn-add{
+  background:var(--success,#27ae60);color:#fff;border:none;border-radius:6px;
+  padding:6px 10px;font-size:.78rem;cursor:pointer;display:flex;align-items:center;gap:5px;
+}
+.arquivos-header .btn-add:hover{opacity:.9}
+
+.file-list{display:flex;flex-direction:column;gap:6px}
+.file-row{
+  display:flex;align-items:center;gap:10px;
+  background:var(--bg,#0e1a26);border:1px solid var(--border,#24405a);
+  border-radius:8px;padding:8px 10px;font-size:.82rem;
+}
+.file-row .file-thumb{
+  width:36px;height:36px;border-radius:6px;object-fit:cover;flex:0 0 36px;
+  background:#000;border:1px solid var(--border,#24405a);
+}
+.file-row .file-icon{
+  width:36px;height:36px;border-radius:6px;flex:0 0 36px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(46,134,193,.12);color:var(--primary,#2e86c1);
+  font-size:1.1rem;
+}
+.file-row .file-icon.fa-file-pdf{background:rgba(231,76,60,.12);color:#e74c3c}
+.file-row .file-icon.fa-file-word{background:rgba(46,134,193,.12);color:#2e86c1}
+.file-row .file-icon.fa-file-excel{background:rgba(39,174,96,.12);color:#27ae60}
+.file-row .file-icon.fa-link{background:rgba(155,89,182,.12);color:#9b59b6}
+.file-row .file-info{flex:1;min-width:0}
+.file-row .file-name{
+  color:var(--text,#e6f0f9);font-weight:500;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.file-row .file-meta{font-size:.7rem;color:var(--muted,#7d99b3);margin-top:2px}
+.file-row .file-actions{display:flex;gap:4px;flex:0 0 auto}
+.file-row .file-actions button{
+  background:transparent;border:1px solid var(--border,#24405a);
+  color:var(--text,#e6f0f9);border-radius:5px;
+  padding:5px 8px;font-size:.78rem;cursor:pointer;
+}
+.file-row .file-actions button:hover{border-color:var(--primary,#2e86c1)}
+.file-row .file-actions .btn-del:hover{border-color:var(--danger,#e74c3c);color:var(--danger,#e74c3c)}
+
+.arquivo-empty{
+  font-size:.8rem;color:var(--muted,#7d99b3);padding:14px 10px;text-align:center;
+  border:1px dashed var(--border,#24405a);border-radius:8px;
+}
+
+.upload-zone{
+  display:block;width:100%;
+  border:2px dashed var(--border,#24405a);border-radius:10px;
+  padding:14px;text-align:center;color:var(--muted,#7d99b3);
+  font-size:.82rem;cursor:pointer;transition:border-color .15s,background .15s;
+  margin-top:10px;user-select:none;background:transparent;font:inherit;
+}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--primary,#2e86c1);background:rgba(46,134,193,.06)}
+.upload-zone i{font-size:1.4rem;color:var(--primary,#2e86c1);margin-bottom:6px;display:block}
+.upload-zone small{display:block;margin-top:4px;opacity:.7;font-size:.72rem}
+
+.aviso-info{
+  background:rgba(46,134,193,.08);border:1px solid rgba(46,134,193,.35);
+  color:#5faee3;padding:10px 12px;border-radius:8px;
+  font-size:.78rem;margin-bottom:14px;
+  display:flex;gap:8px;align-items:flex-start;
+}
+.aviso-info i{margin-top:2px}
+
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;z-index:1000;animation:fadeIn .15s ease;
+}
+.modal-overlay.hidden{display:none}
+.modal-card{
+  background:var(--card,#16283a);border:1px solid var(--border,#24405a);
+  border-radius:14px;padding:22px;max-width:480px;width:100%;
+  max-height:90vh;overflow-y:auto;animation:slideUp .2s ease;
+}
+.modal-card h3{
+  margin-bottom:14px;font-size:1.02rem;color:var(--text,#e6f0f9);
+  display:flex;align-items:center;gap:8px;
+}
+.modal-card h3 i{color:var(--primary,#2e86c1)}
+.modal-card p{
+  font-size:.85rem;color:var(--muted,#7d99b3);
+  white-space:pre-line;line-height:1.55;margin-bottom:18px;
+  word-break:break-word;
+}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:8px}
+.modal-actions button{min-width:110px;padding:10px 16px;font-size:.85rem}
+
+textarea,input[type=text],input[type=file]{
+  width:100%;padding:11px 12px;background:var(--input,#1c3145);
+  border:1px solid var(--border,#24405a);border-radius:8px;
+  color:var(--text,#e6f0f9);font:inherit;
+}
+textarea{resize:vertical;min-height:70px}
+textarea:focus,input[type=text]:focus{outline:none;border-color:var(--primary,#2e86c1)}
+input[type=file]{padding:8px;font-size:.82rem}
+
+.file-preview-img{max-width:100%;border-radius:8px;margin-top:8px;display:block}
+
+.fila-acoes{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.fila-acoes button{padding:8px 12px;font-size:.8rem}
+.fila-item{
+  background:var(--card,#16283a);border:1px solid var(--border,#24405a);
+  border-left:4px solid var(--muted,#7d99b3);
+  border-radius:10px;padding:12px;margin-bottom:10px;font-size:.85rem;
+}
+.fila-item .linha1{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:8px}
+.fila-item .tipo{font-weight:600}
+.fila-item .meta{color:var(--muted,#7d99b3);font-size:.72rem}
+.fila-item pre{
+  font-size:.7rem;color:var(--muted,#7d99b3);background:var(--bg,#0e1a26);
+  padding:6px 8px;border-radius:6px;overflow-x:auto;margin-top:6px;
+  white-space:pre-wrap;word-break:break-all;
+}
+.fila-item .acoes{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.fila-item .acoes button{padding:6px 10px;font-size:.76rem}
+.fila-item.status-pendente{border-left-color:var(--warning,#f39c12)}
+.fila-item.status-sincronizando{border-left-color:var(--primary,#2e86c1)}
+.fila-item.status-sincronizado{border-left-color:var(--success,#27ae60);opacity:.75}
+.fila-item.status-erro{border-left-color:var(--danger,#e74c3c)}
+
+.empty{text-align:center;color:var(--muted,#7d99b3);padding:34px 10px;font-size:.88rem}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-card">
+    <div class="brand-icon"><i class="fas fa-tools"></i></div>
+    <h1>CANA CONTROL — TÉCNICO</h1>
+    <div class="field">
+      <label>CPF</label>
+      <input type="text" id="loginCpf" placeholder="000.000.000-00" inputmode="numeric" autocomplete="username">
+    </div>
+    <div class="field">
+      <label>Senha</label>
+      <input type="password" id="loginSenha" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button id="loginBtn"><i class="fas fa-sign-in-alt"></i> Entrar</button>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <header class="topbar">
+    <div>
+      <div class="brand"><i class="fas fa-tools"></i> CANA CONTROL</div>
+      <div class="user-info">
+        <span id="statusDot" class="dot-online"></span>
+        <span id="statusText">Online</span>
+        <span>·</span>
+        <span id="userNome">—</span>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="btnSync" class="outline" title="Sincronizar"><i class="fas fa-sync"></i></button>
+      <button id="btnSair" class="outline" title="Sair"><i class="fas fa-sign-out-alt"></i></button>
+      <button id="btnInstall" class="outline hidden" title="Instalar app"><i class="fas fa-download"></i></button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button data-tab="abertas" class="active"><i class="fas fa-tools"></i> OS Abertas</button>
+    <button data-tab="concluidas"><i class="fas fa-check-circle"></i> Concluídas</button>
+    <button data-tab="fila"><i class="fas fa-cloud-upload-alt"></i> Fila <span id="badgeFila" class="badge-count hidden">0</span></button>
+  </nav>
+
+  <main>
+    <section id="pane-abertas" class="tab-pane active">
+      <div class="pane-head">
+        <h2>OS Abertas</h2>
+        <button id="btnRefreshOS" class="outline"><i class="fas fa-sync"></i> Atualizar</button>
+      </div>
+      <div id="listaAbertas"></div>
+    </section>
+
+    <section id="pane-concluidas" class="tab-pane">
+      <div class="pane-head">
+        <h2>Histórico — Concluídas</h2>
+      </div>
+      <div id="listaConcluidas"></div>
+    </section>
+
+    <section id="pane-fila" class="tab-pane">
+      <h2>Fila de envio</h2>
+      <div class="fila-acoes">
+        <button id="btnSincronizarTudo" class="success"><i class="fas fa-cloud-upload-alt"></i> Sincronizar</button>
+        <button id="btnExportCsv" class="outline"><i class="fas fa-download"></i> Exportar CSV</button>
+        <button id="btnImportCsv" class="outline"><i class="fas fa-upload"></i> Importar CSV</button>
+        <input type="file" id="inputCsv" accept=".csv,text/csv" hidden>
+        <button id="btnLimparSinc" class="outline"><i class="fas fa-broom"></i> Limpar sincronizados</button>
+      </div>
+      <div id="listaFila"></div>
+    </section>
+  </main>
+</div>
+
+<!-- MODAL CONFIRMAÇÃO -->
+<div id="modalOverlay" class="modal-overlay hidden">
+  <div class="modal-card">
+    <h3><i class="fas fa-exclamation-triangle"></i> <span id="modalTitle"></span></h3>
+    <p id="modalBody"></p>
+    <div class="modal-actions">
+      <button id="modalCancel" class="outline">Cancelar</button>
+      <button id="modalConfirm" class="danger">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FINALIZAR OS -->
+<div id="modalFinalize" class="modal-overlay hidden">
+  <div class="modal-card">
+    <h3><i class="fas fa-check-circle"></i> Finalizar OS <span id="finOsId" style="color:var(--muted,#7d99b3);font-weight:400"></span></h3>
+    <div class="field">
+      <label>Data/hora de término *</label>
+      <input type="datetime-local" id="finDataHora">
+    </div>
+    <div class="field">
+      <label>Observação (opcional)</label>
+      <textarea id="finObs" placeholder="Descreva o serviço executado, peças trocadas, etc."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button id="finCancel" class="outline">Cancelar</button>
+      <button id="finConfirm" class="success"><i class="fas fa-check"></i> Finalizar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALHES -->
+<div id="modalDetail" class="modal-overlay hidden">
+  <div class="modal-card">
+    <h3><i class="fas fa-info-circle"></i> Detalhes da OS</h3>
+    <div id="detailBody"></div>
+
+    <!-- ANEXOS -->
+    <div class="arquivos-section">
+      <div class="arquivos-header">
+        <b><i class="fas fa-paperclip"></i> Anexos <span id="detailArquivosCount" style="font-weight:400;color:var(--muted,#7d99b3)"></span></b>
+        <button type="button" class="btn-add" id="btnAnexarNovo"><i class="fas fa-plus"></i> Anexar</button>
+      </div>
+      <div id="detailArquivos"><div class="arquivo-empty"><i class="fas fa-spinner fa-spin"></i> Carregando...</div></div>
+      <div id="detailUploadZone" class="upload-zone" tabindex="0" role="button">
+        <i class="fas fa-cloud-upload-alt"></i>
+        Ou arraste arquivos aqui para anexar
+        <small>Fotos, PDFs, documentos — máx 5MB</small>
+      </div>
+    </div>
+
+    <div id="detailEditBox" class="hidden">
+      <div class="field" style="margin-top:14px">
+        <label>Editar descrição</label>
+        <textarea id="detailDesc" placeholder="Editar descrição..."></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button id="detClose" class="outline">Fechar</button>
+      <button id="detSaveDesc" class="success hidden"><i class="fas fa-save"></i> Salvar descrição</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL UPLOAD DE ARQUIVO -->
+<div id="modalUpload" class="modal-overlay hidden">
+  <div class="modal-card">
+    <h3><i class="fas fa-paperclip"></i> Anexar arquivo</h3>
+    <div class="field">
+      <label>Descrição</label>
+      <input type="text" id="upDescricao" placeholder="Ex: Foto da peça, Nota fiscal, Laudo...">
+    </div>
+    <div class="field">
+      <label>Arquivo *</label>
+      <input type="file" id="upFile" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.txt">
+      <small style="display:block;font-size:.72rem;color:var(--muted,#7d99b3);margin-top:4px">
+        Máx 5MB. O arquivo será enviado como base64.
+      </small>
+    </div>
+    <div id="upPreview"></div>
+    <div class="modal-actions">
+      <button id="upCancel" class="outline">Cancelar</button>
+      <button id="upConfirm" class="success"><i class="fas fa-upload"></i> Enviar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL VISUALIZAR ARQUIVO -->
+<div id="modalView" class="modal-overlay hidden">
+  <div class="modal-card">
+    <h3><i class="fas fa-file"></i> <span id="viewTitle">Arquivo</span></h3>
+    <div id="viewBody"></div>
+    <div class="modal-actions">
+      <button id="viewClose" class="outline">Fechar</button>
+      <button id="viewDownload" class="success"><i class="fas fa-download"></i> Baixar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* ============ CONFIG ============ */
+const API_BASE   = 'http://127.0.0.1/Transportes/public/api/v1';
+const TOKEN_KEY  = 'canaControlToken';
+const USER_KEY   = 'canaControlUser';
+const FILA_KEY   = 'canaControlFilaTecnico';
+const MANUT_CACHE= 'canaControlManutencoesCache';
+const MAX_UPLOAD = 5 * 1024 * 1024; // 5MB
+
+/* ============ HELPERS ============ */
+const $ = id => document.getElementById(id);
+
+function esc(s){return s==null?'':String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+function fmtData(v){
+  if(v==null||v==='') return '—';
+  let d;
+  if(typeof v==='string'){
+    const m=v.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
+    if(m) d=new Date(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+(m[6]||0));
+    else d=new Date(v);
+  }else d=new Date(v);
+  if(isNaN(d.getTime())) return String(v);
+  return d.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+}
+
+function toast(msg,type='info'){
+  const c=$('toast-container');
+  const d=document.createElement('div');
+  d.className='toast '+type;
+  const ic={success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'};
+  d.innerHTML=`<i class="fas ${ic[type]||ic.info}"></i><span>${esc(msg)}</span><button><i class="fas fa-times"></i></button>`;
+  c.appendChild(d);
+  d.querySelector('button').onclick=()=>d.remove();
+  setTimeout(()=>d.remove(),4500);
+}
+
+function openModalConfirm({ title, body, confirmLabel = 'Confirmar', onConfirm }) {
+  $('modalTitle').textContent   = title;
+  $('modalBody').textContent    = body;
+  $('modalConfirm').textContent = confirmLabel;
+  $('modalOverlay').classList.remove('hidden');
+  const cleanup = () => {
+    $('modalOverlay').classList.add('hidden');
+    $('modalConfirm').onclick = null;
+    $('modalCancel').onclick  = null;
+    $('modalOverlay').onclick = null;
+    document.removeEventListener('keydown', onKey);
+  };
+  const onKey = e => { if (e.key === 'Escape') cleanup(); };
+  $('modalConfirm').onclick = () => { cleanup(); onConfirm(); };
+  $('modalCancel').onclick  = cleanup;
+  $('modalOverlay').onclick = (e) => { if (e.target.id === 'modalOverlay') cleanup(); };
+  document.addEventListener('keydown', onKey);
+}
+
+/* ============ DATAS ============ */
+function localInputValue(d){
+  const p=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+function inputToBackend(val){
+  return val.replace('T',' ') + ':00';
+}
+
+/* ============ AUTH ============ */
+const getToken = () => localStorage.getItem(TOKEN_KEY);
+const setToken = t => localStorage.setItem(TOKEN_KEY,t);
+const getUser  = () => { try{return JSON.parse(localStorage.getItem(USER_KEY)||'null');}catch{return null;} };
+const setUser  = u => localStorage.setItem(USER_KEY,JSON.stringify(u));
+function clearAuth(){localStorage.removeItem(TOKEN_KEY);localStorage.removeItem(USER_KEY);}
+
+/* ============ API ============ */
+async function api(method,path,body=null){
+  const headers={'Content-Type':'application/json'};
+  const tk=getToken();
+  if(tk) headers['Authorization']='Bearer '+tk;
+  const opts={method,headers};
+  if(body!==null) opts.body=JSON.stringify(body);
+
+  let res,data;
+  try{
+    res=await fetch(API_BASE+path,opts);
+    data=await res.json().catch(()=>({}));
+  }catch(e){
+    return {ok:false,status:0,message:'Sem conexão com a API.'};
+  }
+  if(res.status===401){
+    clearAuth();
+    showLogin();
+    toast('Sessão expirada. Faça login novamente.','warning');
+    return {ok:false,status:401,message:'Não autenticado'};
+  }
+  return {
+    ok:res.ok,
+    status:res.status,
+    data:data.data ?? null,
+    message:data.message || null
+  };
+}
+
+/* ============ FILE HELPERS (espelhando dashboard) ============ */
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+function base64ToBlob(base64, mime = 'application/octet-stream') {
+  const byteChars = atob(base64);
+  const byteNumbers = new Array(byteChars.length);
+  for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i);
+  return new Blob([new Uint8Array(byteNumbers)], { type: mime });
+}
+function detectMimeFromBase64(b64) {
+  if (!b64) return 'application/octet-stream';
+  if (b64.startsWith('/9j/')) return 'image/jpeg';
+  if (b64.startsWith('iVBORw0KGgo')) return 'image/png';
+  if (b64.startsWith('R0lGOD')) return 'image/gif';
+  if (b64.startsWith('JVBERi0')) return 'application/pdf';
+  if (b64.startsWith('UEsDB')) return 'application/zip';
+  return 'application/octet-stream';
+}
+function isImageMime(mime) { return /^image\//.test(mime); }
+function iconFromMime(mime){
+  if (mime === 'application/pdf') return 'fa-file-pdf';
+  if (/word/.test(mime)) return 'fa-file-word';
+  if (/excel|sheet/.test(mime)) return 'fa-file-excel';
+  if (/zip/.test(mime)) return 'fa-file-archive';
+  if (isImageMime(mime)) return 'fa-file-image';
+  return 'fa-file';
+}
+
+/* ============ PICKERS ============ */
+function pickId(m){
+  if(!m) return null;
+  const v = m.id_manutencao ?? m.manutencao_id ?? m.idManutencao ?? m.id ?? null;
+  if(v == null || v === '' || (typeof v === 'number' && !isFinite(v))) return null;
+  return v;
+}
+function pickPlaca(m){ return m.placa ?? m.veiculo_placa ?? m.veiculo?.placa ?? ''; }
+function pickModelo(m){ return m.modelo ?? m.veiculo_modelo ?? m.veiculo?.modelo ?? ''; }
+function pickDesc(m){ return m.descricao ?? ''; }
+function pickAbertura(m){ return m.data_manutencao ?? m.data_abertura ?? m.data_ini_manutencao ?? m.criado_em ?? null; }
+function pickFim(m){ return m.data_fim_manutencao ?? null; }
+
+/* ============ MANUTENÇÕES ============ */
+let manutencoesCache = [];
+let manutencoesCacheAtualizadoEm = null;
+let manutencoesCarregadasOffline = false;
+let carregandoOS = false;
+
+function carregarCacheLocal(){
+  try{
+    const c=JSON.parse(localStorage.getItem(MANUT_CACHE)||'null');
+    if(c?.lista){
+      manutencoesCache=c.lista;
+      manutencoesCacheAtualizadoEm=c.atualizado_em||null;
+      return true;
+    }
+  }catch{}
+  return false;
+}
+
+async function carregarManutencoes(){
+  if(carregandoOS) return;
+  if(!getToken()) return;
+  carregandoOS=true;
+  carregarCacheLocal();
+
+  if(!navigator.onLine){
+    manutencoesCarregadasOffline = manutencoesCache.length>0;
+    renderManutencoes();
+    carregandoOS=false;
+    return;
+  }
+
+  const r=await api('GET','/manutencoes');
+  if(r.ok){
+    const lista = Array.isArray(r.data) ? r.data : (r.data?.manutencoes || r.data?.items || []);
+    manutencoesCache=lista;
+    manutencoesCacheAtualizadoEm=new Date().toISOString();
+    manutencoesCarregadasOffline=false;
+    localStorage.setItem(MANUT_CACHE, JSON.stringify({
+      atualizado_em: manutencoesCacheAtualizadoEm,
+      lista: manutencoesCache
+    }));
+  }else if(r.status===0 || r.status>=500){
+    manutencoesCarregadasOffline = manutencoesCache.length>0;
+  }
+
+  renderManutencoes();
+  carregandoOS=false;
+}
+
+function renderOSCard(m, { readonly=false } = {}){
+  const id   = pickId(m);
+  const placa= pickPlaca(m);
+  const modelo=pickModelo(m);
+  const desc = pickDesc(m);
+  const abertura = pickAbertura(m);
+  const fim  = pickFim(m);
+
+  return `
+    <div class="os-card ${fim?'concluida':''}" data-id="${esc(id)}">
+      <div class="os-head">
+        <span class="os-id">OS #${esc(id)}</span>
+        <span class="os-placa">${esc(placa||'—')}${modelo?' · '+esc(modelo):''}</span>
+      </div>
+      <div class="os-desc">${esc(desc) || '<i style="color:var(--muted,#7d99b3)">Sem descrição</i>'}</div>
+      <div class="os-meta">
+        <span><i class="fas fa-calendar-plus"></i> ${esc(fmtData(abertura))}</span>
+        ${fim ? `<span><i class="fas fa-check"></i> ${esc(fmtData(fim))}</span>` : ''}
+      </div>
+      <div class="os-acoes">
+        <button class="outline" data-act="detalhes" data-id="${esc(id)}"><i class="fas fa-eye"></i> Detalhes</button>
+        ${!readonly ? `<button class="success" data-act="finalizar" data-id="${esc(id)}"><i class="fas fa-check"></i> Finalizar</button>` : ''}
+      </div>
+    </div>`;
+}
+
+function renderManutencoes(){
+  const abertas    = manutencoesCache.filter(m => !pickFim(m));
+  const concluidas = manutencoesCache.filter(m => !!pickFim(m));
+
+  const aviso = manutencoesCarregadasOffline
+    ? `<div class="aviso-info"><i class="fas fa-wifi"></i><span>Sem conexão. Exibindo última lista salva${manutencoesCacheAtualizadoEm?' em '+esc(fmtData(manutencoesCacheAtualizadoEm)):''}.</span></div>`
+    : '';
+
+  $('listaAbertas').innerHTML = aviso + (abertas.length
+    ? abertas.map(m => renderOSCard(m)).join('')
+    : '<div class="empty"><i class="fas fa-inbox" style="font-size:1.8rem;opacity:.4"></i><br><br>Nenhuma OS aberta.</div>');
+
+  $('listaConcluidas').innerHTML = concluidas.length
+    ? concluidas.map(m => renderOSCard(m, { readonly: true })).join('')
+    : '<div class="empty"><i class="fas fa-history" style="font-size:1.8rem;opacity:.4"></i><br><br>Nenhuma OS concluída.</div>';
+}
+
+/* ============ ANEXOS — espelhando dashboard.html ============ */
+let detalheManutencao   = null;
+let detalheManutencaoId = null;
+let arquivosDetalhe     = [];
+
+async function carregarArquivos(idManut){
+  if(idManut == null || idManut === '') return { lista: [], offline: true };
+
+  if(!navigator.onLine){
+    return { lista: [], offline: true };
+  }
+  if(!getToken()) return { lista: [], offline: true };
+
+  const r = await api('GET', `/arquivos-manutencao?id_manutencao=${encodeURIComponent(idManut)}`);
+  if(r.ok){
+    const lista = Array.isArray(r.data) ? r.data : (r.data?.arquivos || r.data?.items || []);
+    return { lista, offline: false };
+  }
+  return { lista: [], offline: true, erro: r.message };
+}
+
+function renderArquivoRow(a){
+  const idArq   = a.id_arq_manu;
+  const desc    = a.descricao || ('Arquivo #' + idArq);
+  const hasBlob = !!a.arq_blob;
+  const hasLink = !!a.arq_link;
+  const mime    = hasBlob ? detectMimeFromBase64(a.arq_blob) : '';
+  const img     = hasBlob && isImageMime(mime);
+
+  let previewHtml;
+  if (img) {
+    previewHtml = `<img class="file-thumb" src="data:${mime};base64,${a.arq_blob}" alt="">`;
+  } else if (hasLink) {
+    previewHtml = `<div class="file-icon"><i class="fas fa-link"></i></div>`;
+  } else {
+    previewHtml = `<div class="file-icon"><i class="fas ${iconFromMime(mime)}"></i></div>`;
+  }
+
+  const metaParts = [];
+  if (img) metaParts.push(mime.replace('image/','').toUpperCase());
+  else if (mime === 'application/pdf') metaParts.push('PDF');
+  else if (mime) metaParts.push(mime.split('/')[1]?.toUpperCase() || 'ARQUIVO');
+  if (hasLink && hasBlob) metaParts.push('+ link');
+  else if (hasLink) metaParts.push('link externo');
+
+  const acoes = [];
+  if (hasBlob) {
+    acoes.push(`<button title="Visualizar" data-act="view" data-id="${idArq}"><i class="fas fa-eye"></i></button>`);
+    acoes.push(`<button title="Baixar" data-act="download" data-id="${idArq}"><i class="fas fa-download"></i></button>`);
+  }
+  if (hasLink) {
+    acoes.push(`<button title="Abrir link" data-act="openlink" data-url="${esc(a.arq_link)}"><i class="fas fa-external-link-alt"></i></button>`);
+  }
+  acoes.push(`<button class="btn-del" title="Excluir" data-act="del" data-id="${idArq}"><i class="fas fa-trash"></i></button>`);
+
+  return `
+    <div class="file-row" data-id="${idArq}">
+      ${previewHtml}
+      <div class="file-info">
+        <div class="file-name">${esc(desc)}</div>
+        <div class="file-meta">${esc(metaParts.join(' · ') || '—')}</div>
+      </div>
+      <div class="file-actions">${acoes.join('')}</div>
+    </div>`;
+}
+
+function renderArquivos(lista, offline){
+  arquivosDetalhe = lista || [];
+  const el  = $('detailArquivos');
+  const cnt = $('detailArquivosCount');
+
+  cnt.textContent = lista?.length ? `· ${lista.length} arquivo(s)${offline?' (offline)':''}` : '';
+
+  if(!lista?.length){
+    el.innerHTML = `<div class="arquivo-empty">
+      <i class="fas fa-paperclip" style="opacity:.4"></i><br>
+      ${offline ? 'Sem conexão — não é possível listar anexos.' : 'Nenhum anexo nesta OS.'}
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = `<div class="file-list">${lista.map(renderArquivoRow).join('')}</div>`;
+}
+
+/* ---- Visualizar arquivo (GET /arquivos-manutencao/{id}) ---- */
+async function visualizarArquivo(idArq){
+  const r = await api('GET', '/arquivos-manutencao/' + idArq);
+  if(!r.ok || !r.data || !r.data.arq_blob){
+    toast('Não foi possível obter o arquivo.', 'error');
+    return;
+  }
+  const mime = detectMimeFromBase64(r.data.arq_blob);
+  const titulo = r.data.descricao || ('Arquivo #' + idArq);
+
+  let preview;
+  if (isImageMime(mime)) {
+    preview = `<img src="data:${mime};base64,${r.data.arq_blob}" class="file-preview-img" alt="">`;
+  } else if (mime === 'application/pdf') {
+    preview = `<iframe src="data:application/pdf;base64,${r.data.arq_blob}" style="width:100%;height:460px;border:none;border-radius:8px;margin-top:8px;"></iframe>`;
+  } else {
+    preview = `<p style="font-size:.85rem;color:var(--muted,#7d99b3);margin-top:8px;text-align:center">
+      Pré-visualização não disponível. Use o botão <b>Baixar</b>.</p>`;
+  }
+
+  $('viewTitle').textContent = titulo;
+  $('viewBody').innerHTML    = preview;
+  $('viewDownload').onclick  = () => baixarArquivo(idArq);
+  $('modalView').classList.remove('hidden');
+}
+
+$('viewClose').addEventListener('click', () => $('modalView').classList.add('hidden'));
+$('modalView').addEventListener('click', e => {
+  if(e.target.id === 'modalView') $('modalView').classList.add('hidden');
+});
+
+/* ---- Baixar arquivo ---- */
+async function baixarArquivo(idArq){
+  const r = await api('GET', '/arquivos-manutencao/' + idArq);
+  if(!r.ok || !r.data || !r.data.arq_blob){
+    toast('Não foi possível obter o arquivo.', 'error');
+    return;
+  }
+  const mime = detectMimeFromBase64(r.data.arq_blob);
+  const blob = base64ToBlob(r.data.arq_blob, mime);
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = r.data.descricao || ('arquivo_' + idArq);
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ---- Excluir arquivo ---- */
+function excluirArquivo(idArq){
+  openModalConfirm({
+    title: 'Excluir anexo',
+    body: 'Deseja realmente excluir este arquivo?',
+    confirmLabel: 'Excluir',
+    onConfirm: async () => {
+      const r = await api('DELETE', '/arquivos-manutencao/' + idArq);
+      if(!r.ok){ toast(r.message || 'Erro ao excluir.', 'error'); return; }
+      toast('Arquivo excluído.', 'warning');
+      if(detalheManutencaoId){
+        const { lista, offline } = await carregarArquivos(detalheManutencaoId);
+        renderArquivos(lista, offline);
+      }
+    }
+  });
+}
+
+/* ---- Modal de upload ---- */
+function abrirModalUpload(idManut, arquivosPreSelecionados){
+  if(idManut == null || idManut === ''){
+    toast('Não foi possível identificar a OS.','error');
+    return;
+  }
+  $('modalUpload').dataset.idManut = String(idManut);
+  $('upDescricao').value = '';
+  $('upFile').value = '';
+  $('upPreview').innerHTML = '';
+
+  if(arquivosPreSelecionados && arquivosPreSelecionados.length){
+    const nomes = Array.from(arquivosPreSelecionados).map(f => f.name).join(', ');
+    $('upDescricao').value = arquivosPreSelecionados[0].name.replace(/\.[^.]+$/, '');
+    $('upPreview').innerHTML = `<div class="aviso-info" style="margin-top:10px">
+      <i class="fas fa-check-circle"></i>
+      <span>Arquivo(s) pré-selecionado(s) via arrastar/soltar:<br><b>${esc(nomes)}</b></span>
+    </div>`;
+    // Guarda referência aos arquivos dropados
+    abrirModalUpload._arquivosDropados = Array.from(arquivosPreSelecionados);
+  } else {
+    abrirModalUpload._arquivosDropados = null;
+  }
+
+  $('modalUpload').classList.remove('hidden');
+  setTimeout(()=>$('upDescricao').focus(), 100);
+}
+
+function fecharModalUpload(){
+  $('modalUpload').classList.add('hidden');
+  $('modalUpload').dataset.idManut = '';
+  abrirModalUpload._arquivosDropados = null;
+  $('upFile').value = '';
+  $('upDescricao').value = '';
+  $('upPreview').innerHTML = '';
+}
+
+$('upCancel').addEventListener('click', fecharModalUpload);
+$('modalUpload').addEventListener('click', e => {
+  if(e.target.id === 'modalUpload') fecharModalUpload();
+});
+
+$('upFile').addEventListener('change', () => {
+  const f = $('upFile').files[0];
+  if(!f) return;
+  if(f.size > MAX_UPLOAD){
+    toast(`Arquivo excede ${(MAX_UPLOAD/1024/1024).toFixed(0)}MB.`, 'error');
+    $('upFile').value = '';
+    return;
+  }
+  if(!$('upDescricao').value.trim()){
+    $('upDescricao').value = f.name.replace(/\.[^.]+$/, '');
+  }
+  // Preview de imagem
+  if(/^image\//.test(f.type)){
+    const url = URL.createObjectURL(f);
+    $('upPreview').innerHTML = `<img src="${url}" class="file-preview-img" alt="">`;
+  } else {
+    $('upPreview').innerHTML = `<div class="aviso-info" style="margin-top:10px">
+      <i class="fas fa-file"></i><span>${esc(f.name)} — ${(f.size/1024).toFixed(1)} KB</span>
+    </div>`;
+  }
+});
+
+$('upConfirm').addEventListener('click', async () => {
+  const idManut = $('modalUpload').dataset.idManut;
+  if(!idManut){ toast('OS inválida.','error'); return; }
+
+  let file = $('upFile').files[0] || (abrirModalUpload._arquivosDropados || [])[0];
+  if(!file){ toast('Selecione um arquivo.','error'); return; }
+  if(file.size > MAX_UPLOAD){
+    toast(`Arquivo excede ${(MAX_UPLOAD/1024/1024).toFixed(0)}MB.`, 'error');
+    return;
+  }
+
+  const descricao = $('upDescricao').value.trim() || file.name.replace(/\.[^.]+$/, '');
+
+  const btn = $('upConfirm');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+
+  try{
+    const dataUrl = await fileToBase64(file);
+    const base64  = dataUrl.split(',')[1]; // remove "data:...;base64,"
+
+    const body = {
+      id_manutencao_veiculo: parseInt(idManut),
+      descricao: descricao,
+      arq_link: null,
+      arq_blob: base64
+    };
+
+    const r = await api('POST', '/arquivos-manutencao', body);
+    if(!r.ok){
+      toast(r.message || 'Erro ao anexar arquivo.', 'error');
+      return;
+    }
+
+    toast('Arquivo anexado com sucesso.', 'success');
+    fecharModalUpload();
+
+    // Recarrega lista de anexos no modal de detalhes
+    if(detalheManutencaoId){
+      const { lista, offline } = await carregarArquivos(detalheManutencaoId);
+      renderArquivos(lista, offline);
+    }
+  }catch(e){
+    console.error('[Upload]', e);
+    toast('Falha ao processar arquivo.', 'error');
+  }finally{
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-upload"></i> Enviar';
+  }
+});
+
+/* ---- Botões dos anexos (delegação) ---- */
+$('detailArquivos').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-act]');
+  if(!btn) return;
+  const { act, id, url } = btn.dataset;
+  if(act === 'view') visualizarArquivo(id);
+  else if(act === 'download') baixarArquivo(id);
+  else if(act === 'del') excluirArquivo(id);
+  else if(act === 'openlink') window.open(url, '_blank', 'noopener');
+});
+
+/* ---- Botão "Anexar" + zona de upload ---- */
+$('btnAnexarNovo').addEventListener('click', () => {
+  if(!detalheManutencaoId){ toast('Abra os detalhes de uma OS.','warning'); return; }
+  abrirModalUpload(detalheManutencaoId, null);
+});
+
+$('detailUploadZone').addEventListener('click', () => {
+  if(!detalheManutencaoId){ toast('Abra os detalhes de uma OS.','warning'); return; }
+  abrirModalUpload(detalheManutencaoId, null);
+});
+$('detailUploadZone').addEventListener('keydown', e => {
+  if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); $('detailUploadZone').click(); }
+});
+['dragover','dragenter'].forEach(ev =>
+  $('detailUploadZone').addEventListener(ev, e => {
+    e.preventDefault(); e.stopPropagation();
+    $('detailUploadZone').classList.add('dragover');
+  })
+);
+['dragleave','dragend'].forEach(ev =>
+  $('detailUploadZone').addEventListener(ev, () => {
+    $('detailUploadZone').classList.remove('dragover');
+  })
+);
+$('detailUploadZone').addEventListener('drop', e => {
+  e.preventDefault(); e.stopPropagation();
+  $('detailUploadZone').classList.remove('dragover');
+  if(!detalheManutencaoId){ toast('Abra os detalhes de uma OS.','warning'); return; }
+  const files = e.dataTransfer?.files;
+  if(files && files.length) abrirModalUpload(detalheManutencaoId, files);
+});
+
+/* ============ DETALHES DA OS ============ */
+function fecharDetalhes(){
+  $('modalDetail').classList.add('hidden');
+  detalheManutencao   = null;
+  detalheManutencaoId = null;
+  arquivosDetalhe     = [];
+}
+
+async function abrirDetalhes(id){
+  const idStr = String(id);
+  if(idStr === 'null' || idStr === 'undefined' || idStr === ''){
+    toast('OS sem identificador válido.','error');
+    return;
+  }
+
+  const m = manutencoesCache.find(x => String(pickId(x)) === idStr);
+  if(!m){ toast('OS não encontrada no cache.','warning'); return; }
+
+  detalheManutencao   = m;
+  detalheManutencaoId = pickId(m) ?? id;
+
+  const fim = pickFim(m);
+  const statusTag = fim
+    ? '<span class="tag tag-success">Concluída</span>'
+    : '<span class="tag tag-warning">Aberta</span>';
+
+  $('detailBody').innerHTML = `
+    <div class="detail-row"><span>OS</span><b>#${esc(detalheManutencaoId)}</b></div>
+    <div class="detail-row"><span>Status</span>${statusTag}</div>
+    <div class="detail-row"><span>Placa</span><b>${esc(pickPlaca(m)||'—')}</b></div>
+    <div class="detail-row"><span>Modelo</span><b>${esc(pickModelo(m)||'—')}</b></div>
+    <div class="detail-row"><span>Abertura</span><b>${esc(fmtData(pickAbertura(m)))}</b></div>
+    ${fim?`<div class="detail-row"><span>Conclusão</span><b>${esc(fmtData(fim))}</b></div>`:''}
+    <div class="detail-desc-label">Descrição</div>
+    <div class="detail-desc">${esc(pickDesc(m)) || '<i style="color:var(--muted,#7d99b3)">Sem descrição</i>'}</div>
+  `;
+
+  const editBox = $('detailEditBox');
+  const saveBtn = $('detSaveDesc');
+  if(!fim){
+    editBox.classList.remove('hidden');
+    saveBtn.classList.remove('hidden');
+    $('detailDesc').value = pickDesc(m);
+  }else{
+    editBox.classList.add('hidden');
+    saveBtn.classList.add('hidden');
+  }
+
+  // Reset visual da seção de anexos
+  $('detailArquivosCount').textContent = '';
+  $('detailArquivos').innerHTML = '<div class="arquivo-empty"><i class="fas fa-spinner fa-spin"></i> Carregando...</div>';
+
+  $('modalDetail').classList.remove('hidden');
+
+  const { lista, offline } = await carregarArquivos(detalheManutencaoId);
+  renderArquivos(lista, offline);
+}
+
+$('detClose').addEventListener('click', fecharDetalhes);
+$('modalDetail').addEventListener('click', e => {
+  if(e.target.id === 'modalDetail') fecharDetalhes();
+});
+
+$('detSaveDesc').addEventListener('click', () => {
+  const m = detalheManutencao;
+  if(!m) return;
+  const original = pickDesc(m);
+  const nova = $('detailDesc').value.trim();
+  if(!nova){ toast('Descrição vazia.','error'); return; }
+  if(nova === original){ toast('Nenhuma alteração.','info'); return; }
+
+  adicionarNaFila('manutencao_update', { id_manutencao: pickId(m), descricao: nova });
+  toast('Descrição adicionada à fila.','success');
+  fecharDetalhes();
+  if(navigator.onLine && getToken()) sincronizarFila();
+});
+
+/* ============ FINALIZAR OS ============ */
+let finalizandoManutencao = null;
+
+function abrirFinalizar(id){
+  const m = manutencoesCache.find(x => String(pickId(x)) === String(id));
+  if(!m){ toast('OS não encontrada.','warning'); return; }
+  if(pickFim(m)){ toast('Esta OS já está finalizada.','info'); return; }
+
+  finalizandoManutencao = m;
+  $('finOsId').textContent = '#' + pickId(m);
+  $('finDataHora').value = localInputValue(new Date());
+  $('finObs').value = '';
+  $('modalFinalize').classList.remove('hidden');
+  setTimeout(()=>$('finDataHora').focus(), 100);
+}
+
+$('finCancel').addEventListener('click', () => {
+  $('modalFinalize').classList.add('hidden');
+  finalizandoManutencao = null;
+});
+$('modalFinalize').addEventListener('click', e => {
+  if(e.target.id === 'modalFinalize'){
+    $('modalFinalize').classList.add('hidden');
+    finalizandoManutencao = null;
+  }
+});
+
+$('finConfirm').addEventListener('click', () => {
+  const m = finalizandoManutencao;
+  if(!m) return;
+
+  const dtVal = $('finDataHora').value;
+  if(!dtVal){ toast('Informe a data/hora de término.','error'); return; }
+
+  const obs = $('finObs').value.trim();
+  const dataFim = inputToBackend(dtVal);
+
+  const payload = { id_manutencao: pickId(m), data_fim_manutencao: dataFim };
+  if(obs){
+    const original = pickDesc(m);
+    payload.descricao = `${original}\n\n[Finalizado em ${dataFim}]\n${obs}`;
+  }
+
+  adicionarNaFila('manutencao_update', payload);
+  toast('OS adicionada à fila de finalização.','success');
+
+  $('modalFinalize').classList.add('hidden');
+  finalizandoManutencao = null;
+
+  if(navigator.onLine && getToken()) sincronizarFila();
+});
+
+/* ============ FILA ============ */
+const getFila = () => { try{return JSON.parse(localStorage.getItem(FILA_KEY)||'[]');}catch{return [];} };
+const setFila = f => localStorage.setItem(FILA_KEY,JSON.stringify(f));
+const gerarId = () => 'local_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+
+function adicionarNaFila(tipo,payload){
+  const fila=getFila();
+  fila.push({
+    id:gerarId(),
+    tipo, payload,
+    criado_em:new Date().toISOString(),
+    status:'pendente', tentativas:0, erro:null
+  });
+  setFila(fila);
+  renderFila();
+  atualizarBadgeFila();
+}
+
+function removerDaFila(id){
+  setFila(getFila().filter(i=>i.id!==id));
+  renderFila();
+  atualizarBadgeFila();
+}
+
+function renderFila(){
+  const el=$('listaFila');
+  const fila=getFila();
+  if(fila.length===0){
+    el.innerHTML='<div class="empty"><i class="fas fa-inbox" style="font-size:1.8rem;opacity:.4"></i><br><br>Nenhum registro na fila.</div>';
+    return;
+  }
+  const ordem={erro:0,pendente:1,sincronizando:2,sincronizado:3};
+  const lista=[...fila].sort((a,b)=>(ordem[a.status]??9)-(ordem[b.status]??9)||new Date(b.criado_em)-new Date(a.criado_em));
+
+  el.innerHTML = lista.map(i=>{
+    const p=i.payload||{};
+    let titulo, resumo;
+
+    if(i.tipo==='manutencao_update'){
+      const isFinal = !!p.data_fim_manutencao;
+      const isDesc  = !!p.descricao;
+      const label   = isFinal ? 'Finalizar OS' : (isDesc ? 'Atualizar descrição' : 'Atualizar OS');
+      const icon    = isFinal ? 'fa-check-circle' : 'fa-edit';
+      titulo = `<i class="fas ${icon}"></i> ${label} — OS #${esc(p.id_manutencao)}`;
+      const parts=[];
+      if(p.data_fim_manutencao) parts.push('fim: '+esc(p.data_fim_manutencao));
+      if(p.descricao) parts.push(`"${esc(p.descricao.slice(0,50))}${p.descricao.length>50?'…':''}"`);
+      resumo = parts.join(' · ');
+    }else{
+      titulo = `<i class="fas fa-question"></i> ${esc(i.tipo)}`;
+      resumo = '';
+    }
+
+    const statusTxt = {pendente:'⏳ Pendente',sincronizando:'⟳ Enviando…',sincronizado:'✓ Sincronizado',erro:'⚠ Erro'}[i.status]||i.status;
+    const btnRemover = i.status!=='sincronizando' ? `<button class="outline" data-act="rm" data-id="${i.id}"><i class="fas fa-trash"></i></button>` : '';
+    const btnRetry = (i.status==='erro'||i.status==='pendente') ? `<button class="outline" data-act="retry" data-id="${i.id}"><i class="fas fa-redo"></i> Tentar</button>` : '';
+    return `
+      <div class="fila-item status-${i.status}">
+        <div class="linha1">
+          <span class="tipo">${titulo}</span>
+          <span class="meta">${statusTxt}</span>
+        </div>
+        ${resumo?`<div class="meta">${resumo}</div>`:''}
+        <div class="meta" style="margin-top:4px;">${esc(fmtData(i.criado_em))}${i.tentativas?' · tentativas: '+i.tentativas:''}</div>
+        ${i.erro?`<pre>${esc(i.erro)}</pre>`:''}
+        <div class="acoes">${btnRetry}${btnRemover}</div>
+      </div>`;
+  }).join('');
+}
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button[data-act]');
+  if(!b) return;
+  // Ignora botões dentro da área de anexos (já têm handler próprio)
+  if (b.closest('#detailArquivos')) return;
+  const {act,id}=b.dataset;
+  if(act==='rm') removerDaFila(id);
+  if(act==='retry'){
+    const f=getFila();
+    const item=f.find(x=>x.id===id);
+    if(item){ item.status='pendente'; item.erro=null; setFila(f); renderFila(); }
+    sincronizarFila();
+  }
+  if(act==='detalhes') abrirDetalhes(id);
+  if(act==='finalizar') abrirFinalizar(id);
+});
+
+function atualizarBadgeFila(){
+  const pend=getFila().filter(i=>i.status==='pendente'||i.status==='erro'||i.status==='sincronizando').length;
+  const b=$('badgeFila');
+  if(pend>0){ b.textContent=pend; b.classList.remove('hidden'); }
+  else b.classList.add('hidden');
+}
+
+/* ============ CSV ============ */
+const CSV_COLS=['id','tipo','id_manutencao','data_fim_manutencao','descricao','criado_em','status','erro'];
+const csvEsc=v=>{const s=String(v??'');return /[",\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
+
+function gerarCSV(fila){
+  const linhas=[CSV_COLS.join(',')];
+  for(const i of fila){
+    const p=i.payload||{};
+    linhas.push([
+      i.id, i.tipo,
+      p.id_manutencao ?? '',
+      p.data_fim_manutencao || '',
+      p.descricao || '',
+      i.criado_em || '',
+      i.status || 'pendente',
+      i.erro || ''
+    ].map(csvEsc).join(','));
+  }
+  return linhas.join('\n');
+}
+
+function parseCSV(txt){
+  const rows=[]; let row=[],cur='',q=false;
+  for(let i=0;i<txt.length;i++){
+    const c=txt[i];
+    if(q){
+      if(c==='"'&&txt[i+1]==='"'){cur+='"';i++;}
+      else if(c==='"')q=false;
+      else cur+=c;
+    }else{
+      if(c==='"')q=true;
+      else if(c===','){row.push(cur);cur='';}
+      else if(c==='\n'){row.push(cur);rows.push(row);row=[];cur='';}
+      else if(c==='\r'){}
+      else cur+=c;
+    }
+  }
+  if(cur!==''||row.length){row.push(cur);rows.push(row);}
+  return rows;
+}
+
+function importarCSV(texto){
+  const rows=parseCSV(texto);
+  if(rows.length<2){toast('CSV vazio ou inválido.','warning');return;}
+  const hdr=rows[0];
+  const idx=Object.fromEntries(CSV_COLS.map(c=>[c,hdr.indexOf(c)]));
+  if(idx.id<0||idx.tipo<0){toast('CSV sem colunas obrigatórias (id,tipo).','error');return;}
+
+  const fila=getFila();
+  const idsExistentes=new Set(fila.map(i=>i.id));
+  let add=0;
+
+  for(let r=1;r<rows.length;r++){
+    const row=rows[r];
+    const get=k=>idx[k]>=0?(row[idx[k]]||'').trim():'';
+    const id=get('id'), tipo=get('tipo');
+    if(!id||!tipo||idsExistentes.has(id)) continue;
+    if(tipo!=='manutencao_update') continue;
+
+    const id_manutencao=get('id_manutencao');
+    if(!id_manutencao) continue;
+
+    const payload={ id_manutencao };
+    const dataFim=get('data_fim_manutencao');
+    const desc=get('descricao');
+    if(dataFim) payload.data_fim_manutencao = dataFim;
+    if(desc) payload.descricao = desc;
+
+    fila.push({
+      id, tipo, payload,
+      criado_em:get('criado_em')||new Date().toISOString(),
+      status:'pendente', tentativas:0, erro:null
+    });
+    idsExistentes.add(id);
+    add++;
+  }
+  setFila(fila);
+  renderFila();
+  atualizarBadgeFila();
+  toast(add>0?`${add} item(ns) importado(s).`:'Nenhum item novo.',add>0?'success':'info');
+  if(add>0) sincronizarFila();
+}
+
+/* ============ SYNC ============ */
+let sincronizando=false;
+
+async function sincronizarFila(){
+  if(sincronizando) return;
+  if(!navigator.onLine){ toast('Sem conexão. Dados ficam na fila.','warning'); return; }
+  if(!getToken()){ toast('Faça login para sincronizar.','error'); return; }
+
+  const fila=getFila();
+  const pendentes=fila.filter(i=>i.status==='pendente'||i.status==='erro');
+  if(pendentes.length===0){ toast('Nada para sincronizar.','info'); return; }
+
+  sincronizando=true;
+  $('btnSync').disabled=true;
+
+  let ok=0,err=0,algumSucesso=false;
+
+  for(const item of pendentes){
+    item.status='sincronizando';
+    item.erro=null;
+    setFila(fila);
+    renderFila();
+
+    if(item.tipo!=='manutencao_update'){
+      item.status='erro';
+      item.erro='Tipo desconhecido: '+item.tipo;
+      err++;
+      continue;
+    }
+
+    const idManut = item.payload?.id_manutencao;
+    if(!idManut){
+      item.status='erro';
+      item.erro='Payload sem id_manutencao';
+      err++;
+      continue;
+    }
+
+    const endpoint = '/manutencoes/' + idManut;
+    const body = { ...item.payload };
+    delete body.id_manutencao;
+
+    const r=await api('PUT',endpoint,body);
+    item.tentativas=(item.tentativas||0)+1;
+
+    if(r.ok){
+      item.status='sincronizado';
+      item.erro=null;
+      ok++;
+      algumSucesso=true;
+    }else if(r.status===401){
+      item.status='pendente';
+      setFila(fila);
+      sincronizando=false;
+      $('btnSync').disabled=false;
+      return;
+    }else if(r.status>=400 && r.status<500){
+      item.status='erro';
+      item.erro=r.message||('Erro '+r.status);
+      err++;
+    }else{
+      item.status='pendente';
+      setFila(fila);
+      toast('Falha de rede/servidor. Tente novamente.','error');
+      break;
+    }
+  }
+
+  setFila(fila);
+  renderFila();
+  atualizarBadgeFila();
+  sincronizando=false;
+  $('btnSync').disabled=false;
+
+  if(ok>0&&err===0) toast(`${ok} item(ns) sincronizado(s).`,'success');
+  else if(ok>0&&err>0) toast(`${ok} ok, ${err} com erro.`,'warning');
+  else if(err>0) toast(`${err} item(ns) com erro. Veja a fila.`,'error');
+
+  if(algumSucesso) carregarManutencoes();
+}
+
+/* ============ ABAS ============ */
+document.querySelectorAll('.tabs button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    $('pane-'+b.dataset.tab).classList.add('active');
+  });
+});
+
+/* ============ ONLINE/OFFLINE ============ */
+function atualizarConexao(){
+  const on=navigator.onLine;
+  $('statusDot').className=on?'dot-online':'dot-offline';
+  $('statusText').textContent=on?'Online':'Offline';
+  $('btnSync').disabled=!on;
+}
+window.addEventListener('online',()=>{
+  atualizarConexao();
+  toast('Conectado. Sincronizando…','info');
+  sincronizarFila();
+});
+window.addEventListener('offline',()=>{
+  atualizarConexao();
+  toast('Você está offline. Registros ficam na fila.','warning');
+});
+
+/* ============ LOGIN/LOGOUT ============ */
+function showLogin(){
+  $('login-screen').classList.remove('hidden');
+  $('app').classList.add('hidden');
+}
+function showApp(){
+  $('login-screen').classList.add('hidden');
+  $('app').classList.remove('hidden');
+  const u=getUser();
+  if(u) $('userNome').textContent=u.nome||u.tipo_usuario||'Técnico';
+  renderFila();
+  atualizarBadgeFila();
+  carregarManutencoes();
+}
+
+$('loginBtn').addEventListener('click',async()=>{
+  const cpf=$('loginCpf').value.trim();
+  const senha=$('loginSenha').value;
+  if(!cpf||!senha){toast('Informe CPF e senha.','error');return;}
+  $('loginBtn').disabled=true;
+  const r=await api('POST','/auth/login',{cpf,senha});
+  $('loginBtn').disabled=false;
+  if(!r.ok){toast(r.message||'Falha no login.','error');return;}
+  if(r.data?.tipo_usuario && r.data.tipo_usuario!=='tecnico'){
+    toast('Este usuário não é um técnico.','error');
+    return;
+  }
+  setToken(r.data.token);
+  setUser({tipo_usuario:r.data.tipo_usuario,cpf,nome:r.data.nome||null});
+  toast('Login realizado!','success');
+  showApp();
+  setTimeout(sincronizarFila,400);
+});
+
+$('btnSair').addEventListener('click',async()=>{
+  const pend=getFila().filter(i=>i.status==='pendente'||i.status==='erro').length;
+  if(pend>0 && !confirm(`Há ${pend} item(ns) não sincronizado(s). Eles ficarão salvos localmente. Sair mesmo assim?`)) return;
+  await api('POST','/auth/logout');
+  clearAuth();
+  toast('Sessão encerrada.','info');
+  showLogin();
+});
+
+$('btnSync').addEventListener('click',sincronizarFila);
+$('btnSincronizarTudo').addEventListener('click',sincronizarFila);
+$('btnRefreshOS').addEventListener('click',carregarManutencoes);
+
+$('btnExportCsv').addEventListener('click',()=>{
+  const csv=gerarCSV(getFila());
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`cana_control_tecnico_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('CSV exportado.','success');
+});
+
+$('btnImportCsv').addEventListener('click',()=>$('inputCsv').click());
+$('inputCsv').addEventListener('change',e=>{
+  const f=e.target.files[0];
+  if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>importarCSV(rd.result);
+  rd.readAsText(f,'UTF-8');
+  e.target.value='';
+});
+
+$('btnLimparSinc').addEventListener('click',()=>{
+  const restantes=getFila().filter(i=>i.status!=='sincronizado');
+  const removidos=getFila().length-restantes.length;
+  if(removidos===0){toast('Nenhum item sincronizado.','info');return;}
+  if(!confirm(`Remover ${removidos} item(ns) já sincronizado(s) da fila?`)) return;
+  setFila(restantes);
+  renderFila();
+  atualizarBadgeFila();
+  toast(`${removidos} removido(s).`,'success');
+});
+
+/* ============ PWA ============ */
+async function registrarSW() {
+  if (!('serviceWorker' in navigator)) return;
+  try {
+    const reg = await navigator.serviceWorker.register('sw.js', { scope: './' });
+    reg.addEventListener('updatefound', () => {
+      const novo = reg.installing;
+      novo?.addEventListener('statechange', () => {
+        if (novo.state === 'installed' && navigator.serviceWorker.controller) {
+          mostrarBannerAtualizacao(() => novo.postMessage('SKIP_WAITING'));
+        }
+      });
+    });
+  } catch (e) { console.warn('[PWA]', e); }
+
+  let recarregando = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (recarregando) return;
+    recarregando = true;
+    location.reload();
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      navigator.serviceWorker.getRegistration().then(r => r?.update());
+    }
+  });
+}
+
+function mostrarBannerAtualizacao(onAceitar) {
+  if ($('bannerUpdate')) return;
+  const b = document.createElement('div');
+  b.id = 'bannerUpdate';
+  b.innerHTML = `
+    <span><i class="fas fa-sync"></i> Nova versão disponível.</span>
+    <button id="btnAtualizar">Atualizar</button>
+    <button id="btnFecharBanner"><i class="fas fa-times"></i></button>`;
+  Object.assign(b.style, {
+    position:'fixed', left:'12px', right:'12px', bottom:'12px',
+    background:'var(--card,#16283a)', border:'1px solid var(--border,#24405a)',
+    borderRadius:'12px', padding:'12px 14px',
+    display:'flex', alignItems:'center', gap:'10px',
+    fontSize:'.85rem', zIndex:'999', boxShadow:'0 8px 24px rgba(0,0,0,.5)',
+    color:'var(--text,#e6f0f9)'
+  });
+  b.querySelector('#btnAtualizar').style.marginLeft = 'auto';
+  document.body.appendChild(b);
+  b.querySelector('#btnAtualizar').onclick = () => { onAceitar(); b.remove(); };
+  b.querySelector('#btnFecharBanner').onclick = () => b.remove();
+}
+
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  $('btnInstall')?.classList.remove('hidden');
+});
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+  $('btnInstall')?.classList.add('hidden');
+  toast('App instalado! 🎉','success');
+});
+$('btnInstall')?.addEventListener('click', async () => {
+  if (!deferredPrompt) {
+    toast('Use o menu do navegador → "Adicionar à tela inicial".','info');
+    return;
+  }
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  $('btnInstall').classList.add('hidden');
+  toast(outcome === 'accepted' ? 'Instalando…' : 'Instalação cancelada.', outcome === 'accepted' ? 'success' : 'info');
+});
+
+/* ============ INIT ============ */
+(function init(){
+  atualizarConexao();
+  registrarSW();
+  carregarCacheLocal();
+  if(getToken()){
+    showApp();
+    setTimeout(sincronizarFila,600);
+  }else{
+    renderManutencoes();
+    showLogin();
+  }
+})();
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,392 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0
+}
+
+:root {
+    --bg: #0e1a26;
+    --card: #16283a;
+    --input: #1c3145;
+    --border: #24405a;
+    --text: #e6f0f9;
+    --muted: #7d99b3;
+    --primary: #2e86c1;
+    --success: #27ae60;
+    --warning: #f39c12;
+    --danger: #e74c3c
+}
+
+body {
+    font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased
+}
+
+button {
+    font: inherit;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #fff;
+    background: var(--primary)
+}
+
+button.outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text)
+}
+
+button.success {
+    background: var(--success)
+}
+
+button.danger {
+    background: var(--danger)
+}
+
+button:disabled {
+    opacity: .5;
+    cursor: not-allowed
+}
+
+input,
+select {
+    width: 100%;
+    padding: 11px 12px;
+    background: var(--input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font: inherit
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: var(--primary)
+}
+
+label {
+    display: block;
+    font-size: .8rem;
+    color: var(--muted);
+    margin-bottom: 5px;
+    font-weight: 500
+}
+
+.field {
+    margin-bottom: 13px
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px
+}
+
+.hidden {
+    display: none !important
+}
+
+#login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px
+}
+
+.login-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 26px 22px;
+    width: 100%;
+    max-width: 360px
+}
+
+.login-card h1 {
+    font-size: 1rem;
+    margin: 12px 0 22px;
+    text-align: center
+}
+
+.login-card .brand-icon {
+    text-align: center;
+    font-size: 2.1rem;
+    color: var(--primary)
+}
+
+.login-card button {
+    width: 100%;
+    margin-top: 8px;
+    padding: 13px
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 14px;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 10
+}
+
+.topbar .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: .95rem
+}
+
+.topbar .brand i {
+    color: var(--primary)
+}
+
+.topbar .user-info {
+    font-size: .72rem;
+    color: var(--muted);
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px
+}
+
+.topbar .actions {
+    display: flex;
+    gap: 6px
+}
+
+.topbar .actions button {
+    padding: 8px 11px;
+    font-size: .85rem
+}
+
+.dot-online,
+.dot-offline {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block
+}
+
+.dot-online {
+    background: var(--success)
+}
+
+.dot-offline {
+    background: var(--danger)
+}
+
+.tabs {
+    display: flex;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 57px;
+    z-index: 9
+}
+
+.tabs button {
+    flex: 1;
+    background: transparent;
+    color: var(--muted);
+    border-radius: 0;
+    padding: 13px 4px;
+    font-size: .8rem;
+    border-bottom: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px
+}
+
+.tabs button.active {
+    color: var(--text);
+    border-bottom-color: var(--primary)
+}
+
+.badge-count {
+    background: var(--warning);
+    color: #000;
+    font-size: .68rem;
+    padding: 1px 6px;
+    border-radius: 8px;
+    font-weight: 700
+}
+
+main {
+    padding: 16px;
+    max-width: 600px;
+    margin: 0 auto
+}
+
+.tab-pane {
+    display: none
+}
+
+.tab-pane.active {
+    display: block
+}
+
+h2 {
+    font-size: 1.02rem;
+    margin-bottom: 14px
+}
+
+.fila-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--muted);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+    font-size: .85rem
+}
+
+.fila-item .linha1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    gap: 8px
+}
+
+.fila-item .tipo {
+    font-weight: 600
+}
+
+.fila-item .meta {
+    color: var(--muted);
+    font-size: .72rem
+}
+
+.fila-item pre {
+    font-size: .7rem;
+    color: var(--muted);
+    background: var(--bg);
+    padding: 6px 8px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin-top: 6px;
+    white-space: pre-wrap;
+    word-break: break-all
+}
+
+.fila-item .acoes {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap
+}
+
+.fila-item .acoes button {
+    padding: 6px 10px;
+    font-size: .76rem
+}
+
+.fila-item.status-pendente {
+    border-left-color: var(--warning)
+}
+
+.fila-item.status-sincronizando {
+    border-left-color: var(--primary)
+}
+
+.fila-item.status-sincronizado {
+    border-left-color: var(--success);
+    opacity: .75
+}
+
+.fila-item.status-erro {
+    border-left-color: var(--danger)
+}
+
+.fila-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px
+}
+
+.fila-acoes button {
+    padding: 8px 12px;
+    font-size: .8rem
+}
+
+.empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 34px 10px;
+    font-size: .88rem
+}
+
+#toast-container {
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: calc(100% - 24px);
+    max-width: 400px
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .4);
+    font-size: .84rem;
+    animation: slidein .25s ease
+}
+
+.toast.success {
+    border-left: 4px solid var(--success)
+}
+
+.toast.error {
+    border-left: 4px solid var(--danger)
+}
+
+.toast.warning {
+    border-left: 4px solid var(--warning)
+}
+
+.toast.info {
+    border-left: 4px solid var(--primary)
+}
+
+.toast button {
+    background: transparent;
+    color: var(--muted);
+    padding: 2px 6px
+}
+
+@keyframes slidein {
+    from {
+        opacity: 0;
+        transform: translateY(-8px)
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0)
+    }
+}
