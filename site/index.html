@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fleet Control System — Gestão de frotas para usinas de energia</title>
+<meta name="description" content="Sistema de gestão de frotas para usinas de energia: rastreamento, abastecimento, manutenção e relatórios operacionais em um único painel.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="style.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+<header>
+  <div class="topbar">
+    <div class="wrap d-flex justify-content-between">
+      <div>Segunda a sexta · 8h às 18h</div>
+      <div>
+        <a href="tel:+551140000000">+55 11 4000-0000</a>
+        <span class="mx-2" style="opacity:.4">·</span>
+        <a href="mailto:comercial@fleetcontrol.com.br">comercial@fleetcontrol.com.br</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="site-nav">
+    <div class="wrap position-relative">
+      <a href="#" class="brand">
+        <span class="brand-mark">FC</span>
+        <span>Fleet Control System</span>
+      </a>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Abrir menu" aria-expanded="false">
+        <span>Menu</span>
+      </button>
+
+      <nav class="nav-menu" id="navMenu">
+        <a href="#recursos">Recursos</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#setores">Setores</a>
+        <a href="#contato">Contato</a>
+        <a href="#contato" class="nav-cta">Solicitar demonstração</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="wrap">
+    <div class="row align-items-center g-5">
+
+      <div class="col-lg-6">
+        <div class="eyebrow">Gestão de frotas · Setor energético</div>
+        <h1 class="h-display">
+          Controle operacional da frota dentro da sua usina.
+        </h1>
+        <p class="lead-text">
+          Caminhões, tratores, empilhadeiras e veículos de apoio em um único painel.
+          Rastreamento, abastecimento, manutenção e relatórios — sem planilhas paralelas.
+        </p>
+        <div class="d-flex flex-wrap gap-2">
+          <a href="#contato" class="btn-primary-paper">
+            Solicitar demonstração <span>→</span>
+          </a>
+          <a href="#recursos" class="btn-outline-paper">
+            Conhecer os recursos
+          </a>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="panel">
+          <div class="panel-head">
+            <span>PAINEL · USINA ANDRADINA</span>
+            <span>21 OUT 2026 · 14:42</span>
+          </div>
+
+          <div class="panel-row">
+            <div>
+              <div class="plate">FRT-2041</div>
+              <div class="sector">Caminhão Munck · Biomassa</div>
+            </div>
+            <span class="status-pill status-ok">Em rota</span>
+          </div>
+
+          <div class="panel-row">
+            <div>
+              <div class="plate">TRT-0330</div>
+              <div class="sector">Trator de pátio · Insumos</div>
+            </div>
+            <span class="status-pill status-ok">Em rota</span>
+          </div>
+
+          <div class="panel-row">
+            <div>
+              <div class="plate">EMP-0087</div>
+              <div class="sector">Empilhadeira · Pátio</div>
+            </div>
+            <span class="status-pill status-warn">Manutenção</span>
+          </div>
+
+          <div class="panel-row">
+            <div>
+              <div class="plate">UTIL-0112</div>
+              <div class="sector">Pick-up 4x4 · Administrativo</div>
+            </div>
+            <span class="status-pill status-idle">Parado</span>
+          </div>
+
+          <div class="panel-foot">
+            <div>
+              <div class="kpi-v">87%</div>
+              <div class="kpi-l">Disponibilidade</div>
+            </div>
+            <div>
+              <div class="kpi-v">1.482 L</div>
+              <div class="kpi-l">Diesel / dia</div>
+            </div>
+            <div>
+              <div class="kpi-v">03</div>
+              <div class="kpi-l">Alertas ativos</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= STRIP DE NÚMEROS ================= -->
+<section class="strip">
+  <div class="wrap">
+    <div class="strip-grid">
+      <div>
+        <div class="strip-n">250+</div>
+        <div class="strip-l">Veículos monitorados</div>
+      </div>
+      <div>
+        <div class="strip-n">22</div>
+        <div class="strip-l">Usinas atendidas</div>
+      </div>
+      <div>
+        <div class="strip-n">38%</div>
+        <div class="strip-l">Redução média de custo operacional</div>
+      </div>
+      <div>
+        <div class="strip-n">24/7</div>
+        <div class="strip-l">Suporte técnico especializado</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SOBRE ================= -->
+<section class="section">
+  <div class="wrap">
+    <div class="row g-5">
+      <div class="col-lg-4">
+        <div class="eyebrow">Sobre</div>
+        <h2 class="h-section">Feito para a rotina operacional da usina.</h2>
+      </div>
+      <div class="col-lg-7 offset-lg-1 prose">
+        <p>
+          Usinas operam com dezenas de veículos e equipamentos em circulação
+          simultânea: caminhões, tratores, empilhadeiras, pick-ups e geradores
+          móveis. A falta de visibilidade sobre essa frota gera custos que só
+          aparecem no fechamento do mês — combustível sem controle, manutenções
+          corretivas caras e equipamentos parados sem justificativa registrada.
+        </p>
+        <p>
+          O Fleet Control System consolida essas informações em um único painel.
+          A operação sabe onde cada veículo está, o que consumiu e quando será
+          a próxima manutenção. O resultado aparece nos indicadores de
+          disponibilidade, custo por hora e consumo médio da frota.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RECURSOS ================= -->
+<section class="section section-alt" id="recursos">
+  <div class="wrap">
+    <div class="row g-5 align-items-start">
+      <div class="col-lg-4">
+        <div class="eyebrow">Recursos</div>
+        <h2 class="h-section">Módulos do sistema.</h2>
+        <p class="prose mt-3" style="max-width:340px;">
+          Cada módulo funciona de forma independente, mas compartilha a mesma
+          base de dados operacional da usina.
+        </p>
+      </div>
+
+      <div class="col-lg-8">
+        <div class="row g-0 modules" style="margin-top:0;">
+          <div class="col-md-6 pe-md-4">
+            <div class="module">
+              <div class="module-n">01</div>
+              <div>
+                <h3>Rastreamento em tempo real</h3>
+                <p>Posição, velocidade e status de cada veículo no mapa, com histórico completo de trajetos por turno.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 ps-md-4">
+            <div class="module">
+              <div class="module-n">02</div>
+              <div>
+                <h3>Gestão de abastecimento</h3>
+                <p>Consumo por veículo, comparação com a média do setor e detecção de desvios no tanque.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 pe-md-4">
+            <div class="module">
+              <div class="module-n">03</div>
+              <div>
+                <h3>Manutenção preventiva</h3>
+                <p>Programação por quilometragem ou horímetro, com alertas antecipados de revisão vencida.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 ps-md-4">
+            <div class="module">
+              <div class="module-n">04</div>
+              <div>
+                <h3>Controle de motoristas</h3>
+                <p>Cadastro, habilitações, escalas e histórico de ocorrências por condutor.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 pe-md-4">
+            <div class="module">
+              <div class="module-n">05</div>
+              <div>
+                <h3>Relatórios operacionais</h3>
+                <p>Custo por veículo, horas trabalhadas, produtividade e disponibilidade — em PDF ou exportáveis.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 ps-md-4">
+            <div class="module">
+              <div class="module-n">06</div>
+              <div>
+                <h3>Em desenvolvimento</h3>
+                <p>Bombas de combustivel e controle via software integrado.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COMO FUNCIONA ================= -->
+<section class="section" id="como-funciona">
+  <div class="wrap">
+    <div class="row g-5">
+      <div class="col-lg-7">
+        <div class="eyebrow">Implantação</div>
+        <h2 class="h-section">Do cadastro ao primeiro relatório em duas semanas.</h2>
+        <p class="prose mt-3">
+          O processo é conduzido pela nossa equipe de campo, em conjunto com
+          a operação da usina. Sem necessidade de infraestrutura de TI adicional.
+        </p>
+      </div>
+      <div class="col-lg-5 d-flex align-items-end justify-content-lg-end">
+        <a href="#contato" class="btn-primary-ink">
+          Falar com um especialista <span>→</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-n">ETAPA 01</div>
+        <h3>Cadastro</h3>
+        <p>Importação dos veículos, definição de setores e associação de motoristas responsáveis.</p>
+      </div>      
+      <div class="step">
+        <div class="step-n">ETAPA 02</div>
+        <h3>Operação assistida</h3>
+        <p>Acompanhamento próximo nos primeiros 30 dias, alertas e permissões.</p>
+      </div>
+      <div class="step">
+        <div class="step-n">ETAPA 03</div>
+        <h3>Relatórios e ajustes</h3>
+        <p>Revisão mensal dos indicadores com a coordenação de frota para calibrar metas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SETORES ================= -->
+<section class="section section-alt" id="setores">
+  <div class="wrap">
+    <div class="eyebrow">Setores atendidos</div>
+    <h2 class="h-section">Presença em diferentes tipos de operação.</h2>
+
+    <div class="sectors">
+      <div class="sector-item">
+        <h4>Usinas sucroenergéticas</h4>
+        <p>Etanol, açúcar e cogeração. Controle de frota de campo e transporte de cana.</p>
+      </div>
+      <div class="sector-item">
+        <h4>Termelétricas</h4>
+        <p>Geração a gás, biomassa e óleo combustível. Rotinas de manutenção e logística de insumos.</p>
+      </div>
+      <div class="sector-item">
+        <h4>Hidrelétricas e PCHs</h4>
+        <p>Operação e manutenção de barragens, veículos de apoio e equipes de campo.</p>
+      </div>
+      <div class="sector-item">
+        <h4>Parques eólicos</h4>
+        <p>Deslocamento entre aerogeradores, controle de horas e manutenção programada.</p>
+      </div>
+      <div class="sector-item">
+        <h4>Usinas solares</h4>
+        <p>Equipes de operação em campo, veículos leves e equipamentos de limpeza.</p>
+      </div>
+      <div class="sector-item">
+        <h4>Indústria geral</h4>
+        <p>Frotas pesadas, logística interna e transporte de matérias-primas entre unidades.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CITAÇÃO ================= -->
+<section class="quote">
+  <div class="wrap">
+    <blockquote>
+      Antes do sistema, o controle era feito em três planilhas diferentes e
+      dependia de quem estava no plantão. Hoje o supervisor abre o painel e
+      vê a frota inteira. Melhoramos a nossa visão e gestão sobre a frota.
+    </blockquote>
+    <cite>Coordenador de manutenção · Usina ANDRADINA</cite>
+  </div>
+</section>
+
+<!-- ================= CONTATO ================= -->
+<section class="section" id="contato">
+  <div class="wrap">
+    <div class="row g-5">
+      <div class="col-lg-6">
+        <div class="eyebrow">Contato</div>
+        <h2 class="h-section mb-4">Solicite uma demonstração.</h2>
+
+        <form id="contactForm" novalidate>
+          <div class="row g-3">
+            <div class="col-sm-6 field-group">
+              <label class="field-label" for="nome">Nome</label>
+              <input type="text" class="form-control" id="nome" required>
+            </div>
+            <div class="col-sm-6 field-group">
+              <label class="field-label" for="email">E-mail corporativo</label>
+              <input type="email" class="form-control" id="email" required>
+            </div>
+            <div class="col-sm-6 field-group">
+              <label class="field-label" for="empresa">Usina / Empresa</label>
+              <input type="text" class="form-control" id="empresa" required>
+            </div>
+            <div class="col-sm-6 field-group">
+              <label class="field-label" for="telefone">Telefone</label>
+              <input type="tel" class="form-control" id="telefone" required>
+            </div>
+            <div class="col-12 field-group">
+              <label class="field-label" for="frota">Tamanho da frota</label>
+              <select class="form-select" id="frota" required>
+                <option value="" selected disabled>Selecione</option>
+                <option>Até 10 veículos</option>
+                <option>De 11 a 50 veículos</option>
+                <option>De 51 a 150 veículos</option>
+                <option>Mais de 150 veículos</option>
+              </select>
+            </div>
+            <div class="col-12 field-group">
+              <label class="field-label" for="mensagem">Mensagem</label>
+              <textarea class="form-control" id="mensagem" rows="4" required></textarea>
+            </div>
+          </div>
+
+          <div class="d-flex flex-wrap align-items-center gap-3 mt-2">
+            <button type="submit" class="btn-primary-ink">Enviar solicitação</button>
+            <span class="mono" style="font-size:.76rem; color:var(--muted);">
+              Resposta em até 1 dia útil
+            </span>
+          </div>
+
+          <div class="form-feedback" id="formFeedback">
+            Solicitação enviada. Retornaremos pelo e-mail informado.
+          </div>
+        </form>
+      </div>
+
+      <div class="col-lg-5 offset-lg-1">
+        <div class="info-panel">
+          <div class="info-row">
+            <div class="info-key">Endereço</div>
+            <div class="info-val">
+              Av. das Indústrias, 1200<br>
+              Distrito Industrial · Brasil
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-key">Comercial</div>
+            <div class="info-val"><a href="mailto:comercial@fleetcontrol.com.br">comercial@fleetcontrol.com.br</a></div>
+          </div>
+          <div class="info-row">
+            <div class="info-key">Telefone</div>
+            <div class="info-val"><a href="tel:+5518997977267">+55 18 99797-7267</a></div>
+          </div>
+          <div class="info-row">
+            <div class="info-key">Suporte</div>
+            <div class="info-val">24 horas · clientes ativos</div>
+          </div>
+          <div class="info-row">
+            <div class="info-key">CNPJ</div>
+            <div class="info-val mono" style="font-size:.85rem;">12.345.678/0001-01</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6">
+        <a href="#" class="brand">
+          <span class="brand-mark">FC</span>
+          <span>Fleet Control System</span>
+        </a>
+        <p style="max-width:320px; margin-top:1rem; line-height:1.65;">
+          Sistema de gestão de frotas para usinas de energia. Desenvolvido
+          com foco em eficiência operacional e dados confiáveis.
+        </p>
+      </div>
+
+      <div class="col-lg-2 col-md-3 col-6">
+        <h5>Produto</h5>
+        <a href="#recursos">Recursos</a>
+        <a href="#como-funciona">Implantação</a>
+        <a href="#setores">Setores</a>
+        <a href="#contato">Demonstração</a>
+      </div>
+
+      <div class="col-lg-2 col-md-3 col-6">
+        <h5>Empresa</h5>
+        <a href="#">Sobre</a>
+        <a href="#">Clientes</a>
+        <a href="#">Carreiras</a>
+        <a href="#contato">Contato</a>
+      </div>
+
+      <div class="col-lg-2 col-md-3 col-6">
+        <h5>Suporte</h5>
+        <a href="#">Base de conhecimento</a>
+        <a href="#">Status</a>
+        <a href="#">Documentação da API</a>
+      </div>
+
+      <div class="col-lg-2 col-md-3 col-6">
+        <h5>Legal</h5>
+        <a href="#">Privacidade</a>
+        <a href="#">Termos de uso</a>
+        <a href="#">LGPD</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© <span id="year">2026</span> Fleet Control System</span>
+      <span>CNPJ 00.000.000/0001-00</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  /* Menu mobile */
+  const navToggle = document.getElementById('navToggle');
+  const navMenu = document.getElementById('navMenu');
+  navToggle.addEventListener('click', () => {
+    const open = navMenu.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', open);
+  });
+  navMenu.querySelectorAll('a').forEach(a =>
+    a.addEventListener('click', () => navMenu.classList.remove('open'))
+  );
+
+  /* Formulário */
+  const form = document.getElementById('contactForm');
+  const feedback = document.getElementById('formFeedback');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let valid = true;
+
+    form.querySelectorAll('[required]').forEach(field => {
+      const value = field.value.trim();
+      const ok = value !== '' && (field.type !== 'email' || /.+@.+\..+/.test(value));
+      field.classList.toggle('invalid', !ok);
+      if (!ok) valid = false;
+    });
+
+    if (!valid) return;
+
+    feedback.classList.add('show');
+    form.reset();
+    setTimeout(() => feedback.classList.remove('show'), 6000);
+  });
+
+  /* Ano no footer */
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
