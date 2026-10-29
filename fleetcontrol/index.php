@@ -1,4 +1,11 @@
 <?php
+// Remove o prefixo do subdiretório da REQUEST_URI
+// dev: /Transportes/public | prod: /fleetcontrol | raiz: '' (string vazia)
+$scriptDir = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
+if ($scriptDir !== '' && strpos($_SERVER['REQUEST_URI'], $scriptDir) === 0) {
+    $_SERVER['REQUEST_URI'] = substr($_SERVER['REQUEST_URI'], strlen($scriptDir)) ?: '/';
+}
+
 //require_once '../vendor/autoload.php'; // se usar Composer para autoload, ou faça manualmente
 require_once '../config/database.php';
 require_once '../src/Core/Router.php';

@@ -1,9 +1,9 @@
+Options -MultiViews
+Options -Indexes
 RewriteEngine On
-RewriteBase /Transportes/public/
+DirectoryIndex index.php
 
-# Se o arquivo ou diretório existir, serve direto
+# Front controller
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-
-# Senão, manda tudo pro index.php
 RewriteRule ^ index.php [QSA,L]

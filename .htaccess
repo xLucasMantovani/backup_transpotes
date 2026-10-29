@@ -1,0 +1,10 @@
+Options -Indexes
+RewriteEngine On
+
+# Bloqueia diretórios sensíveis
+RewriteRule ^(src|config|vendor)(/|$) - [F,L]
+
+# Bloqueia arquivos sensíveis
+<FilesMatch "^(\.env.*|composer\.(json|lock)|package(-lock)?\.json|\.htaccess|\.git.*)$">
+    Require all denied
+</FilesMatch>
