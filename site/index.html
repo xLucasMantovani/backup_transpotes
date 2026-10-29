@@ -11,10 +11,11 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="style.css" rel="stylesheet">
-
 </head>
 
 <body>
+
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 
 <!-- ================= HEADER ================= -->
 <header>
@@ -29,7 +30,7 @@
     </div>
   </div>
 
-  <div class="site-nav">
+  <div class="site-nav" id="siteNav">
     <div class="wrap position-relative">
       <a href="#" class="brand">
         <span class="brand-mark">FC</span>
@@ -57,15 +58,15 @@
     <div class="row align-items-center g-5">
 
       <div class="col-lg-6">
-        <div class="eyebrow">Gestão de frotas · Setor energético</div>
-        <h1 class="h-display">
+        <div class="eyebrow" data-reveal>Gestão de frotas · Setor energético</div>
+        <h1 class="h-display delay-1" data-reveal>
           Controle operacional da frota dentro da sua usina.
         </h1>
-        <p class="lead-text">
+        <p class="lead-text delay-2" data-reveal>
           Caminhões, tratores, empilhadeiras e veículos de apoio em um único painel.
           Rastreamento, abastecimento, manutenção e relatórios — sem planilhas paralelas.
         </p>
-        <div class="d-flex flex-wrap gap-2">
+        <div class="d-flex flex-wrap gap-2 delay-3" data-reveal>
           <a href="#contato" class="btn-primary-paper">
             Solicitar demonstração <span>→</span>
           </a>
@@ -75,7 +76,7 @@
         </div>
       </div>
 
-      <div class="col-lg-6">
+      <div class="col-lg-6 delay-2" data-reveal="right">
         <div class="panel">
           <div class="panel-head">
             <span>PAINEL · USINA ANDRADINA</span>
@@ -139,19 +140,19 @@
 <section class="strip">
   <div class="wrap">
     <div class="strip-grid">
-      <div>
-        <div class="strip-n">250+</div>
+      <div data-reveal>
+        <div class="strip-n" data-count="250" data-suffix="+">0+</div>
         <div class="strip-l">Veículos monitorados</div>
       </div>
-      <div>
-        <div class="strip-n">22</div>
+      <div class="delay-1" data-reveal>
+        <div class="strip-n" data-count="22">0</div>
         <div class="strip-l">Usinas atendidas</div>
       </div>
-      <div>
-        <div class="strip-n">38%</div>
+      <div class="delay-2" data-reveal>
+        <div class="strip-n" data-count="38" data-suffix="%">0%</div>
         <div class="strip-l">Redução média de custo operacional</div>
       </div>
-      <div>
+      <div class="delay-3" data-reveal>
         <div class="strip-n">24/7</div>
         <div class="strip-l">Suporte técnico especializado</div>
       </div>
@@ -164,10 +165,10 @@
   <div class="wrap">
     <div class="row g-5">
       <div class="col-lg-4">
-        <div class="eyebrow">Sobre</div>
-        <h2 class="h-section">Feito para a rotina operacional da usina.</h2>
+        <div class="eyebrow" data-reveal>Sobre</div>
+        <h2 class="h-section delay-1" data-reveal>Feito para a rotina operacional da usina.</h2>
       </div>
-      <div class="col-lg-7 offset-lg-1 prose">
+      <div class="col-lg-7 offset-lg-1 prose delay-2" data-reveal>
         <p>
           Usinas operam com dezenas de veículos e equipamentos em circulação
           simultânea: caminhões, tratores, empilhadeiras, pick-ups e geradores
@@ -191,9 +192,9 @@
   <div class="wrap">
     <div class="row g-5 align-items-start">
       <div class="col-lg-4">
-        <div class="eyebrow">Recursos</div>
-        <h2 class="h-section">Módulos do sistema.</h2>
-        <p class="prose mt-3" style="max-width:340px;">
+        <div class="eyebrow" data-reveal>Recursos</div>
+        <h2 class="h-section delay-1" data-reveal>Módulos do sistema.</h2>
+        <p class="prose mt-3 delay-2" data-reveal style="max-width:340px;">
           Cada módulo funciona de forma independente, mas compartilha a mesma
           base de dados operacional da usina.
         </p>
@@ -202,7 +203,7 @@
       <div class="col-lg-8">
         <div class="row g-0 modules" style="margin-top:0;">
           <div class="col-md-6 pe-md-4">
-            <div class="module">
+            <div class="module" data-reveal>
               <div class="module-n">01</div>
               <div>
                 <h3>Rastreamento em tempo real</h3>
@@ -211,7 +212,7 @@
             </div>
           </div>
           <div class="col-md-6 ps-md-4">
-            <div class="module">
+            <div class="module delay-1" data-reveal>
               <div class="module-n">02</div>
               <div>
                 <h3>Gestão de abastecimento</h3>
@@ -220,7 +221,7 @@
             </div>
           </div>
           <div class="col-md-6 pe-md-4">
-            <div class="module">
+            <div class="module delay-2" data-reveal>
               <div class="module-n">03</div>
               <div>
                 <h3>Manutenção preventiva</h3>
@@ -229,7 +230,7 @@
             </div>
           </div>
           <div class="col-md-6 ps-md-4">
-            <div class="module">
+            <div class="module delay-3" data-reveal>
               <div class="module-n">04</div>
               <div>
                 <h3>Controle de motoristas</h3>
@@ -238,7 +239,7 @@
             </div>
           </div>
           <div class="col-md-6 pe-md-4">
-            <div class="module">
+            <div class="module delay-4" data-reveal>
               <div class="module-n">05</div>
               <div>
                 <h3>Relatórios operacionais</h3>
@@ -247,11 +248,11 @@
             </div>
           </div>
           <div class="col-md-6 ps-md-4">
-            <div class="module">
+            <div class="module delay-5" data-reveal>
               <div class="module-n">06</div>
               <div>
                 <h3>Em desenvolvimento</h3>
-                <p>Bombas de combustivel e controle via software integrado.</p>
+                <p>Bombas de combustível e controle via software integrado.</p>
               </div>
             </div>
           </div>
@@ -266,32 +267,32 @@
   <div class="wrap">
     <div class="row g-5">
       <div class="col-lg-7">
-        <div class="eyebrow">Implantação</div>
-        <h2 class="h-section">Do cadastro ao primeiro relatório em duas semanas.</h2>
-        <p class="prose mt-3">
+        <div class="eyebrow" data-reveal>Implantação</div>
+        <h2 class="h-section delay-1" data-reveal>Do cadastro ao primeiro relatório em duas semanas.</h2>
+        <p class="prose mt-3 delay-2" data-reveal>
           O processo é conduzido pela nossa equipe de campo, em conjunto com
           a operação da usina. Sem necessidade de infraestrutura de TI adicional.
         </p>
       </div>
       <div class="col-lg-5 d-flex align-items-end justify-content-lg-end">
-        <a href="#contato" class="btn-primary-ink">
+        <a href="#contato" class="btn-primary-ink delay-3" data-reveal>
           Falar com um especialista <span>→</span>
         </a>
       </div>
     </div>
 
     <div class="steps">
-      <div class="step">
+      <div class="step" data-reveal>
         <div class="step-n">ETAPA 01</div>
         <h3>Cadastro</h3>
         <p>Importação dos veículos, definição de setores e associação de motoristas responsáveis.</p>
-      </div>      
-      <div class="step">
+      </div>
+      <div class="step delay-1" data-reveal>
         <div class="step-n">ETAPA 02</div>
         <h3>Operação assistida</h3>
         <p>Acompanhamento próximo nos primeiros 30 dias, alertas e permissões.</p>
       </div>
-      <div class="step">
+      <div class="step delay-2" data-reveal>
         <div class="step-n">ETAPA 03</div>
         <h3>Relatórios e ajustes</h3>
         <p>Revisão mensal dos indicadores com a coordenação de frota para calibrar metas.</p>
@@ -303,31 +304,31 @@
 <!-- ================= SETORES ================= -->
 <section class="section section-alt" id="setores">
   <div class="wrap">
-    <div class="eyebrow">Setores atendidos</div>
-    <h2 class="h-section">Presença em diferentes tipos de operação.</h2>
+    <div class="eyebrow" data-reveal>Setores atendidos</div>
+    <h2 class="h-section delay-1" data-reveal>Presença em diferentes tipos de operação.</h2>
 
     <div class="sectors">
-      <div class="sector-item">
+      <div class="sector-item" data-reveal>
         <h4>Usinas sucroenergéticas</h4>
         <p>Etanol, açúcar e cogeração. Controle de frota de campo e transporte de cana.</p>
       </div>
-      <div class="sector-item">
+      <div class="sector-item delay-1" data-reveal>
         <h4>Termelétricas</h4>
         <p>Geração a gás, biomassa e óleo combustível. Rotinas de manutenção e logística de insumos.</p>
       </div>
-      <div class="sector-item">
+      <div class="sector-item delay-2" data-reveal>
         <h4>Hidrelétricas e PCHs</h4>
         <p>Operação e manutenção de barragens, veículos de apoio e equipes de campo.</p>
       </div>
-      <div class="sector-item">
+      <div class="sector-item delay-3" data-reveal>
         <h4>Parques eólicos</h4>
         <p>Deslocamento entre aerogeradores, controle de horas e manutenção programada.</p>
       </div>
-      <div class="sector-item">
+      <div class="sector-item delay-4" data-reveal>
         <h4>Usinas solares</h4>
         <p>Equipes de operação em campo, veículos leves e equipamentos de limpeza.</p>
       </div>
-      <div class="sector-item">
+      <div class="sector-item delay-5" data-reveal>
         <h4>Indústria geral</h4>
         <p>Frotas pesadas, logística interna e transporte de matérias-primas entre unidades.</p>
       </div>
@@ -338,12 +339,12 @@
 <!-- ================= CITAÇÃO ================= -->
 <section class="quote">
   <div class="wrap">
-    <blockquote>
+    <blockquote data-reveal>
       Antes do sistema, o controle era feito em três planilhas diferentes e
       dependia de quem estava no plantão. Hoje o supervisor abre o painel e
       vê a frota inteira. Melhoramos a nossa visão e gestão sobre a frota.
     </blockquote>
-    <cite>Coordenador de manutenção · Usina ANDRADINA</cite>
+    <cite class="delay-1" data-reveal>Coordenador de manutenção · Usina ANDRADINA</cite>
   </div>
 </section>
 
@@ -352,28 +353,28 @@
   <div class="wrap">
     <div class="row g-5">
       <div class="col-lg-6">
-        <div class="eyebrow">Contato</div>
-        <h2 class="h-section mb-4">Solicite uma demonstração.</h2>
+        <div class="eyebrow" data-reveal>Contato</div>
+        <h2 class="h-section mb-4 delay-1" data-reveal>Solicite uma demonstração.</h2>
 
         <form id="contactForm" novalidate>
           <div class="row g-3">
-            <div class="col-sm-6 field-group">
+            <div class="col-sm-6 field-group" data-reveal>
               <label class="field-label" for="nome">Nome</label>
               <input type="text" class="form-control" id="nome" required>
             </div>
-            <div class="col-sm-6 field-group">
+            <div class="col-sm-6 field-group delay-1" data-reveal>
               <label class="field-label" for="email">E-mail corporativo</label>
               <input type="email" class="form-control" id="email" required>
             </div>
-            <div class="col-sm-6 field-group">
+            <div class="col-sm-6 field-group delay-2" data-reveal>
               <label class="field-label" for="empresa">Usina / Empresa</label>
               <input type="text" class="form-control" id="empresa" required>
             </div>
-            <div class="col-sm-6 field-group">
+            <div class="col-sm-6 field-group delay-3" data-reveal>
               <label class="field-label" for="telefone">Telefone</label>
               <input type="tel" class="form-control" id="telefone" required>
             </div>
-            <div class="col-12 field-group">
+            <div class="col-12 field-group delay-4" data-reveal>
               <label class="field-label" for="frota">Tamanho da frota</label>
               <select class="form-select" id="frota" required>
                 <option value="" selected disabled>Selecione</option>
@@ -383,13 +384,13 @@
                 <option>Mais de 150 veículos</option>
               </select>
             </div>
-            <div class="col-12 field-group">
+            <div class="col-12 field-group delay-4" data-reveal>
               <label class="field-label" for="mensagem">Mensagem</label>
               <textarea class="form-control" id="mensagem" rows="4" required></textarea>
             </div>
           </div>
 
-          <div class="d-flex flex-wrap align-items-center gap-3 mt-2">
+          <div class="d-flex flex-wrap align-items-center gap-3 mt-2 delay-5" data-reveal>
             <button type="submit" class="btn-primary-ink">Enviar solicitação</button>
             <span class="mono" style="font-size:.76rem; color:var(--muted);">
               Resposta em até 1 dia útil
@@ -402,7 +403,7 @@
         </form>
       </div>
 
-      <div class="col-lg-5 offset-lg-1">
+      <div class="col-lg-5 offset-lg-1" data-reveal="right">
         <div class="info-panel">
           <div class="info-row">
             <div class="info-key">Endereço</div>
@@ -488,7 +489,74 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  /* Menu mobile */
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- 1. Barra de progresso ---------- */
+  const progress = document.getElementById('scrollProgress');
+  function updateProgress(){
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    progress.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  window.addEventListener('resize', updateProgress);
+  updateProgress();
+
+  /* ---------- 2. Nav com sombra ao rolar ---------- */
+  const siteNav = document.getElementById('siteNav');
+  function updateNav(){
+    siteNav.classList.toggle('scrolled', window.scrollY > 20);
+  }
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+
+  /* ---------- 3. Reveal on scroll ---------- */
+  if (prefersReduced) {
+    document.querySelectorAll('[data-reveal]').forEach(el => el.classList.add('revealed'));
+    document.querySelectorAll('[data-count]').forEach(el => {
+      const n = parseInt(el.dataset.count, 10);
+      el.textContent = n.toLocaleString('pt-BR') + (el.dataset.suffix || '');
+    });
+  } else {
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+
+    /* ---------- 4. Contadores ---------- */
+    function animateCounter(el){
+      const target = parseInt(el.dataset.count, 10);
+      const suffix = el.dataset.suffix || '';
+      const duration = 1500;
+      const start = performance.now();
+      function frame(now){
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(target * eased).toLocaleString('pt-BR') + suffix;
+        if (p < 1) requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    }
+
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateCounter(entry.target);
+          counterObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('[data-count]').forEach(el => counterObserver.observe(el));
+  }
+
+  /* ---------- 5. Menu mobile ---------- */
   const navToggle = document.getElementById('navToggle');
   const navMenu = document.getElementById('navMenu');
   navToggle.addEventListener('click', () => {
@@ -499,7 +567,7 @@
     a.addEventListener('click', () => navMenu.classList.remove('open'))
   );
 
-  /* Formulário */
+  /* ---------- 6. Formulário ---------- */
   const form = document.getElementById('contactForm');
   const feedback = document.getElementById('formFeedback');
 
@@ -521,7 +589,7 @@
     setTimeout(() => feedback.classList.remove('show'), 6000);
   });
 
-  /* Ano no footer */
+  /* ---------- 7. Ano ---------- */
   document.getElementById('year').textContent = new Date().getFullYear();
 </script>
 

@@ -16,12 +16,10 @@
 <link rel="stylesheet" href="style-motorista.css">
 
 <style>
-/* ---- Abas roláveis ---- */
 .tabs{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .tabs::-webkit-scrollbar{display:none}
 .tabs button{flex:1 0 auto;padding:13px 14px;white-space:nowrap}
 
-/* ---- Checklist ---- */
 .chk-counter{
   display:inline-flex;align-items:center;gap:6px;
   background:var(--input,#1c3145);border:1px solid var(--border,#24405a);
@@ -54,7 +52,6 @@
 }
 .segmented input:checked + span{background:var(--primary,#2e86c1);color:#fff}
 
-/* ---- Ocorrência ---- */
 .aviso{
   background:rgba(243,156,18,.08);
   border:1px solid rgba(243,156,18,.35);
@@ -72,7 +69,6 @@ textarea{
 }
 textarea:focus{outline:none;border-color:var(--primary,#2e86c1)}
 
-/* ---- Modal de confirmação ---- */
 .modal-overlay{
   position:fixed;inset:0;background:rgba(0,0,0,.6);
   display:flex;align-items:center;justify-content:center;
@@ -104,7 +100,6 @@ textarea:focus{outline:none;border-color:var(--primary,#2e86c1)}
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="login-screen">
   <div class="login-card">
     <div class="brand-icon"><i class="fas fa-truck"></i></div>
@@ -121,7 +116,6 @@ textarea:focus{outline:none;border-color:var(--primary,#2e86c1)}
   </div>
 </div>
 
-<!-- APP -->
 <div id="app" class="hidden">
   <header class="topbar">
     <div>
@@ -156,6 +150,10 @@ textarea:focus{outline:none;border-color:var(--primary,#2e86c1)}
           <label>Veículo (placa) *</label>
           <input type="text" id="fPlaca" list="veiculosList" placeholder="ABC-1234" autocomplete="off" required>
           <datalist id="veiculosList"></datalist>
+        </div>
+        <div class="field">
+          <label>KM atual do veículo *</label>
+          <input type="number" id="fKmAtual" min="0" inputmode="numeric" placeholder="Ex: 45200" required>
         </div>
         <div class="row">
           <div class="field"><label>Origem *</label><input type="text" id="fOrigem" required></div>
@@ -268,6 +266,10 @@ textarea:focus{outline:none;border-color:var(--primary,#2e86c1)}
           <input type="text" id="oPlaca" list="veiculosList" placeholder="ABC-1234" autocomplete="off" required>
         </div>
         <div class="field">
+          <label>KM atual do veículo *</label>
+          <input type="number" id="oKmAtual" min="0" inputmode="numeric" placeholder="Ex: 45200" required>
+        </div>
+        <div class="field">
           <label>Tipo de ocorrência *</label>
           <select id="oTipo" required>
             <option value="Mecânica">Mecânica</option>
@@ -302,7 +304,6 @@ textarea:focus{outline:none;border-color:var(--primary,#2e86c1)}
   </main>
 </div>
 
-<!-- MODAL DE CONFIRMAÇÃO -->
 <div id="modalOverlay" class="modal-overlay hidden">
   <div class="modal-card">
     <h3><i class="fas fa-exclamation-triangle"></i> <span id="modalTitle"></span></h3>
@@ -346,16 +347,7 @@ function toast(msg,type='info'){
   setTimeout(()=>d.remove(),4500);
 }
 
-/* ============ MODAL DE CONFIRMAÇÃO ============ */
-/**
- * Abre um modal de confirmação customizado (não bloqueante, estilizado).
- *
- * @param {Object}   opts
- * @param {string}   opts.title        Título exibido no topo
- * @param {string}   opts.body         Texto do corpo (aceita \n)
- * @param {string}   [opts.confirmLabel='Confirmar']
- * @param {Function} opts.onConfirm    Chamado quando o usuário confirma
- */
+/* ============ MODAL ============ */
 function openModalConfirm({ title, body, confirmLabel = 'Confirmar', onConfirm }) {
   $('modalTitle').textContent   = title;
   $('modalBody').textContent    = body;
@@ -420,7 +412,7 @@ const gerarId = () => 'local_'+Date.now()+'_'+Math.random().toString(36).slice(2
 
 function adicionarNaFila(tipo,payload){
   const fila=getFila();
-  fila.push({
+  const novoItem = {
     id:gerarId(),
     tipo,
     payload,
@@ -428,11 +420,17 @@ function adicionarNaFila(tipo,payload){
     status:'pendente',
     tentativas:0,
     erro:null
-  });
+  };
+  fila.push(novoItem);
   setFila(fila);
+
+  // Registra KM no cache local (abastecimento / checklist / frete / ocorrencia)
+  registrarKmDoItem(novoItem);
+
   renderFila();
   atualizarBadgeFila();
 }
+
 function removerDaFila(id){
   setFila(getFila().filter(i=>i.id!==id));
   renderFila();
@@ -455,7 +453,8 @@ function renderFila(){
     let titulo, resumo;
     if(i.tipo==='frete'){
       titulo = `<i class="fas fa-route"></i> Frete — ${esc(p.placa||'')}`;
-      resumo = `${esc(p.origem||'')} → ${esc(p.destino||'')} · ${fmtNum(p.peso)} t · ${fmtMoney(p.valor)}`;
+      resumo = `${esc(p.origem||'')} → ${esc(p.destino||'')} · ${fmtNum(p.peso)} t · ${fmtMoney(p.valor)}`
+             + (p.km_atual ? ` · KM ${esc(p.km_atual)}` : '');
     } else if(i.tipo==='abastecimento'){
       titulo = `<i class="fas fa-gas-pump"></i> Abastecimento — ${esc(p.placa||'')}`;
       resumo = `Km ${esc(p.km||0)} · ${fmtNum(p.litros)} L`;
@@ -512,6 +511,144 @@ function atualizarBadgeFila(){
   const b=$('badgeFila');
   if(pend>0){ b.textContent=pend; b.classList.remove('hidden'); }
   else b.classList.add('hidden');
+}
+
+/* ============ VALIDAÇÕES ============ */
+/*
+ * Regras isoladas, centralizadas e testáveis.
+ * Rodam 100% no front para funcionar mesmo offline.
+ */
+
+// --- Limites para detectar "números absurdos" ---
+const LIMITES = {
+  km:        { min: 0, max: 3_000_000 },
+  litros:    { min: 0, max: 2_000 },
+  distancia: { min: 0, max: 10_000 },
+  peso:      { min: 0, max: 100 },
+  valor:     { min: 0, max: 500_000 },
+};
+
+function validarFaixa(valor, campo) {
+  const lim = LIMITES[campo];
+  if (!lim) return { ok: true };
+  if (!Number.isFinite(valor)) return { ok: false, msg: `Valor inválido para ${campo}.` };
+  if (valor < lim.min) return { ok: false, msg: `${campo} não pode ser menor que ${lim.min}.` };
+  if (valor > lim.max) {
+    return {
+      ok: false,
+      msg: `${campo} acima do limite razoável (máx: ${lim.max.toLocaleString('pt-BR')}). Confira o valor digitado.`
+    };
+  }
+  return { ok: true };
+}
+
+// --- Cache de KM por veículo ---
+const KM_CACHE_KEY = 'canaControlKmPorVeiculo';
+
+function getKmCache() {
+  try { return JSON.parse(localStorage.getItem(KM_CACHE_KEY) || '{}'); } catch { return {}; }
+}
+function setKmCache(c) {
+  localStorage.setItem(KM_CACHE_KEY, JSON.stringify(c));
+}
+
+/**
+ * Extrai o KM de um item da fila (se aplicável) e registra no cache.
+ * Cobre os 4 tipos: abastecimento, checklist, frete, ocorrencia.
+ */
+function registrarKmDoItem(item) {
+  if (!item?.payload?.placa) return null;
+  let km = null;
+  if (item.tipo === 'abastecimento')      km = Number(item.payload.km);
+  else if (item.tipo === 'checklist')     km = Number(item.payload.dados_check?.km_atual);
+  else if (item.tipo === 'frete')         km = Number(item.payload.km_atual);
+  else if (item.tipo === 'ocorrencia')    km = Number(item.payload.km_atual);
+  if (!Number.isFinite(km) || km < 0) return null;
+  registrarKmObservado(item.payload.placa, km, item.tipo);
+  return km;
+}
+
+function registrarKmObservado(placa, km, fonte) {
+  if (!placa || !Number.isFinite(km) || km < 0) return;
+  const cache = getKmCache();
+  const atual = cache[placa];
+  if (!atual || km > atual.km) {
+    cache[placa] = { km, fonte, data: new Date().toISOString() };
+    setKmCache(cache);
+  }
+}
+
+/**
+ * Maior KM conhecido para a placa (cache + fila) — fonte de verdade offline.
+ * Sem histórico → retorna null (não bloqueia).
+ */
+function getUltimoKmConhecido(placa) {
+  if (!placa) return null;
+  let max = null;
+  const cache = getKmCache();
+  if (cache[placa] && Number.isFinite(cache[placa].km)) max = cache[placa].km;
+
+  for (const item of getFila()) {
+    if (item.payload?.placa !== placa) continue;
+    let km = null;
+    if (item.tipo === 'abastecimento')   km = Number(item.payload.km);
+    else if (item.tipo === 'checklist')  km = Number(item.payload.dados_check?.km_atual);
+    else if (item.tipo === 'frete')      km = Number(item.payload.km_atual);
+    else if (item.tipo === 'ocorrencia') km = Number(item.payload.km_atual);
+    if (Number.isFinite(km) && (max === null || km > max)) max = km;
+  }
+  return max;
+}
+
+function validarKmVeiculo(placa, km) {
+  if (!placa) return { ok: false, msg: 'Informe a placa.' };
+  if (!Number.isFinite(km) || km < 0) return { ok: false, msg: 'Informe um KM válido.' };
+  const ultimo = getUltimoKmConhecido(placa);
+  if (ultimo !== null && km < ultimo) {
+    return {
+      ok: false,
+      ultimoKm: ultimo,
+      msg: `KM atual (${km.toLocaleString('pt-BR')}) é menor que o último registrado para este veículo (${ultimo.toLocaleString('pt-BR')} km).`
+    };
+  }
+  return { ok: true, ultimoKm: ultimo };
+}
+
+/**
+ * Popula o cache local com os últimos KMs conhecidos no servidor.
+ * Chamado ao entrar online (login / reconexão).
+ */
+async function popularKmCacheDoServidor() {
+  if (!navigator.onLine || !getToken()) return;
+  try {
+    const [rAbast, rCheck] = await Promise.all([
+      api('GET', '/abastecimentos'),
+      api('GET', '/checklists')
+    ]);
+    const cache = getKmCache();
+
+    const processar = (items, fonte, extractor) => {
+      (items || []).forEach(item => {
+        const placa = item.placa;
+        const km = extractor(item);
+        if (!placa || !Number.isFinite(km) || km < 0) return;
+        const atual = cache[placa];
+        if (!atual || km > atual.km) {
+          cache[placa] = { km, fonte, data: item.data_hora || new Date().toISOString() };
+        }
+      });
+    };
+
+    processar(rAbast.data, 'abastecimento', a => Number(a.km));
+    processar(rCheck.data, 'checklist', c => {
+      const dc = (typeof c.dados_check === 'object' && c.dados_check) ? c.dados_check : {};
+      return Number(dc.km_atual);
+    });
+
+    setKmCache(cache);
+  } catch (e) {
+    console.warn('[km-cache] Falha ao popular do servidor:', e);
+  }
 }
 
 /* ============ CSV ============ */
@@ -629,6 +766,10 @@ function importarCSV(texto){
     add++;
   }
   setFila(fila);
+
+  // Sincroniza cache de KM com os itens importados
+  fila.forEach(registrarKmDoItem);
+
   renderFila();
   atualizarBadgeFila();
   toast(add>0?`${add} item(ns) importado(s).`:'Nenhum item novo.',add>0?'success':'info');
@@ -716,27 +857,65 @@ async function sincronizarFila(){
 
 /* ============ FORMULÁRIOS ============ */
 function coletarFrete(){
-  const placa=$('fPlaca').value.trim().toUpperCase();
-  const origem=$('fOrigem').value.trim();
-  const destino=$('fDestino').value.trim();
+  const placa     = $('fPlaca').value.trim().toUpperCase();
+  const kmRaw     = $('fKmAtual').value;
+  const km        = parseInt(kmRaw);
+  const origem    = $('fOrigem').value.trim();
+  const destino   = $('fDestino').value.trim();
+  const distancia = parseFloat($('fDistancia').value) || 0;
+  const peso      = parseFloat($('fPeso').value) || 0;
+  const valor     = parseFloat($('fValor').value) || 0;
+
   if(!placa||!origem||!destino){toast('Preencha placa, origem e destino.','error');return null;}
+  if(!kmRaw || !Number.isFinite(km) || km < 0){ toast('Informe o KM atual do veículo.','error'); return null; }
+
+  // Faixas razoáveis
+  const checagens = [
+    validarFaixa(km,        'km'),
+    validarFaixa(distancia, 'distancia'),
+    validarFaixa(peso,      'peso'),
+    validarFaixa(valor,     'valor'),
+  ];
+  for (const v of checagens) {
+    if (!v.ok) { toast(v.msg, 'error'); return null; }
+  }
+
+  // KM mínimo em relação ao último registrado
+  const vKmVeic = validarKmVeiculo(placa, km);
+  if (!vKmVeic.ok) { toast(vKmVeic.msg, 'error'); return null; }
+
   return {
     placa,
+    km_atual: km,      // cache local — backend atual ignora (fora de $allowed)
     origem,
     destino,
-    distancia:parseFloat($('fDistancia').value)||0,
-    peso:parseFloat($('fPeso').value)||0,
-    valor:parseFloat($('fValor').value)||0,
-    status_frete:$('fStatus').value
+    distancia,
+    peso,
+    valor,
+    status_frete: $('fStatus').value
   };
 }
 
 function coletarAbastecimento(){
-  const placa=$('aPlaca').value.trim().toUpperCase();
-  const km=parseInt($('aKm').value);
-  const litros=parseFloat($('aLitros').value);
-  if(!placa||!km||!litros){toast('Preencha placa, km e litros.','error');return null;}
-  return {placa,km,litros};
+  const placa     = $('aPlaca').value.trim().toUpperCase();
+  const kmRaw     = $('aKm').value;
+  const km        = parseInt(kmRaw);
+  const litrosRaw = $('aLitros').value;
+  const litros    = parseFloat(litrosRaw);
+
+  if(!placa){ toast('Informe a placa.','error'); return null; }
+  if(kmRaw === '' || !Number.isFinite(km) || km < 0){ toast('Informe o KM atual.','error'); return null; }
+  if(litrosRaw === '' || !Number.isFinite(litros) || litros <= 0){ toast('Informe os litros.','error'); return null; }
+
+  const vKm = validarFaixa(km, 'km');
+  if (!vKm.ok) { toast(vKm.msg, 'error'); return null; }
+  const vLitros = validarFaixa(litros, 'litros');
+  if (!vLitros.ok) { toast(vLitros.msg, 'error'); return null; }
+
+  const vKmVeic = validarKmVeiculo(placa, km);
+  if (!vKmVeic.ok) { toast(vKmVeic.msg, 'error'); return null; }
+
+  return { placa, km, litros };
 }
 
 $('formFrete').addEventListener('submit',e=>{
@@ -793,7 +972,12 @@ $('formChecklist').addEventListener('submit', e => {
   if (!placa) { toast('Informe a placa.', 'error'); return; }
   if (!kmRaw || !Number.isFinite(km) || km < 0) { toast('Informe o KM atual.', 'error'); return; }
 
-  // Coleta itens e identifica não conformes (false explícito)
+  // Validações centralizadas
+  const vKm = validarFaixa(km, 'km');
+  if (!vKm.ok) { toast(vKm.msg, 'error'); return; }
+  const vKmVeic = validarKmVeiculo(placa, km);
+  if (!vKmVeic.ok) { toast(vKmVeic.msg, 'error'); return; }
+
   const itens = {};
   const naoConformes = [];
   document.querySelectorAll('#chkList input[type=checkbox]').forEach(cb => {
@@ -821,13 +1005,11 @@ $('formChecklist').addEventListener('submit', e => {
     if (navigator.onLine && getToken()) sincronizarFila();
   };
 
-  // 1) Tudo OK → salva direto
   if (naoConformes.length === 0) {
     enfileirarChecklist();
     return;
   }
 
-  // 2) Itens faltando → pergunta se gera ocorrência
   const descricaoOcorrencia =
     `Checklist ${tipo} (KM ${km}). Itens não conformes: ${naoConformes.join(', ')}.` +
     (obs ? ` Observações do motorista: ${obs}` : '');
@@ -845,29 +1027,47 @@ $('formChecklist').addEventListener('submit', e => {
       adicionarNaFila('ocorrencia', {
         placa,
         tipo_ocorrencia: `Checklist ${tipo}`,
-        descricao: descricaoOcorrencia
+        descricao: descricaoOcorrencia,
+        km_atual: km   // para o cache local
       });
       toast('Checklist + ocorrência adicionados à fila.', 'success');
       resetForm();
       if (navigator.onLine && getToken()) sincronizarFila();
     }
-    // Cancelar → nada acontece. Form permanece preenchido.
   });
 });
 
 /* ============ OCORRÊNCIA ============ */
 function coletarOcorrencia(){
-  const placa = $('oPlaca').value.trim().toUpperCase();
+  const placa           = $('oPlaca').value.trim().toUpperCase();
+  const kmRaw           = $('oKmAtual').value;
+  const km              = parseInt(kmRaw);
   const tipo_ocorrencia = $('oTipo').value;
-  const descricao = $('oDesc').value.trim();
+  const descricao       = $('oDesc').value.trim();
 
   if(!placa){ toast('Informe a placa.','error'); return null; }
+  if(!kmRaw || !Number.isFinite(km) || km < 0){ toast('Informe o KM atual do veículo.','error'); return null; }
   if(!descricao){ toast('Descreva o problema.','error'); return null; }
+
+  // Validações centralizadas
+  const vKm = validarFaixa(km, 'km');
+  if (!vKm.ok) { toast(vKm.msg, 'error'); return null; }
+  const vKmVeic = validarKmVeiculo(placa, km);
+  if (!vKmVeic.ok) { toast(vKmVeic.msg, 'error'); return null; }
+
   if(descricao.length < 10){
     if(!confirm('A descrição está bem curta. Enviar mesmo assim?')) return null;
   }
 
-  return { placa, tipo_ocorrencia, descricao };
+  // Prefixa KM na descrição → backend persiste e o técnico vê no admin
+  const descricaoComKm = `KM ${km.toLocaleString('pt-BR')} - ${descricao}`;
+
+  return {
+    placa,
+    tipo_ocorrencia,
+    descricao: descricaoComKm,
+    km_atual: km   // apenas cache local
+  };
 }
 
 $('formOcorrencia').addEventListener('submit', e => {
@@ -880,7 +1080,7 @@ $('formOcorrencia').addEventListener('submit', e => {
   if(navigator.onLine && getToken()) sincronizarFila();
 });
 
-/* ============ VEÍCULOS (datalist + cache) ============ */
+/* ============ VEÍCULOS ============ */
 async function carregarVeiculos(){
   let lista=[];
   if(navigator.onLine&&getToken()){
@@ -915,7 +1115,12 @@ function atualizarConexao(){
   $('statusText').textContent=on?'Online':'Offline';
   $('btnSync').disabled=!on;
 }
-window.addEventListener('online',()=>{atualizarConexao();toast('Conectado. Sincronizando…','info');sincronizarFila();});
+window.addEventListener('online',()=>{
+  atualizarConexao();
+  toast('Conectado. Sincronizando…','info');
+  popularKmCacheDoServidor();
+  sincronizarFila();
+});
 window.addEventListener('offline',()=>{atualizarConexao();toast('Você está offline. Registros ficam na fila.','warning');});
 
 /* ============ LOGIN / LOGOUT ============ */
@@ -932,6 +1137,7 @@ function showApp(){
   atualizarBadgeFila();
   atualizarContadorCheck();
   carregarVeiculos();
+  popularKmCacheDoServidor();
 }
 
 $('loginBtn').addEventListener('click',async()=>{
@@ -994,7 +1200,7 @@ $('btnLimparSinc').addEventListener('click',()=>{
   toast(`${removidos} removido(s).`,'success');
 });
 
-/* ============ PWA: Service Worker ============ */
+/* ============ PWA ============ */
 async function registrarSW() {
   if (!('serviceWorker' in navigator)) return;
   try {
@@ -1047,7 +1253,6 @@ function mostrarBannerAtualizacao(onAceitar) {
   b.querySelector('#btnFecharBanner').onclick = () => b.remove();
 }
 
-/* ============ PWA: prompt de instalação ============ */
 let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();

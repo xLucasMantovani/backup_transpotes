@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CANA CONTROL — Motorista</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16283a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cana Motorista">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="stylesheet" href="style-motorista.css">
+
+<style>
+/* ---- Abas roláveis ---- */
+.tabs{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:1 0 auto;padding:13px 14px;white-space:nowrap}
+
+/* ---- Checklist ---- */
+.chk-counter{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--input,#1c3145);border:1px solid var(--border,#24405a);
+  padding:5px 10px;border-radius:8px;font-size:.78rem;font-weight:600;
+  color:var(--text,#e6f0f9);
+}
+.chk-counter.full{background:#27ae60;border-color:#27ae60;color:#fff}
+.chk-list{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.chk-item{
+  display:flex;align-items:center;gap:10px;
+  background:var(--card,#16283a);border:1px solid var(--border,#24405a);
+  padding:11px 13px;border-radius:10px;cursor:pointer;
+  transition:background .15s,border-color .15s;
+  color:var(--text,#e6f0f9);
+}
+.chk-item:active{background:var(--input,#1c3145)}
+.chk-item input[type=checkbox]{
+  width:20px;height:20px;accent-color:#27ae60;
+  flex:0 0 20px;cursor:pointer;margin:0;
+}
+.chk-item.checked{border-color:#27ae60;background:rgba(39,174,96,.08)}
+.chk-item span{font-size:.9rem;user-select:none}
+.segmented{display:flex;background:var(--input,#1c3145);border-radius:10px;padding:4px;gap:4px}
+.segmented label{flex:1;margin:0}
+.segmented input{position:absolute;opacity:0;pointer-events:none}
+.segmented span{
+  display:block;text-align:center;padding:10px;border-radius:7px;
+  font-size:.85rem;font-weight:600;color:var(--muted,#7d99b3);cursor:pointer;
+  transition:background .15s,color .15s;
+}
+.segmented input:checked + span{background:var(--primary,#2e86c1);color:#fff}
+
+/* ---- Ocorrência ---- */
+.aviso{
+  background:rgba(243,156,18,.08);
+  border:1px solid rgba(243,156,18,.35);
+  color:#f39c12;
+  padding:10px 12px;border-radius:8px;
+  font-size:.78rem;margin-bottom:14px;
+  display:flex;gap:8px;align-items:flex-start;
+}
+.aviso i{margin-top:2px}
+
+textarea{
+  width:100%;padding:11px 12px;background:var(--input,#1c3145);
+  border:1px solid var(--border,#24405a);border-radius:8px;
+  color:var(--text,#e6f0f9);font:inherit;resize:vertical;min-height:70px;
+}
+textarea:focus{outline:none;border-color:var(--primary,#2e86c1)}
+
+/* ---- Modal de confirmação ---- */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;z-index:1000;
+  animation:fadeIn .15s ease;
+}
+.modal-overlay.hidden{display:none}
+.modal-card{
+  background:var(--card,#16283a);border:1px solid var(--border,#24405a);
+  border-radius:14px;padding:22px;max-width:440px;width:100%;
+  max-height:90vh;overflow-y:auto;
+  animation:slideUp .2s ease;
+}
+.modal-card h3{
+  margin-bottom:10px;font-size:1.02rem;color:var(--text,#e6f0f9);
+  display:flex;align-items:center;gap:8px;
+}
+.modal-card h3 i{color:#f39c12}
+.modal-card p{
+  font-size:.85rem;color:var(--muted,#7d99b3);
+  white-space:pre-line;line-height:1.55;margin-bottom:18px;
+  word-break:break-word;
+}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.modal-actions button{min-width:110px;padding:10px 16px;font-size:.85rem}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="brand-icon"><i class="fas fa-truck"></i></div>
+    <h1>CANA CONTROL — MOTORISTA</h1>
+    <div class="field">
+      <label>CPF</label>
+      <input type="text" id="loginCpf" placeholder="000.000.000-00" inputmode="numeric" autocomplete="username">
+    </div>
+    <div class="field">
+      <label>Senha</label>
+      <input type="password" id="loginSenha" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button id="loginBtn"><i class="fas fa-sign-in-alt"></i> Entrar</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+  <header class="topbar">
+    <div>
+      <div class="brand"><i class="fas fa-truck"></i> CANA CONTROL</div>
+      <div class="user-info">
+        <span id="statusDot" class="dot-online"></span>
+        <span id="statusText">Online</span>
+        <span>·</span>
+        <span id="userNome">—</span>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="btnSync" class="outline" title="Sincronizar"><i class="fas fa-sync"></i></button>
+      <button id="btnSair" class="outline" title="Sair"><i class="fas fa-sign-out-alt"></i></button>
+      <button id="btnInstall" class="outline hidden" title="Instalar app"><i class="fas fa-download"></i></button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button data-tab="frete" class="active"><i class="fas fa-route"></i> Frete</button>
+    <button data-tab="abastecimento"><i class="fas fa-gas-pump"></i> Abastecimento</button>
+    <button data-tab="checklist"><i class="fas fa-clipboard-check"></i> Checklist</button>
+    <button data-tab="ocorrencia"><i class="fas fa-exclamation-triangle"></i> Ocorrência</button>
+    <button data-tab="fila"><i class="fas fa-cloud-upload-alt"></i> Fila <span id="badgeFila" class="badge-count hidden">0</span></button>
+  </nav>
+
+  <main>
+    <section id="pane-frete" class="tab-pane active">
+      <h2>Registrar Frete</h2>
+      <form id="formFrete">
+        <div class="field">
+          <label>Veículo (placa) *</label>
+          <input type="text" id="fPlaca" list="veiculosList" placeholder="ABC-1234" autocomplete="off" required>
+          <datalist id="veiculosList"></datalist>
+        </div>
+        <div class="row">
+          <div class="field"><label>Origem *</label><input type="text" id="fOrigem" required></div>
+          <div class="field"><label>Destino *</label><input type="text" id="fDestino" required></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Distância (km)</label><input type="number" id="fDistancia" step="0.1" min="0" inputmode="decimal"></div>
+          <div class="field"><label>Peso (t)</label><input type="number" id="fPeso" step="0.1" min="0" inputmode="decimal"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Valor (R$)</label><input type="number" id="fValor" step="0.01" min="0" inputmode="decimal"></div>
+          <div class="field"><label>Status</label>
+            <select id="fStatus">
+              <option>Em andamento</option>
+              <option>Agendado</option>
+              <option>Concluído</option>
+              <option>Cancelado</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="success" style="width:100%;padding:13px">
+          <i class="fas fa-save"></i> Salvar Frete
+        </button>
+      </form>
+    </section>
+
+    <section id="pane-abastecimento" class="tab-pane">
+      <h2>Registrar Abastecimento</h2>
+      <form id="formAbastecimento">
+        <div class="field">
+          <label>Veículo (placa) *</label>
+          <input type="text" id="aPlaca" list="veiculosList" placeholder="ABC-1234" autocomplete="off" required>
+        </div>
+        <div class="row">
+          <div class="field"><label>Km atual *</label><input type="number" id="aKm" min="0" inputmode="numeric" required></div>
+          <div class="field"><label>Litros *</label><input type="number" id="aLitros" step="0.1" min="0" inputmode="decimal" required></div>
+        </div>
+        <button type="submit" class="success" style="width:100%;padding:13px">
+          <i class="fas fa-save"></i> Salvar Abastecimento
+        </button>
+      </form>
+    </section>
+
+    <section id="pane-checklist" class="tab-pane">
+      <h2>Checklist de Veículo</h2>
+      <form id="formChecklist">
+        <div class="field">
+          <label>Tipo *</label>
+          <div class="segmented">
+            <label>
+              <input type="radio" name="chkTipo" value="Pré-viagem" checked>
+              <span><i class="fas fa-sign-out-alt"></i> Pré-viagem</span>
+            </label>
+            <label>
+              <input type="radio" name="chkTipo" value="Pós-viagem">
+              <span><i class="fas fa-sign-in-alt"></i> Pós-viagem</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Veículo (placa) *</label>
+          <input type="text" id="cPlaca" list="veiculosList" placeholder="ABC-1234" autocomplete="off" required>
+        </div>
+
+        <div class="field">
+          <label>KM atual *</label>
+          <input type="number" id="cKm" min="0" inputmode="numeric" placeholder="Ex: 45200" required>
+        </div>
+
+        <div class="field">
+          <label style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <span>Itens de verificação</span>
+            <span id="chkCounter" class="chk-counter">0/10</span>
+          </label>
+          <div class="chk-list" id="chkList">
+            <label class="chk-item"><input type="checkbox" data-item="nivel_oleo"><span>Nível de óleo</span></label>
+            <label class="chk-item"><input type="checkbox" data-item="nivel_agua"><span>Nível de água</span></label>
+            <label class="chk-item"><input type="checkbox" data-item="pneus"><span>Pneus (pressão e sulco)</span></label>
+            <label class="chk-item"><input type="checkbox" data-item="freios"><span>Freios</span></label>
+            <label class="chk-item"><input type="checkbox" data-item="luzes_farois"><span>Luzes e faróis</span></label>
+            <label class="chk-item"><input type="checkbox" data-item="documentos"><span>Documentos do veículo</span></label>
+            <label class="chk-item"><input type="checkbox" data-item="extintor"><span>Extintor de incêndio</span></label>
+            <label class="chk-item"><input type="checkbox" data-item="triangulo"><span>Triângulo de sinalização</span></label>
+            <label class="chk-item"><input type="checkbox" data-item="limpadores"><span>Limpadores de para-brisa</span></label>
+            <label class="chk-item"><input type="checkbox" data-item="bateria"><span>Bateria</span></label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Observações</label>
+          <textarea id="cObs" placeholder="Descreva problemas, avarias ou observações..."></textarea>
+        </div>
+
+        <button type="submit" class="success" style="width:100%;padding:13px">
+          <i class="fas fa-save"></i> Salvar Checklist
+        </button>
+      </form>
+    </section>
+
+    <section id="pane-ocorrencia" class="tab-pane">
+      <h2>Registrar Ocorrência</h2>
+      <div class="aviso">
+        <i class="fas fa-info-circle"></i>
+        <span>A ocorrência será <b>automaticamente atribuída</b> ao técnico com menos serviços em aberto.</span>
+      </div>
+      <form id="formOcorrencia">
+        <div class="field">
+          <label>Veículo (placa) *</label>
+          <input type="text" id="oPlaca" list="veiculosList" placeholder="ABC-1234" autocomplete="off" required>
+        </div>
+        <div class="field">
+          <label>Tipo de ocorrência *</label>
+          <select id="oTipo" required>
+            <option value="Mecânica">Mecânica</option>
+            <option value="Elétrica">Elétrica</option>
+            <option value="Pneus">Pneus</option>
+            <option value="Freios">Freios</option>
+            <option value="Documentação">Documentação</option>
+            <option value="Geral">Outros / Geral</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Descrição do problema *</label>
+          <textarea id="oDesc" placeholder="Descreva o problema com o máximo de detalhes..." required></textarea>
+        </div>
+        <button type="submit" class="danger" style="width:100%;padding:13px">
+          <i class="fas fa-exclamation-triangle"></i> Registrar Ocorrência
+        </button>
+      </form>
+    </section>
+
+    <section id="pane-fila" class="tab-pane">
+      <h2>Fila de envio</h2>
+      <div class="fila-acoes">
+        <button id="btnSincronizarTudo" class="success"><i class="fas fa-cloud-upload-alt"></i> Sincronizar</button>
+        <button id="btnExportCsv" class="outline"><i class="fas fa-download"></i> Exportar CSV</button>
+        <button id="btnImportCsv" class="outline"><i class="fas fa-upload"></i> Importar CSV</button>
+        <input type="file" id="inputCsv" accept=".csv,text/csv" hidden>
+        <button id="btnLimparSinc" class="outline"><i class="fas fa-broom"></i> Limpar sincronizados</button>
+      </div>
+      <div id="listaFila"></div>
+    </section>
+  </main>
+</div>
+
+<!-- MODAL DE CONFIRMAÇÃO -->
+<div id="modalOverlay" class="modal-overlay hidden">
+  <div class="modal-card">
+    <h3><i class="fas fa-exclamation-triangle"></i> <span id="modalTitle"></span></h3>
+    <p id="modalBody"></p>
+    <div class="modal-actions">
+      <button id="modalCancel" class="outline">Cancelar</button>
+      <button id="modalConfirm" class="danger">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* ============ CONFIG ============ */
+const API_BASE   = 'http://127.0.0.1/Transportes/public/api/v1';
+const TOKEN_KEY  = 'canaControlToken';
+const USER_KEY   = 'canaControlUser';
+const FILA_KEY   = 'canaControlFilaMotorista';
+const VEIC_CACHE = 'canaControlVeiculosCache';
+
+/* ============ HELPERS ============ */
+const $ = id => document.getElementById(id);
+
+function esc(s){return s==null?'':String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function fmtNum(v){return Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtMoney(v){return 'R$ '+Number(v||0).toFixed(2).replace('.',',');}
+function fmtData(iso){try{return new Date(iso).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}catch{return iso||'';}}
+
+function toast(msg,type='info'){
+  const c=$('toast-container');
+  const d=document.createElement('div');
+  d.className='toast '+type;
+  const ic={success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'};
+  d.innerHTML=`<i class="fas ${ic[type]||ic.info}"></i><span>${esc(msg)}</span><button><i class="fas fa-times"></i></button>`;
+  c.appendChild(d);
+  d.querySelector('button').onclick=()=>d.remove();
+  setTimeout(()=>d.remove(),4500);
+}
+
+/* ============ MODAL DE CONFIRMAÇÃO ============ */
+/**
+ * Abre um modal de confirmação customizado (não bloqueante, estilizado).
+ *
+ * @param {Object}   opts
+ * @param {string}   opts.title        Título exibido no topo
+ * @param {string}   opts.body         Texto do corpo (aceita \n)
+ * @param {string}   [opts.confirmLabel='Confirmar']
+ * @param {Function} opts.onConfirm    Chamado quando o usuário confirma
+ */
+function openModalConfirm({ title, body, confirmLabel = 'Confirmar', onConfirm }) {
+  $('modalTitle').textContent   = title;
+  $('modalBody').textContent    = body;
+  $('modalConfirm').textContent = confirmLabel;
+  $('modalOverlay').classList.remove('hidden');
+
+  const cleanup = () => {
+    $('modalOverlay').classList.add('hidden');
+    $('modalConfirm').onclick = null;
+    $('modalCancel').onclick  = null;
+    $('modalOverlay').onclick = null;
+    document.removeEventListener('keydown', onKey);
+  };
+  const onKey = e => { if (e.key === 'Escape') cleanup(); };
+
+  $('modalConfirm').onclick = () => { cleanup(); onConfirm(); };
+  $('modalCancel').onclick  = cleanup;
+  $('modalOverlay').onclick = (e) => { if (e.target.id === 'modalOverlay') cleanup(); };
+  document.addEventListener('keydown', onKey);
+}
+
+/* ============ AUTH ============ */
+const getToken = () => localStorage.getItem(TOKEN_KEY);
+const setToken = t => localStorage.setItem(TOKEN_KEY,t);
+const getUser  = () => { try{return JSON.parse(localStorage.getItem(USER_KEY)||'null');}catch{return null;} };
+const setUser  = u => localStorage.setItem(USER_KEY,JSON.stringify(u));
+function clearAuth(){localStorage.removeItem(TOKEN_KEY);localStorage.removeItem(USER_KEY);}
+
+/* ============ API ============ */
+async function api(method,path,body=null){
+  const headers={'Content-Type':'application/json'};
+  const tk=getToken();
+  if(tk) headers['Authorization']='Bearer '+tk;
+  const opts={method,headers};
+  if(body!==null) opts.body=JSON.stringify(body);
+
+  let res,data;
+  try{
+    res=await fetch(API_BASE+path,opts);
+    data=await res.json().catch(()=>({}));
+  }catch(e){
+    return {ok:false,status:0,message:'Sem conexão com a API.'};
+  }
+  if(res.status===401){
+    clearAuth();
+    showLogin();
+    toast('Sessão expirada. Faça login novamente.','warning');
+    return {ok:false,status:401,message:'Não autenticado'};
+  }
+  return {
+    ok:res.ok,
+    status:res.status,
+    data:data.data ?? null,
+    message:data.message || null
+  };
+}
+
+/* ============ FILA (localStorage) ============ */
+const getFila = () => { try{return JSON.parse(localStorage.getItem(FILA_KEY)||'[]');}catch{return [];} };
+const setFila = f => localStorage.setItem(FILA_KEY,JSON.stringify(f));
+const gerarId = () => 'local_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+
+function adicionarNaFila(tipo,payload){
+  const fila=getFila();
+  fila.push({
+    id:gerarId(),
+    tipo,
+    payload,
+    criado_em:new Date().toISOString(),
+    status:'pendente',
+    tentativas:0,
+    erro:null
+  });
+  setFila(fila);
+  renderFila();
+  atualizarBadgeFila();
+}
+function removerDaFila(id){
+  setFila(getFila().filter(i=>i.id!==id));
+  renderFila();
+  atualizarBadgeFila();
+}
+
+function renderFila(){
+  const el=$('listaFila');
+  const fila=getFila();
+  if(fila.length===0){
+    el.innerHTML='<div class="empty"><i class="fas fa-inbox" style="font-size:1.8rem;opacity:.4"></i><br><br>Nenhum registro na fila.</div>';
+    return;
+  }
+  const ordem={erro:0,pendente:1,sincronizando:2,sincronizado:3};
+  const lista=[...fila].sort((a,b)=>(ordem[a.status]??9)-(ordem[b.status]??9)||new Date(b.criado_em)-new Date(a.criado_em));
+
+  el.innerHTML = lista.map(i=>{
+    const p=i.payload||{};
+
+    let titulo, resumo;
+    if(i.tipo==='frete'){
+      titulo = `<i class="fas fa-route"></i> Frete — ${esc(p.placa||'')}`;
+      resumo = `${esc(p.origem||'')} → ${esc(p.destino||'')} · ${fmtNum(p.peso)} t · ${fmtMoney(p.valor)}`;
+    } else if(i.tipo==='abastecimento'){
+      titulo = `<i class="fas fa-gas-pump"></i> Abastecimento — ${esc(p.placa||'')}`;
+      resumo = `Km ${esc(p.km||0)} · ${fmtNum(p.litros)} L`;
+    } else if(i.tipo==='checklist'){
+      const d = p.dados_check || {};
+      const itens = d.itens || {};
+      const marcados = Object.values(itens).filter(Boolean).length;
+      const total = Object.keys(itens).length || 10;
+      titulo = `<i class="fas fa-clipboard-check"></i> Checklist — ${esc(p.placa||'')}`;
+      resumo = `${esc(d.tipo||'')} · Km ${esc(d.km_atual||0)} · ${marcados}/${total} itens`
+             + (d.observacoes ? ` · "${esc(d.observacoes.slice(0,28))}${d.observacoes.length>28?'…':''}"` : '');
+    } else if(i.tipo==='ocorrencia'){
+      const desc = p.descricao || '';
+      titulo = `<i class="fas fa-exclamation-triangle"></i> Ocorrência — ${esc(p.placa||'')}`;
+      resumo = `${esc(p.tipo_ocorrencia||'')} · "${esc(desc.slice(0,40))}${desc.length>40?'…':''}"`
+             + (i.id_tecnico_atribuido ? ` · → técnico #${i.id_tecnico_atribuido}` : '');
+    } else {
+      titulo = `<i class="fas fa-question"></i> ${esc(i.tipo)}`;
+      resumo = '';
+    }
+
+    const statusTxt = {pendente:'⏳ Pendente',sincronizando:'⟳ Enviando…',sincronizado:'✓ Sincronizado',erro:'⚠ Erro'}[i.status]||i.status;
+    const btnRemover = i.status!=='sincronizando' ? `<button class="outline" data-act="rm" data-id="${i.id}"><i class="fas fa-trash"></i></button>` : '';
+    const btnRetry = (i.status==='erro'||i.status==='pendente') ? `<button class="outline" data-act="retry" data-id="${i.id}"><i class="fas fa-redo"></i> Tentar</button>` : '';
+    return `
+      <div class="fila-item status-${i.status}">
+        <div class="linha1">
+          <span class="tipo">${titulo}</span>
+          <span class="meta">${statusTxt}</span>
+        </div>
+        <div class="meta">${resumo}</div>
+        <div class="meta" style="margin-top:4px;">${fmtData(i.criado_em)}${i.tentativas?' · tentativas: '+i.tentativas:''}</div>
+        ${i.erro?`<pre>${esc(i.erro)}</pre>`:''}
+        <div class="acoes">${btnRetry}${btnRemover}</div>
+      </div>`;
+  }).join('');
+}
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button[data-act]');
+  if(!b) return;
+  const {act,id}=b.dataset;
+  if(act==='rm') removerDaFila(id);
+  if(act==='retry'){
+    const f=getFila();
+    const item=f.find(x=>x.id===id);
+    if(item){ item.status='pendente'; item.erro=null; setFila(f); renderFila(); }
+    sincronizarFila();
+  }
+});
+
+function atualizarBadgeFila(){
+  const pend=getFila().filter(i=>i.status==='pendente'||i.status==='erro'||i.status==='sincronizando').length;
+  const b=$('badgeFila');
+  if(pend>0){ b.textContent=pend; b.classList.remove('hidden'); }
+  else b.classList.add('hidden');
+}
+
+/* ============ CSV ============ */
+const CSV_COLS=['id','tipo','placa','origem','destino','distancia','peso','valor',
+                'status_frete','km','litros','dados_check','tipo_ocorrencia','descricao',
+                'criado_em','status','erro'];
+const csvEsc=v=>{const s=String(v??'');return /[",\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
+
+function gerarCSV(fila){
+  const linhas=[CSV_COLS.join(',')];
+  for(const i of fila){
+    const p=i.payload||{};
+    const kmValue = i.tipo==='checklist'
+      ? (p.dados_check?.km_atual ?? '')
+      : (p.km ?? '');
+    linhas.push([
+      i.id,
+      i.tipo,
+      p.placa||'',
+      p.origem||'',
+      p.destino||'',
+      p.distancia??'',
+      p.peso??'',
+      p.valor??'',
+      p.status_frete||'',
+      kmValue,
+      p.litros??'',
+      p.dados_check ? JSON.stringify(p.dados_check) : '',
+      i.tipo==='ocorrencia' ? (p.tipo_ocorrencia||'') : '',
+      i.tipo==='ocorrencia' ? (p.descricao||'') : '',
+      i.criado_em||'',
+      i.status||'pendente',
+      i.erro||''
+    ].map(csvEsc).join(','));
+  }
+  return linhas.join('\n');
+}
+
+function parseCSV(txt){
+  const rows=[]; let row=[],cur='',q=false;
+  for(let i=0;i<txt.length;i++){
+    const c=txt[i];
+    if(q){
+      if(c==='"'&&txt[i+1]==='"'){cur+='"';i++;}
+      else if(c==='"')q=false;
+      else cur+=c;
+    }else{
+      if(c==='"')q=true;
+      else if(c===','){row.push(cur);cur='';}
+      else if(c==='\n'){row.push(cur);rows.push(row);row=[];cur='';}
+      else if(c==='\r'){}
+      else cur+=c;
+    }
+  }
+  if(cur!==''||row.length){row.push(cur);rows.push(row);}
+  return rows;
+}
+
+function importarCSV(texto){
+  const rows=parseCSV(texto);
+  if(rows.length<2){toast('CSV vazio ou inválido.','warning');return;}
+  const hdr=rows[0];
+  const idx=Object.fromEntries(CSV_COLS.map(c=>[c,hdr.indexOf(c)]));
+  if(idx.tipo<0||idx.id<0){toast('CSV sem colunas obrigatórias (id,tipo).','error');return;}
+
+  const fila=getFila();
+  const idsExistentes=new Set(fila.map(i=>i.id));
+  let add=0;
+
+  for(let r=1;r<rows.length;r++){
+    const row=rows[r];
+    const get=k=>idx[k]>=0?(row[idx[k]]||'').trim():'';
+    const id=get('id');
+    const tipo=get('tipo');
+    if(!id||!tipo||idsExistentes.has(id)) continue;
+
+    let payload;
+    if(tipo==='frete'){
+      payload={
+        placa:get('placa'),
+        origem:get('origem'),
+        destino:get('destino'),
+        distancia:parseFloat(get('distancia'))||0,
+        peso:parseFloat(get('peso'))||0,
+        valor:parseFloat(get('valor'))||0,
+        status_frete:get('status_frete')||'Em andamento'
+      };
+    }else if(tipo==='abastecimento'){
+      payload={
+        placa:get('placa'),
+        km:parseInt(get('km'))||0,
+        litros:parseFloat(get('litros'))||0
+      };
+    }else if(tipo==='checklist'){
+      let dc;
+      try { dc = JSON.parse(get('dados_check')); } catch { dc = null; }
+      if(!dc || typeof dc !== 'object') continue;
+      payload = { placa:get('placa'), dados_check: dc };
+    }else if(tipo==='ocorrencia'){
+      const descricao = get('descricao');
+      if(!descricao) continue;
+      payload = {
+        placa:get('placa'),
+        tipo_ocorrencia:get('tipo_ocorrencia')||'Geral',
+        descricao
+      };
+    }else continue;
+
+    fila.push({
+      id, tipo, payload,
+      criado_em:get('criado_em')||new Date().toISOString(),
+      status:'pendente', tentativas:0, erro:null
+    });
+    idsExistentes.add(id);
+    add++;
+  }
+  setFila(fila);
+  renderFila();
+  atualizarBadgeFila();
+  toast(add>0?`${add} item(ns) importado(s).`:'Nenhum item novo.',add>0?'success':'info');
+  if(add>0) sincronizarFila();
+}
+
+/* ============ SYNC ============ */
+let sincronizando=false;
+
+async function sincronizarFila(){
+  if(sincronizando) return;
+  if(!navigator.onLine){ toast('Sem conexão. Dados ficam na fila.','warning'); return; }
+  if(!getToken()){ toast('Faça login para sincronizar.','error'); return; }
+
+  const fila=getFila();
+  const pendentes=fila.filter(i=>i.status==='pendente'||i.status==='erro');
+  if(pendentes.length===0){ toast('Nada para sincronizar.','info'); return; }
+
+  sincronizando=true;
+  $('btnSync').disabled=true;
+
+  let ok=0,err=0;
+  for(const item of pendentes){
+    item.status='sincronizando';
+    item.erro=null;
+    setFila(fila);
+    renderFila();
+
+    const endpoint =
+      item.tipo === 'frete'         ? '/fretes' :
+      item.tipo === 'abastecimento' ? '/abastecimentos' :
+      item.tipo === 'checklist'     ? '/checklists' :
+      item.tipo === 'ocorrencia'    ? '/manutencoes' :
+      null;
+
+    if (!endpoint) {
+      item.status='erro';
+      item.erro='Tipo desconhecido: '+item.tipo;
+      err++;
+      continue;
+    }
+
+    const r=await api('POST',endpoint,item.payload);
+    item.tentativas=(item.tentativas||0)+1;
+
+    if(r.ok){
+      item.status='sincronizado';
+      item.erro=null;
+      item.id_servidor =
+        r.data?.id_frete ??
+        r.data?.id_abastecimento ??
+        r.data?.id_manutencao ??
+        (r.data?.data_hora ? `${r.data.data_hora}|${r.data.placa}|${r.data.id_motorista}` : null);
+      if(item.tipo==='ocorrencia' && r.data?.id_tecnico){
+        item.id_tecnico_atribuido = r.data.id_tecnico;
+      }
+      ok++;
+    }else if(r.status===401){
+      item.status='pendente';
+      setFila(fila);
+      sincronizando=false;
+      $('btnSync').disabled=false;
+      return;
+    }else if(r.status>=400&&r.status<500){
+      item.status='erro';
+      item.erro=r.message||('Erro '+r.status);
+      err++;
+    }else{
+      item.status='pendente';
+      setFila(fila);
+      toast('Falha de rede/servidor. Tente novamente.','error');
+      break;
+    }
+  }
+  setFila(fila);
+  renderFila();
+  atualizarBadgeFila();
+  sincronizando=false;
+  $('btnSync').disabled=false;
+
+  if(ok>0&&err===0) toast(`${ok} item(ns) sincronizado(s).`,'success');
+  else if(ok>0&&err>0) toast(`${ok} ok, ${err} com erro.`,'warning');
+  else if(err>0) toast(`${err} item(ns) com erro. Veja a fila.`,'error');
+}
+
+/* ============ FORMULÁRIOS ============ */
+function coletarFrete(){
+  const placa=$('fPlaca').value.trim().toUpperCase();
+  const origem=$('fOrigem').value.trim();
+  const destino=$('fDestino').value.trim();
+  if(!placa||!origem||!destino){toast('Preencha placa, origem e destino.','error');return null;}
+  return {
+    placa,
+    origem,
+    destino,
+    distancia:parseFloat($('fDistancia').value)||0,
+    peso:parseFloat($('fPeso').value)||0,
+    valor:parseFloat($('fValor').value)||0,
+    status_frete:$('fStatus').value
+  };
+}
+
+function coletarAbastecimento(){
+  const placa=$('aPlaca').value.trim().toUpperCase();
+  const km=parseInt($('aKm').value);
+  const litros=parseFloat($('aLitros').value);
+  if(!placa||!km||!litros){toast('Preencha placa, km e litros.','error');return null;}
+  return {placa,km,litros};
+}
+
+$('formFrete').addEventListener('submit',e=>{
+  e.preventDefault();
+  const p=coletarFrete();
+  if(!p) return;
+  adicionarNaFila('frete',p);
+  toast('Frete adicionado à fila.','success');
+  e.target.reset();
+  if(navigator.onLine&&getToken()) sincronizarFila();
+});
+
+$('formAbastecimento').addEventListener('submit',e=>{
+  e.preventDefault();
+  const p=coletarAbastecimento();
+  if(!p) return;
+  adicionarNaFila('abastecimento',p);
+  toast('Abastecimento adicionado à fila.','success');
+  e.target.reset();
+  if(navigator.onLine&&getToken()) sincronizarFila();
+});
+
+/* ============ CHECKLIST ============ */
+const ITENS_CHECK = ['nivel_oleo','nivel_agua','pneus','freios','luzes_farois',
+                     'documentos','extintor','triangulo','limpadores','bateria'];
+
+function atualizarContadorCheck(){
+  const boxes = document.querySelectorAll('#chkList input[type=checkbox]');
+  if(!boxes.length) return;
+  const marcados = Array.from(boxes).filter(b => b.checked).length;
+  const c = $('chkCounter');
+  if(!c) return;
+  c.textContent = `${marcados}/${ITENS_CHECK.length}`;
+  c.classList.toggle('full', marcados === ITENS_CHECK.length);
+}
+
+document.querySelectorAll('#chkList input[type=checkbox]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    cb.closest('.chk-item').classList.toggle('checked', cb.checked);
+    atualizarContadorCheck();
+  });
+});
+
+$('formChecklist').addEventListener('submit', e => {
+  e.preventDefault();
+
+  const form = e.target;
+  const tipo    = document.querySelector('input[name=chkTipo]:checked')?.value || 'Pré-viagem';
+  const placa   = $('cPlaca').value.trim().toUpperCase();
+  const kmRaw   = $('cKm').value;
+  const km      = parseInt(kmRaw);
+  const obs     = $('cObs').value.trim();
+
+  if (!placa) { toast('Informe a placa.', 'error'); return; }
+  if (!kmRaw || !Number.isFinite(km) || km < 0) { toast('Informe o KM atual.', 'error'); return; }
+
+  // Coleta itens e identifica não conformes (false explícito)
+  const itens = {};
+  const naoConformes = [];
+  document.querySelectorAll('#chkList input[type=checkbox]').forEach(cb => {
+    itens[cb.dataset.item] = cb.checked;
+    if (!cb.checked) {
+      naoConformes.push(cb.closest('.chk-item').querySelector('span').textContent.trim());
+    }
+  });
+
+  const payloadChecklist = {
+    placa,
+    dados_check: { tipo, km_atual: km, itens, observacoes: obs }
+  };
+
+  const resetForm = () => {
+    form.reset();
+    document.querySelectorAll('#chkList .chk-item').forEach(el => el.classList.remove('checked'));
+    atualizarContadorCheck();
+  };
+
+  const enfileirarChecklist = () => {
+    adicionarNaFila('checklist', payloadChecklist);
+    toast('Checklist adicionado à fila.', 'success');
+    resetForm();
+    if (navigator.onLine && getToken()) sincronizarFila();
+  };
+
+  // 1) Tudo OK → salva direto
+  if (naoConformes.length === 0) {
+    enfileirarChecklist();
+    return;
+  }
+
+  // 2) Itens faltando → pergunta se gera ocorrência
+  const descricaoOcorrencia =
+    `Checklist ${tipo} (KM ${km}). Itens não conformes: ${naoConformes.join(', ')}.` +
+    (obs ? ` Observações do motorista: ${obs}` : '');
+
+  openModalConfirm({
+    title: 'Itens não conformes',
+    body:
+      `Os itens abaixo não foram marcados como OK:\n\n` +
+      `• ${naoConformes.join('\n• ')}\n\n` +
+      `Deseja registrar também uma ocorrência (manutenção) ` +
+      `para o técnico com menos OS em aberto?`,
+    confirmLabel: 'Sim, gerar ocorrência',
+    onConfirm: () => {
+      adicionarNaFila('checklist', payloadChecklist);
+      adicionarNaFila('ocorrencia', {
+        placa,
+        tipo_ocorrencia: `Checklist ${tipo}`,
+        descricao: descricaoOcorrencia
+      });
+      toast('Checklist + ocorrência adicionados à fila.', 'success');
+      resetForm();
+      if (navigator.onLine && getToken()) sincronizarFila();
+    }
+    // Cancelar → nada acontece. Form permanece preenchido.
+  });
+});
+
+/* ============ OCORRÊNCIA ============ */
+function coletarOcorrencia(){
+  const placa = $('oPlaca').value.trim().toUpperCase();
+  const tipo_ocorrencia = $('oTipo').value;
+  const descricao = $('oDesc').value.trim();
+
+  if(!placa){ toast('Informe a placa.','error'); return null; }
+  if(!descricao){ toast('Descreva o problema.','error'); return null; }
+  if(descricao.length < 10){
+    if(!confirm('A descrição está bem curta. Enviar mesmo assim?')) return null;
+  }
+
+  return { placa, tipo_ocorrencia, descricao };
+}
+
+$('formOcorrencia').addEventListener('submit', e => {
+  e.preventDefault();
+  const p = coletarOcorrencia();
+  if(!p) return;
+  adicionarNaFila('ocorrencia', p);
+  toast('Ocorrência registrada na fila.','success');
+  e.target.reset();
+  if(navigator.onLine && getToken()) sincronizarFila();
+});
+
+/* ============ VEÍCULOS (datalist + cache) ============ */
+async function carregarVeiculos(){
+  let lista=[];
+  if(navigator.onLine&&getToken()){
+    const r=await api('GET','/veiculos');
+    if(r.ok&&Array.isArray(r.data)){
+      lista=r.data;
+      localStorage.setItem(VEIC_CACHE,JSON.stringify(lista));
+    }
+  }
+  if(!lista.length){
+    try{lista=JSON.parse(localStorage.getItem(VEIC_CACHE)||'[]');}catch{lista=[];}
+  }
+  const dl=$('veiculosList');
+  dl.innerHTML=lista.map(v=>`<option value="${esc(v.placa)}">${esc(v.dados_veiculo?.modelo||'')}</option>`).join('');
+}
+
+/* ============ ABAS ============ */
+document.querySelectorAll('.tabs button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    $('pane-'+b.dataset.tab).classList.add('active');
+    if(b.dataset.tab==='checklist') atualizarContadorCheck();
+  });
+});
+
+/* ============ STATUS ONLINE/OFFLINE ============ */
+function atualizarConexao(){
+  const on=navigator.onLine;
+  $('statusDot').className=on?'dot-online':'dot-offline';
+  $('statusText').textContent=on?'Online':'Offline';
+  $('btnSync').disabled=!on;
+}
+window.addEventListener('online',()=>{atualizarConexao();toast('Conectado. Sincronizando…','info');sincronizarFila();});
+window.addEventListener('offline',()=>{atualizarConexao();toast('Você está offline. Registros ficam na fila.','warning');});
+
+/* ============ LOGIN / LOGOUT ============ */
+function showLogin(){
+  $('login-screen').classList.remove('hidden');
+  $('app').classList.add('hidden');
+}
+function showApp(){
+  $('login-screen').classList.add('hidden');
+  $('app').classList.remove('hidden');
+  const u=getUser();
+  if(u) $('userNome').textContent=u.nome||u.tipo_usuario||'Motorista';
+  renderFila();
+  atualizarBadgeFila();
+  atualizarContadorCheck();
+  carregarVeiculos();
+}
+
+$('loginBtn').addEventListener('click',async()=>{
+  const cpf=$('loginCpf').value.trim();
+  const senha=$('loginSenha').value;
+  if(!cpf||!senha){toast('Informe CPF e senha.','error');return;}
+  $('loginBtn').disabled=true;
+  const r=await api('POST','/auth/login',{cpf,senha});
+  $('loginBtn').disabled=false;
+  if(!r.ok){toast(r.message||'Falha no login.','error');return;}
+  setToken(r.data.token);
+  setUser({tipo_usuario:r.data.tipo_usuario,cpf,nome:r.data.nome||null});
+  toast('Login realizado!','success');
+  showApp();
+  setTimeout(sincronizarFila,400);
+});
+
+$('btnSair').addEventListener('click',async()=>{
+  const pend=getFila().filter(i=>i.status==='pendente'||i.status==='erro').length;
+  if(pend>0&&!confirm(`Há ${pend} item(ns) não sincronizado(s). Eles ficarão salvos localmente. Sair mesmo assim?`)) return;
+  await api('POST','/auth/logout');
+  clearAuth();
+  toast('Sessão encerrada.','info');
+  showLogin();
+});
+
+$('btnSync').addEventListener('click',sincronizarFila);
+$('btnSincronizarTudo').addEventListener('click',sincronizarFila);
+
+$('btnExportCsv').addEventListener('click',()=>{
+  const csv=gerarCSV(getFila());
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`cana_control_motorista_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('CSV exportado.','success');
+});
+
+$('btnImportCsv').addEventListener('click',()=>$('inputCsv').click());
+$('inputCsv').addEventListener('change',e=>{
+  const f=e.target.files[0];
+  if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>importarCSV(rd.result);
+  rd.readAsText(f,'UTF-8');
+  e.target.value='';
+});
+
+$('btnLimparSinc').addEventListener('click',()=>{
+  const restantes=getFila().filter(i=>i.status!=='sincronizado');
+  const removidos=getFila().length-restantes.length;
+  if(removidos===0){toast('Nenhum item sincronizado.','info');return;}
+  if(!confirm(`Remover ${removidos} item(ns) já sincronizado(s) da fila?`)) return;
+  setFila(restantes);
+  renderFila();
+  atualizarBadgeFila();
+  toast(`${removidos} removido(s).`,'success');
+});
+
+/* ============ PWA: Service Worker ============ */
+async function registrarSW() {
+  if (!('serviceWorker' in navigator)) return;
+  try {
+    const reg = await navigator.serviceWorker.register('sw.js', { scope: './' });
+    reg.addEventListener('updatefound', () => {
+      const novo = reg.installing;
+      novo?.addEventListener('statechange', () => {
+        if (novo.state === 'installed' && navigator.serviceWorker.controller) {
+          mostrarBannerAtualizacao(() => novo.postMessage('SKIP_WAITING'));
+        }
+      });
+    });
+  } catch (e) {
+    console.warn('[PWA] Falha ao registrar SW:', e);
+  }
+
+  let recarregando = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (recarregando) return;
+    recarregando = true;
+    location.reload();
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      navigator.serviceWorker.getRegistration().then(r => r?.update());
+    }
+  });
+}
+
+function mostrarBannerAtualizacao(onAceitar) {
+  if ($('bannerUpdate')) return;
+  const b = document.createElement('div');
+  b.id = 'bannerUpdate';
+  b.innerHTML = `
+    <span><i class="fas fa-sync"></i> Nova versão disponível.</span>
+    <button id="btnAtualizar">Atualizar</button>
+    <button id="btnFecharBanner"><i class="fas fa-times"></i></button>`;
+  Object.assign(b.style, {
+    position:'fixed', left:'12px', right:'12px', bottom:'12px',
+    background:'var(--card,#16283a)', border:'1px solid var(--border,#24405a)',
+    borderRadius:'12px', padding:'12px 14px',
+    display:'flex', alignItems:'center', gap:'10px',
+    fontSize:'.85rem', zIndex:'999', boxShadow:'0 8px 24px rgba(0,0,0,.5)',
+    color:'var(--text,#e6f0f9)'
+  });
+  b.querySelector('#btnAtualizar').style.marginLeft = 'auto';
+  document.body.appendChild(b);
+  b.querySelector('#btnAtualizar').onclick = () => { onAceitar(); b.remove(); };
+  b.querySelector('#btnFecharBanner').onclick = () => b.remove();
+}
+
+/* ============ PWA: prompt de instalação ============ */
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  $('btnInstall')?.classList.remove('hidden');
+});
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+  $('btnInstall')?.classList.add('hidden');
+  toast('App instalado! 🎉','success');
+});
+$('btnInstall')?.addEventListener('click', async () => {
+  if (!deferredPrompt) {
+    toast('Use o menu do navegador → "Adicionar à tela inicial".','info');
+    return;
+  }
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  $('btnInstall').classList.add('hidden');
+  toast(outcome === 'accepted' ? 'Instalando…' : 'Instalação cancelada.', outcome === 'accepted' ? 'success' : 'info');
+});
+
+/* ============ INIT ============ */
+(function init(){
+  atualizarConexao();
+  atualizarContadorCheck();
+  registrarSW();
+  if(getToken()){
+    showApp();
+    setTimeout(sincronizarFila,600);
+  }else{
+    showLogin();
+  }
+})();
+
+})();
+</script>
+</body>
+</html>
