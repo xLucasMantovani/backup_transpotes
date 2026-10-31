@@ -7,7 +7,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <link rel="stylesheet" href="estilo.css">
-
 </head>
 <body>
 
@@ -304,7 +303,7 @@
 /* =========================================================
    CONFIG
    ========================================================= */
-const API_BASE = 'http://127.0.0.1/Transportes/public/api/v1';
+const API_BASE = 'http://127.0.0.1/Transportes/fleetcontrol/api/v1';
 
 /* =========================================================
    AUTH STATE
@@ -566,6 +565,142 @@ window.visualizarArquivoBlob = async function(idArq) {
 };
 
 /* =========================================================
+   ===== NOVO: VALIDAÇÕES CENTRALIZADAS =====
+   Espelha as regras aplicadas no motorista.html
+   ========================================================= */
+
+/* Faixas razoáveis para detectar valores absurdos */
+const LIMITES = {
+  km:         { min: 0, max: 3_000_000 },
+  litros:     { min: 0, max: 2_000 },
+  distancia:  { min: 0, max: 10_000 },
+  peso:       { min: 0, max: 100 },
+  valor:      { min: 0, max: 500_000 },
+  ano:        { min: 1900, max: new Date().getFullYear() + 1 },
+  capacidade: { min: 0, max: 100 },
+};
+
+function rotuloCampo(campo) {
+  return ({
+    km: 'KM',
+    litros: 'Litros',
+    distancia: 'Distância',
+    peso: 'Peso',
+    valor: 'Valor',
+    ano: 'Ano',
+    capacidade: 'Capacidade'
+  })[campo] || campo;
+}
+
+function validarFaixa(valor, campo) {
+  const lim = LIMITES[campo];
+  if (!lim) return { ok: true };
+  if (!Number.isFinite(valor)) {
+    return { ok: false, msg: `Valor inválido para ${rotuloCampo(campo)}.` };
+  }
+  if (valor < lim.min) {
+    return { ok: false, msg: `${rotuloCampo(campo)} não pode ser menor que ${lim.min}.` };
+  }
+  if (valor > lim.max) {
+    return {
+      ok: false,
+      msg: `${rotuloCampo(campo)} acima do limite razoável (máx: ${lim.max.toLocaleString('pt-BR')}). Confira o valor digitado.`
+    };
+  }
+  return { ok: true };
+}
+
+/* --- CPF / Placa --- */
+function validarCPFBasico(cpf) {
+  const limpo = String(cpf || '').replace(/\D/g, '');
+  return limpo.length === 11;
+}
+
+function validarPlaca(placa) {
+  if (!placa) return false;
+  // Aceita ABC-1234, ABC1234 ou formato Mercosul ABC1D23
+  return /^[A-Z]{3}-?\d[A-Z0-9]\d{2}$/i.test(String(placa).trim());
+}
+
+/* --- KM: cache do último valor por placa (via servidor) --- */
+const _kmCache = { mapa: null, timestamp: 0 };
+const KM_CACHE_TTL = 5 * 60 * 1000; // 5 minutos
+
+async function carregarKmCache(force = false) {
+  const agora = Date.now();
+  if (!force && _kmCache.mapa && (agora - _kmCache.timestamp) < KM_CACHE_TTL) {
+    return _kmCache.mapa;
+  }
+  const [rAbast, rCheck] = await Promise.all([
+    api('GET', '/abastecimentos'),
+    api('GET', '/checklists')
+  ]);
+  const mapa = {};
+  const processar = (items, extractor) => {
+    (items || []).forEach(item => {
+      const placa = item.placa;
+      const km = extractor(item);
+      if (!placa || !Number.isFinite(km) || km < 0) return;
+      if (mapa[placa] === undefined || km > mapa[placa]) mapa[placa] = km;
+    });
+  };
+  processar(rAbast.data, a => Number(a.km));
+  processar(rCheck.data, c => {
+    const dc = (typeof c.dados_check === 'object' && c.dados_check) ? c.dados_check : {};
+    return Number(dc.km_atual);
+  });
+  _kmCache.mapa = mapa;
+  _kmCache.timestamp = agora;
+  return mapa;
+}
+
+function invalidarKmCache() {
+  _kmCache.mapa = null;
+  _kmCache.timestamp = 0;
+}
+
+async function validarKmVeiculo(placa, km) {
+  if (!placa) return { ok: false, msg: 'Informe a placa.' };
+  if (!Number.isFinite(km) || km < 0) return { ok: false, msg: 'Informe um KM válido.' };
+
+  const faixa = validarFaixa(km, 'km');
+  if (!faixa.ok) return faixa;
+
+  const mapa = await carregarKmCache();
+  const ultimo = mapa[placa];
+  if (ultimo !== undefined && km < ultimo) {
+    return {
+      ok: false,
+      ultimoKm: ultimo,
+      msg: `KM (${km.toLocaleString('pt-BR')}) é menor que o último registrado para este veículo (${ultimo.toLocaleString('pt-BR')} km).`
+    };
+  }
+  return { ok: true, ultimoKm: ultimo ?? null };
+}
+
+/* --- Descrição mínima --- */
+function validarDescricaoMinima(texto, minimo = 10) {
+  const t = String(texto || '').trim();
+  if (t.length === 0) return { ok: false, msg: 'Preencha a descrição.' };
+  if (t.length < minimo) {
+    return { ok: false, msg: `Descrição muito curta (mín. ${minimo} caracteres).` };
+  }
+  return { ok: true };
+}
+
+/* --- Data de validade de documento --- */
+function validarValidadeDocumento(dataISO) {
+  if (!dataISO) return { ok: false, msg: 'Informe a validade.' };
+  const d = new Date(dataISO + 'T00:00:00');
+  if (isNaN(d.getTime())) return { ok: false, msg: 'Data inválida.' };
+  const anoMin = new Date().getFullYear() - 5;
+  if (d.getFullYear() < anoMin) {
+    return { ok: false, msg: `Data muito antiga (antes de ${anoMin}). Confira o valor.` };
+  }
+  return { ok: true };
+}
+
+/* =========================================================
    NAVEGAÇÃO
    ========================================================= */
 document.querySelectorAll('#sidebar .menu a').forEach(a => {
@@ -636,6 +771,7 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
   await api('POST', '/auth/logout');
   clearToken();
   invalidarCache('veiculos','motoristas','tecnicos','manutencoes');
+  invalidarKmCache();
   toast('Sessão encerrada.', 'info');
   showLogin();
 });
@@ -802,11 +938,11 @@ async function novoFrete() {
       <div class="form-group"><label>Destino</label><input type="text" id="fDestino"></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label>Distância (km)</label><input type="number" id="fDist" step="0.1"></div>
-      <div class="form-group"><label>Peso (t)</label><input type="number" id="fPeso" step="0.1"></div>
+      <div class="form-group"><label>Distância (km)</label><input type="number" id="fDist" step="0.1" min="0"></div>
+      <div class="form-group"><label>Peso (t)</label><input type="number" id="fPeso" step="0.1" min="0"></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label>Valor (R$)</label><input type="number" id="fValor" step="0.01"></div>
+      <div class="form-group"><label>Valor (R$)</label><input type="number" id="fValor" step="0.01" min="0"></div>
       <div class="form-group">
         <label>Status</label>
         <select id="fStatus"><option>Agendado</option><option>Em andamento</option><option>Concluído</option><option>Cancelado</option></select>
@@ -826,6 +962,13 @@ async function novoFrete() {
     if (!body.placa) { toast('Selecione um veículo.', 'error'); return false; }
     if (!body.id_motorista) { toast('Selecione um motorista.', 'error'); return false; }
     if (!body.origem || !body.destino) { toast('Informe origem e destino.', 'error'); return false; }
+
+    // ===== NOVO: validação de faixas =====
+    for (const [campo, valor] of [['distancia', body.distancia], ['peso', body.peso], ['valor', body.valor]]) {
+      const v = validarFaixa(valor, campo);
+      if (!v.ok) { toast(v.msg, 'error'); return false; }
+    }
+
     const r = await api('POST', '/fretes', body);
     if (!r.ok) { toast(r.message || 'Erro ao criar frete.', 'error'); return false; }
     toast('Frete criado!', 'success');
@@ -867,6 +1010,8 @@ window.excluirAbast = function(id) {
   openModal('Excluir Abastecimento', `<p>Excluir abastecimento #${id}?</p>`, async () => {
     const r = await api('DELETE', '/abastecimentos/' + id);
     if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
+    // ===== NOVO: invalida cache de KM após exclusão =====
+    invalidarKmCache();
     toast('Abastecimento excluído.', 'warning');
     loadAbastecimentos();
   });
@@ -881,21 +1026,39 @@ async function novoAbastecimento() {
       <div class="form-group"><label>Motorista</label><select id="aMotorista">${buildMotoristaOptions(motoristas)}</select></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label>Km</label><input type="number" id="aKm"></div>
-      <div class="form-group"><label>Litros</label><input type="number" id="aLitros" step="0.1"></div>
+      <div class="form-group"><label>Km</label><input type="number" id="aKm" min="0"></div>
+      <div class="form-group"><label>Litros</label><input type="number" id="aLitros" step="0.1" min="0"></div>
+    </div>
+    <div class="obs-note" style="font-size:.8rem;color:var(--text-muted);background:var(--bg-body);padding:8px 14px;border-radius:8px;margin-top:8px;">
+      <i class="fas fa-info-circle"></i> O KM informado deve ser maior que o último KM registrado para o veículo.
     </div>`;
   openModal('Novo Abastecimento', html, async () => {
-    const body = {
-      placa: document.getElementById('aPlaca').value,
-      id_motorista: parseInt(document.getElementById('aMotorista').value),
-      km: parseInt(document.getElementById('aKm').value) || 0,
-      litros: parseFloat(document.getElementById('aLitros').value) || 0
-    };
-    if (!body.placa) { toast('Selecione um veículo.', 'error'); return false; }
-    if (!body.id_motorista) { toast('Selecione um motorista.', 'error'); return false; }
-    if (!body.litros) { toast('Informe os litros.', 'error'); return false; }
+    const placa   = document.getElementById('aPlaca').value;
+    const idMot   = parseInt(document.getElementById('aMotorista').value);
+    const km      = parseInt(document.getElementById('aKm').value);
+    const litros  = parseFloat(document.getElementById('aLitros').value);
+
+    if (!placa) { toast('Selecione um veículo.', 'error'); return false; }
+    if (!idMot) { toast('Selecione um motorista.', 'error'); return false; }
+    if (!Number.isFinite(km) || km < 0) { toast('Informe o KM atual.', 'error'); return false; }
+    if (!Number.isFinite(litros) || litros <= 0) { toast('Informe os litros.', 'error'); return false; }
+
+    // ===== NOVO: faixas razoáveis =====
+    const vKm = validarFaixa(km, 'km');
+    if (!vKm.ok) { toast(vKm.msg, 'error'); return false; }
+    const vLitros = validarFaixa(litros, 'litros');
+    if (!vLitros.ok) { toast(vLitros.msg, 'error'); return false; }
+
+    // ===== NOVO: KM contra último registrado =====
+    const vKmVeic = await validarKmVeiculo(placa, km);
+    if (!vKmVeic.ok) { toast(vKmVeic.msg, 'error'); return false; }
+
+    const body = { placa, id_motorista: idMot, km, litros };
     const r = await api('POST', '/abastecimentos', body);
     if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
+
+    // ===== NOVO: invalida cache de KM após criação =====
+    invalidarKmCache();
     toast('Abastecimento criado!', 'success');
     loadAbastecimentos();
   });
@@ -956,7 +1119,6 @@ async function loadManutencoes() {
   if (idTec) params.append('id_tecnico', idTec);
   const r = await api('GET', '/manutencoes' + (params.toString() ? '?' + params : ''));
 
-  // Atualiza cache local das manutenções
   if (r.ok && Array.isArray(r.data)) _cache.manutencoes = r.data;
 
   const tbody = document.getElementById('manutBody');
@@ -985,13 +1147,11 @@ async function loadManutencoes() {
   });
 }
 
-/* Modal de detalhes da manutenção com lista de arquivos anexos */
 window.verDetalhesManutencao = async function(id) {
   const r = await api('GET', '/manutencoes/' + id);
   if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
   const m = r.data;
 
-  // Busca arquivos
   const rArq = await api('GET', '/arquivos-manutencao?id_manutencao=' + id);
   const arquivos = (rArq.ok && Array.isArray(rArq.data)) ? rArq.data : [];
 
@@ -1049,7 +1209,6 @@ window.excluirArquivoDeDetalhe = function(idArq, idManut) {
     if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
     toast('Arquivo excluído.', 'warning');
     closeModal();
-    // Reabre os detalhes atualizados
     setTimeout(() => verDetalhesManutencao(idManut), 200);
   });
 };
@@ -1085,7 +1244,7 @@ async function novaManutencao() {
       <div class="form-group"><label>Veículo</label><select id="mPlaca">${buildVeiculoOptions(veiculos)}</select></div>
       <div class="form-group"><label>Técnico responsável</label><select id="mTecnico">${buildTecnicoOptions(tecnicos)}</select></div>
     </div>
-    <div class="form-group"><label>Descrição</label><textarea id="mDesc" rows="3"></textarea></div>
+    <div class="form-group"><label>Descrição</label><textarea id="mDesc" rows="3" placeholder="Descreva o problema ou serviço a executar (mín. 10 caracteres)"></textarea></div>
     <div class="obs-note">
       <i class="fas fa-info-circle"></i>
       Após criar a manutenção, anexe arquivos (notas fiscais, fotos, laudos) pelo botão
@@ -1099,7 +1258,11 @@ async function novaManutencao() {
     };
     if (!body.placa) { toast('Selecione um veículo.', 'error'); return false; }
     if (!body.id_tecnico) { toast('Selecione um técnico.', 'error'); return false; }
-    if (!body.descricao) { toast('Informe a descrição.', 'error'); return false; }
+
+    // ===== NOVO: descrição mínima =====
+    const vDesc = validarDescricaoMinima(body.descricao, 10);
+    if (!vDesc.ok) { toast(vDesc.msg, 'error'); return false; }
+
     const r = await api('POST', '/manutencoes', body);
     if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
     invalidarCache('manutencoes');
@@ -1213,7 +1376,6 @@ async function abrirModalArquivo(idManutPreSelecionado = '') {
     if (!r.ok) { toast(r.message || 'Erro ao anexar arquivo.', 'error'); return false; }
     toast('Arquivo anexado!', 'success');
 
-    // Se estiver na página de arquivos, atualiza
     if (document.getElementById('page-arquivos').classList.contains('active')) {
       document.getElementById('arqManutId').value = idManut;
       carregarArquivos();
@@ -1261,6 +1423,7 @@ window.excluirVeiculo = function(placa) {
     const r = await api('DELETE', '/veiculos/' + encodeURIComponent(placa));
     if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
     invalidarCache('veiculos');
+    invalidarKmCache();
     await popularFiltros();
     toast('Veículo excluído.', 'warning');
     loadVeiculos();
@@ -1268,25 +1431,42 @@ window.excluirVeiculo = function(placa) {
 };
 function novoVeiculo() {
   const html = `
-    <div class="form-group"><label>Placa</label><input type="text" id="vPlaca"></div>
+    <div class="form-group"><label>Placa</label><input type="text" id="vPlaca" placeholder="ABC-1234 ou ABC1234"></div>
     <div class="form-row">
       <div class="form-group"><label>Modelo</label><input type="text" id="vModelo"></div>
-      <div class="form-group"><label>Ano</label><input type="number" id="vAno"></div>
+      <div class="form-group"><label>Ano</label><input type="number" id="vAno" min="1900"></div>
     </div>
     <div class="form-row">
       <div class="form-group"><label>Tipo</label><input type="text" id="vTipo"></div>
-      <div class="form-group"><label>Capacidade (t)</label><input type="number" id="vCap" step="0.1"></div>
+      <div class="form-group"><label>Capacidade (t)</label><input type="number" id="vCap" step="0.1" min="0"></div>
     </div>`;
   openModal('Novo Veículo', html, async () => {
-    const placa = document.getElementById('vPlaca').value.trim();
+    const placa = document.getElementById('vPlaca').value.trim().toUpperCase();
+    const ano = parseInt(document.getElementById('vAno').value) || null;
+    const capacidade = parseFloat(document.getElementById('vCap').value) || null;
+
+    // ===== NOVO: validações de placa, ano e capacidade =====
     if (!placa) { toast('Informe a placa.', 'error'); return false; }
+    if (!validarPlaca(placa)) {
+      toast('Placa inválida. Use o formato ABC-1234 ou ABC1234 (Mercosul: ABC1D23).', 'error');
+      return false;
+    }
+    if (ano !== null) {
+      const vAno = validarFaixa(ano, 'ano');
+      if (!vAno.ok) { toast(vAno.msg, 'error'); return false; }
+    }
+    if (capacidade !== null) {
+      const vCap = validarFaixa(capacidade, 'capacidade');
+      if (!vCap.ok) { toast(vCap.msg, 'error'); return false; }
+    }
+
     const body = {
       placa,
       dados_veiculo: {
         modelo: document.getElementById('vModelo').value.trim(),
-        ano: parseInt(document.getElementById('vAno').value) || null,
+        ano,
         tipo: document.getElementById('vTipo').value.trim(),
-        capacidade: parseFloat(document.getElementById('vCap').value) || null
+        capacidade
       }
     };
     const r = await api('POST', '/veiculos', body);
@@ -1354,7 +1534,12 @@ async function novoDocumento() {
       validade: document.getElementById('dVal').value,
       status_documento: document.getElementById('dStatus').value
     };
-    if (!body.placa || !body.descricao || !body.validade) { toast('Preencha todos os campos.', 'error'); return false; }
+    if (!body.placa || !body.descricao) { toast('Preencha todos os campos.', 'error'); return false; }
+
+    // ===== NOVO: validação de data =====
+    const vVal = validarValidadeDocumento(body.validade);
+    if (!vVal.ok) { toast(vVal.msg, 'error'); return false; }
+
     const r = await api('POST', '/documentos-veiculo', body);
     if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
     toast('Documento criado!', 'success');
@@ -1400,8 +1585,8 @@ window.excluirMotorista = function(id) {
 function novoMotorista() {
   const html = `
     <div class="form-row">
-      <div class="form-group"><label>Nome</label><input type="text" id="moNome"></div>
-      <div class="form-group"><label>CPF</label><input type="text" id="moCpf"></div>
+      <div class="form-group"><label>Nome</label><input type="text" id="moNome" placeholder="Nome completo"></div>
+      <div class="form-group"><label>CPF</label><input type="text" id="moCpf" placeholder="000.000.000-00"></div>
     </div>
     <div class="form-row">
       <div class="form-group"><label>Telefone</label><input type="text" id="moTel"></div>
@@ -1413,15 +1598,21 @@ function novoMotorista() {
     <div class="form-group"><label>Funções</label><input type="text" id="moFuncoes"></div>
     <div class="form-group"><label>Observações</label><input type="text" id="moObs"></div>`;
   openModal('Novo Motorista', html, async () => {
+    const nome = document.getElementById('moNome').value.trim();
+    const cpf = document.getElementById('moCpf').value.trim();
+
+    // ===== NOVO: nome mínimo e CPF com 11 dígitos =====
+    if (nome.length < 3) { toast('Nome muito curto (mín. 3 caracteres).', 'error'); return false; }
+    if (!validarCPFBasico(cpf)) { toast('CPF inválido. Informe 11 dígitos.', 'error'); return false; }
+
     const body = {
-      nome: document.getElementById('moNome').value.trim(),
-      cpf: document.getElementById('moCpf').value.trim(),
+      nome,
+      cpf,
       telefone: document.getElementById('moTel').value.trim(),
       status_motorista: parseInt(document.getElementById('moStatus').value),
       funcoes_motorista: document.getElementById('moFuncoes').value.trim(),
       observacoes: document.getElementById('moObs').value.trim()
     };
-    if (!body.nome || !body.cpf) { toast('Nome e CPF obrigatórios.', 'error'); return false; }
     const r = await api('POST', '/motoristas', body);
     if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
     invalidarCache('motoristas');
@@ -1469,8 +1660,8 @@ window.excluirTecnico = function(id) {
 function novoTecnico() {
   const html = `
     <div class="form-row">
-      <div class="form-group"><label>Nome</label><input type="text" id="tNome"></div>
-      <div class="form-group"><label>CPF</label><input type="text" id="tCpf"></div>
+      <div class="form-group"><label>Nome</label><input type="text" id="tNome" placeholder="Nome completo"></div>
+      <div class="form-group"><label>CPF</label><input type="text" id="tCpf" placeholder="000.000.000-00"></div>
     </div>
     <div class="form-row">
       <div class="form-group"><label>Telefone</label><input type="text" id="tTel"></div>
@@ -1484,15 +1675,21 @@ function novoTecnico() {
       <div class="form-group"><label>Observações</label><input type="text" id="tObs"></div>
     </div>`;
   openModal('Novo Técnico', html, async () => {
+    const nome = document.getElementById('tNome').value.trim();
+    const cpf = document.getElementById('tCpf').value.trim();
+
+    // ===== NOVO: nome mínimo e CPF com 11 dígitos =====
+    if (nome.length < 3) { toast('Nome muito curto (mín. 3 caracteres).', 'error'); return false; }
+    if (!validarCPFBasico(cpf)) { toast('CPF inválido. Informe 11 dígitos.', 'error'); return false; }
+
     const body = {
-      nome: document.getElementById('tNome').value.trim(),
-      cpf: document.getElementById('tCpf').value.trim(),
+      nome,
+      cpf,
       telefone: document.getElementById('tTel').value.trim(),
       status_tecnico: parseInt(document.getElementById('tStatus').value),
       tipo_tecnico: document.getElementById('tTipo').value.trim(),
       observacoes: document.getElementById('tObs').value.trim()
     };
-    if (!body.nome || !body.cpf) { toast('Nome e CPF obrigatórios.', 'error'); return false; }
     const r = await api('POST', '/tecnicos', body);
     if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
     invalidarCache('tecnicos');

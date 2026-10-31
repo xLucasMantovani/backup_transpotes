@@ -5,6 +5,7 @@ $scriptDir = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/'
 if ($scriptDir !== '' && strpos($_SERVER['REQUEST_URI'], $scriptDir) === 0) {
     $_SERVER['REQUEST_URI'] = substr($_SERVER['REQUEST_URI'], strlen($scriptDir)) ?: '/';
 }
+define('API', '/api/v1');
 
 //require_once '../vendor/autoload.php'; // se usar Composer para autoload, ou faça manualmente
 require_once '../config/database.php';
@@ -30,96 +31,71 @@ spl_autoload_register(function ($class) {
 $router = new Router();
 $request = new Request();
 
-// Autenticação //Renomear as rotas
-/*
-$router->post('/Transportes/public/api/v1/auth/login', 'AuthController@login'); //Teste ok
-$router->post('/Transportes/public/api/v1/auth/logout', 'AuthController@logout'); //Teste ok
-
-// Motoristas (admin)
-$router->get('/Transportes/public/api/v1/motoristas', 'MotoristaController@index');
-$router->post('/Transportes/public/api/v1/motoristas', 'MotoristaController@store');
-
-// Fretes/Viagens
-$router->get('/Transportes/public/api/v1/fretes', 'FreteController@index'); //Teste ok
-$router->post('/Transportes/public/api/v1/fretes', 'FreteController@store'); //Teste ok
-
-// Abastecimentos
-$router->get('/Transportes/public/api/v1/abastecimentos', 'AbastecimentoController@index'); //Teste ok
-$router->post('/Transportes/public/api/v1/abastecimentos', 'AbastecimentoController@store'); //Teste ok
-
-// Checklists
-$router->post('/Transportes/public/api/v1/checklists', 'ChecklistController@store');
-
-// Manutenções
-$router->post('/Transportes/public/api/v1/manutencoes', 'ManutencaoController@store');
-$router->put('/Transportes/public/api/v1/manutencoes/{id}', 'ManutencaoController@update');
-*/
-
 // Autenticação
-$router->post('/Transportes/public/api/v1/auth/login', 'AuthController@login');
-$router->post('/Transportes/public/api/v1/auth/logout', 'AuthController@logout');
+$router->post(API .'/auth/login', 'AuthController@login');
+$router->post(API .'/auth/logout', 'AuthController@logout');
 
 // Motoristas
-$router->get('/Transportes/public/api/v1/motoristas', 'MotoristaController@index');
-$router->get('/Transportes/public/api/v1/motoristas/{id}', 'MotoristaController@show');
-$router->post('/Transportes/public/api/v1/motoristas', 'MotoristaController@store');
-$router->put('/Transportes/public/api/v1/motoristas/{id}', 'MotoristaController@update');
-$router->delete('/Transportes/public/api/v1/motoristas/{id}', 'MotoristaController@destroy');
+$router->get(API .'/motoristas', 'MotoristaController@index');
+$router->get(API .'/motoristas/{id}', 'MotoristaController@show');
+$router->post(API .'/motoristas', 'MotoristaController@store');
+$router->put(API .'/motoristas/{id}', 'MotoristaController@update');
+$router->delete(API .'/motoristas/{id}', 'MotoristaController@destroy');
 
 // Técnicos
-$router->get('/Transportes/public/api/v1/tecnicos', 'TecnicoController@index');
-$router->get('/Transportes/public/api/v1/tecnicos/{id}', 'TecnicoController@show');
-$router->post('/Transportes/public/api/v1/tecnicos', 'TecnicoController@store');
-$router->put('/Transportes/public/api/v1/tecnicos/{id}', 'TecnicoController@update');
-$router->delete('/Transportes/public/api/v1/tecnicos/{id}', 'TecnicoController@destroy');
+$router->get(API .'/tecnicos', 'TecnicoController@index');
+$router->get(API .'/tecnicos/{id}', 'TecnicoController@show');
+$router->post(API .'/tecnicos', 'TecnicoController@store');
+$router->put(API .'/tecnicos/{id}', 'TecnicoController@update');
+$router->delete(API .'/tecnicos/{id}', 'TecnicoController@destroy');
 
 // Veículos
-$router->get('/Transportes/public/api/v1/veiculos', 'VeiculoController@index');
-$router->get('/Transportes/public/api/v1/veiculos/{placa}', 'VeiculoController@show');
-$router->post('/Transportes/public/api/v1/veiculos', 'VeiculoController@store');
-$router->put('/Transportes/public/api/v1/veiculos/{placa}', 'VeiculoController@update');
-$router->delete('/Transportes/public/api/v1/veiculos/{placa}', 'VeiculoController@destroy');
+$router->get(API .'/veiculos', 'VeiculoController@index');
+$router->get(API .'/veiculos/{placa}', 'VeiculoController@show');
+$router->post(API .'/veiculos', 'VeiculoController@store');
+$router->put(API .'/veiculos/{placa}', 'VeiculoController@update');
+$router->delete(API .'/veiculos/{placa}', 'VeiculoController@destroy');
 
 // Documentos de Veículo
-$router->get('/Transportes/public/api/v1/documentos-veiculo', 'DocumentoVeiculoController@index');
-$router->get('/Transportes/public/api/v1/documentos-veiculo/{placa}/{descricao}', 'DocumentoVeiculoController@show');
-$router->post('/Transportes/public/api/v1/documentos-veiculo', 'DocumentoVeiculoController@store');
-$router->put('/Transportes/public/api/v1/documentos-veiculo/{placa}/{descricao}', 'DocumentoVeiculoController@update');
-$router->delete('/Transportes/public/api/v1/documentos-veiculo/{placa}/{descricao}', 'DocumentoVeiculoController@destroy');
+$router->get(API .'/documentos-veiculo', 'DocumentoVeiculoController@index');
+$router->get(API .'/documentos-veiculo/{placa}/{descricao}', 'DocumentoVeiculoController@show');
+$router->post(API .'/documentos-veiculo', 'DocumentoVeiculoController@store');
+$router->put(API .'/documentos-veiculo/{placa}/{descricao}', 'DocumentoVeiculoController@update');
+$router->delete(API .'/documentos-veiculo/{placa}/{descricao}', 'DocumentoVeiculoController@destroy');
 
 // Manutenções
-$router->get('/Transportes/public/api/v1/manutencoes', 'ManutencaoController@index');
-$router->get('/Transportes/public/api/v1/manutencoes/{id}', 'ManutencaoController@show');
-$router->post('/Transportes/public/api/v1/manutencoes', 'ManutencaoController@store');
-$router->put('/Transportes/public/api/v1/manutencoes/{id}', 'ManutencaoController@update');
-$router->delete('/Transportes/public/api/v1/manutencoes/{id}', 'ManutencaoController@destroy');
+$router->get(API .'/manutencoes', 'ManutencaoController@index');
+$router->get(API .'/manutencoes/{id}', 'ManutencaoController@show');
+$router->post(API .'/manutencoes', 'ManutencaoController@store');
+$router->put(API .'/manutencoes/{id}', 'ManutencaoController@update');
+$router->delete(API .'/manutencoes/{id}', 'ManutencaoController@destroy');
 
 // Arquivos de Manutenção
-$router->get('/Transportes/public/api/v1/arquivos-manutencao', 'ArquivoManutencaoController@index');
-$router->get('/Transportes/public/api/v1/arquivos-manutencao/{id}', 'ArquivoManutencaoController@show');
-$router->post('/Transportes/public/api/v1/arquivos-manutencao', 'ArquivoManutencaoController@store');
-$router->delete('/Transportes/public/api/v1/arquivos-manutencao/{id}', 'ArquivoManutencaoController@destroy');
+$router->get(API .'/arquivos-manutencao', 'ArquivoManutencaoController@index');
+$router->get(API .'/arquivos-manutencao/{id}', 'ArquivoManutencaoController@show');
+$router->post(API .'/arquivos-manutencao', 'ArquivoManutencaoController@store');
+$router->delete(API .'/arquivos-manutencao/{id}', 'ArquivoManutencaoController@destroy');
 
 // Fretes
-$router->get('/Transportes/public/api/v1/fretes', 'FreteController@index');
-$router->get('/Transportes/public/api/v1/fretes/{id}', 'FreteController@show');
-$router->post('/Transportes/public/api/v1/fretes', 'FreteController@store');
-$router->put('/Transportes/public/api/v1/fretes/{id}', 'FreteController@update');
-$router->delete('/Transportes/public/api/v1/fretes/{id}', 'FreteController@destroy');
+$router->get(API .'/fretes', 'FreteController@index');
+$router->get(API .'/fretes/{id}', 'FreteController@show');
+$router->post(API .'/fretes', 'FreteController@store');
+$router->put(API .'/fretes/{id}', 'FreteController@update');
+$router->delete(API .'/fretes/{id}', 'FreteController@destroy');
 
 // Abastecimentos
-$router->get('/Transportes/public/api/v1/abastecimentos', 'AbastecimentoController@index');
-$router->get('/Transportes/public/api/v1/abastecimentos/{id}', 'AbastecimentoController@show');
-$router->post('/Transportes/public/api/v1/abastecimentos', 'AbastecimentoController@store');
-$router->put('/Transportes/public/api/v1/abastecimentos/{id}', 'AbastecimentoController@update');
-$router->delete('/Transportes/public/api/v1/abastecimentos/{id}', 'AbastecimentoController@destroy');
+$router->get(API .'/abastecimentos', 'AbastecimentoController@index');
+$router->get(API .'/abastecimentos/{id}', 'AbastecimentoController@show');
+$router->post(API .'/abastecimentos', 'AbastecimentoController@store');
+$router->put(API .'/abastecimentos/{id}', 'AbastecimentoController@update');
+$router->delete(API .'/abastecimentos/{id}', 'AbastecimentoController@destroy');
 
 // Checklists
-$router->get('/Transportes/public/api/v1/checklists', 'ChecklistController@index');
-$router->get('/Transportes/public/api/v1/checklists/{dataHora}/{placa}/{idMotorista}', 'ChecklistController@show');
-$router->post('/Transportes/public/api/v1/checklists', 'ChecklistController@store');
-$router->put('/Transportes/public/api/v1/checklists/{dataHora}/{placa}/{idMotorista}', 'ChecklistController@update');
-$router->delete('/Transportes/public/api/v1/checklists/{dataHora}/{placa}/{idMotorista}', 'ChecklistController@destroy');
+$router->get(API .'/checklists', 'ChecklistController@index');
+$router->get(API .'/checklists/{dataHora}/{placa}/{idMotorista}', 'ChecklistController@show');
+$router->post(API .'/checklists', 'ChecklistController@store');
+$router->put(API .'/checklists/{dataHora}/{placa}/{idMotorista}', 'ChecklistController@update');
+$router->delete(API .'/checklists/{dataHora}/{placa}/{idMotorista}', 'ChecklistController@destroy');
 
 
 $router->dispatch(Request::capture());
