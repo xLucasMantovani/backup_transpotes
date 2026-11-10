@@ -49,51 +49,74 @@ class MotoristaController {
 
     public function store(Request $request) {
         Auth::requireRole('admin');
-
-        $nome = $request->input('nome');
-        $cpf = $request->input('cpf');
-        $telefone = $request->input('telefone', null);
-        $endereco = $request->input('endereco', null);
-        $status = $request->input('status_motorista', 1);
+    
+        $nome      = $request->input('nome');
+        $cpf       = $request->input('cpf');
+        $login     = $request->input('login');
+        $senha     = $request->input('senha');
+        $telefone  = $request->input('telefone', null);
+        $endereco  = $request->input('endereco', null);
+        $status    = $request->input('status_motorista', 1);
         $observacoes = $request->input('observacoes', null);
-        $funcoes = $request->input('funcoes_motorista', null);
-
+        $funcoes   = $request->input('funcoes_motorista', null);
+    
         if (!$nome || !$cpf) {
             JsonResponse::error('Nome e CPF são obrigatórios', 422);
         }
-
+        if ($senha && strlen($senha) < 5) {
+            JsonResponse::error('Senha muito curta (mín. 5 caracteres).', 422);
+        }
+    
         $db = Database::getConnection();
-
-        // Verifica se CPF já existe
+    
+        // Verifica CPF duplicado
         $stmt = $db->prepare("SELECT 1 FROM tb_funcionarios WHERE JSON_UNQUOTE(JSON_EXTRACT(dados_funcionario, '$.cpf')) = :cpf");
         $stmt->execute([':cpf' => $cpf]);
         if ($stmt->fetch()) {
             JsonResponse::error('CPF já cadastrado', 422);
         }
-
-        $dadosFuncionario = json_encode([
-            'nome' => $nome,
-            'cpf' => $cpf,
+    
+        // Login padrão = CPF (se não informado)
+        $loginFinal = $login ?: $cpf;
+    
+        // Verifica login duplicado
+        $stmt = $db->prepare(
+            "SELECT 1 FROM tb_funcionarios
+             WHERE JSON_UNQUOTE(JSON_EXTRACT(dados_funcionario, '$.login')) = :login
+                OR JSON_UNQUOTE(JSON_EXTRACT(dados_funcionario, '$.cpf'))   = :login"
+        );
+        $stmt->execute([':login' => $loginFinal]);
+        if ($stmt->fetch()) {
+            JsonResponse::error('Login já cadastrado para outro funcionário', 422);
+        }
+    
+        $dadosFuncionario = [
+            'nome'     => $nome,
+            'cpf'      => $cpf,
+            'login'    => $loginFinal,
             'telefone' => $telefone,
-            'endereco' => $endereco
-        ]);
-
+            'endereco' => $endereco,
+        ];
+        if ($senha) {
+            $dadosFuncionario['senha_hash'] = password_hash($senha, PASSWORD_DEFAULT);
+        }
+    
         $stmt = $db->prepare("INSERT INTO tb_funcionarios (dados_funcionario) VALUES (:dados)");
-        $stmt->execute([':dados' => $dadosFuncionario]);
+        $stmt->execute([':dados' => json_encode($dadosFuncionario)]);
         $idFuncionario = $db->lastInsertId();
-
+    
         $stmt = $db->prepare(
             "INSERT INTO tb_motoristas (id_motorista, status_motorista, observacoes, funcoes_motorista)
              VALUES (:id, :status, :obs, :funcoes)"
         );
         $stmt->execute([
-            ':id' => $idFuncionario,
-            ':status' => $status,
-            ':obs' => $observacoes,
+            ':id'      => $idFuncionario,
+            ':status'  => $status,
+            ':obs'     => $observacoes,
             ':funcoes' => $funcoes
         ]);
-
-        JsonResponse::success(['id_motorista' => $idFuncionario], 201);
+    
+        JsonResponse::success(['id_motorista' => $idFuncionario, 'login' => $loginFinal], 201);
     }
 
     public function update(Request $request) {
@@ -145,6 +168,30 @@ class MotoristaController {
         if ($request->input('funcoes_motorista') !== null) {
             $updates[] = "funcoes_motorista = :funcoes";
             $params[':funcoes'] = $request->input('funcoes_motorista');
+        }
+        // Atualização de login
+        if ($request->input('login')) {
+            $novoLogin = trim($request->input('login'));
+            // Verifica duplicidade (excluindo o próprio)
+            $stmt = Database::getConnection()->prepare(
+                "SELECT 1 FROM tb_funcionarios
+                WHERE (JSON_UNQUOTE(JSON_EXTRACT(dados_funcionario, '$.login')) = :login
+                    OR JSON_UNQUOTE(JSON_EXTRACT(dados_funcionario, '$.cpf'))   = :login)
+                AND id_funcionario <> :id"
+            );
+            $stmt->execute([':login' => $novoLogin, ':id' => $id]);
+            if ($stmt->fetch()) {
+                JsonResponse::error('Login já em uso por outro funcionário.', 422);
+            }
+            $novosDados['login'] = $novoLogin;
+        }
+
+        // Atualização de senha (só se enviada)
+        if ($request->input('senha')) {
+            if (strlen($request->input('senha')) < 5) {
+                JsonResponse::error('Senha muito curta (mín. 5).', 422);
+            }
+            $novosDados['senha_hash'] = password_hash($request->input('senha'), PASSWORD_DEFAULT);
         }
         if (!empty($updates)) {
             $sql = "UPDATE tb_motoristas SET " . implode(', ', $updates) . " WHERE id_motorista = :id";

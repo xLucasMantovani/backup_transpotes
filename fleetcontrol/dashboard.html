@@ -3,68 +3,52 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CANA CONTROL — Admin</title>
+<title>Fleet Control — Admin</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="login-screen">
   <div class="login-card">
     <div class="brand-login">
       <i class="fas fa-truck"></i>
-      <h1>CANA CONTROL — ADMIN</h1>
+      <h1>Fleet Control — ADMIN</h1>
     </div>
-    <div class="form-group">
-      <label>CPF</label>
-      <input type="text" id="loginCpf" placeholder="000.000.000-00">
-    </div>
-    <div class="form-group">
-      <label>Senha</label>
-      <input type="password" id="loginSenha" placeholder="••••••••">
-    </div>
+    <div class="form-group"><label>CPF</label><input type="text" id="loginCpf" placeholder="000.000.000-00"></div>
+    <div class="form-group"><label>Senha</label><input type="password" id="loginSenha" placeholder="••••••••"></div>
     <button id="loginBtn"><i class="fas fa-sign-in-alt"></i> Entrar</button>
   </div>
 </div>
 
-<!-- APP -->
 <div id="app" style="display:none;">
   <aside id="sidebar">
-    <div class="brand"><i class="fas fa-truck"></i><span>CANA CONTROL</span></div>
+    <div class="brand"><i class="fas fa-truck"></i><span>Fleet Control</span></div>
     <button class="toggle-btn" id="sidebarToggle"><i class="fas fa-chevron-left"></i></button>
     <nav class="menu">
       <div class="group-label">Visão Geral</div>
       <a href="#" data-page="dashboard" class="active"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
-
       <div class="group-label">Operação</div>
       <a href="#" data-page="fretes"><i class="fas fa-route"></i><span>Fretes</span></a>
       <a href="#" data-page="abastecimentos"><i class="fas fa-gas-pump"></i><span>Abastecimentos</span></a>
       <a href="#" data-page="checklists"><i class="fas fa-clipboard-check"></i><span>Checklists</span></a>
-
       <div class="group-label">Manutenção</div>
       <a href="#" data-page="manutencoes"><i class="fas fa-tools"></i><span>Manutenções</span></a>
       <a href="#" data-page="arquivos"><i class="fas fa-paperclip"></i><span>Arquivos</span></a>
-
       <div class="group-label">Cadastros</div>
       <a href="#" data-page="veiculos"><i class="fas fa-truck"></i><span>Veículos</span></a>
       <a href="#" data-page="documentos"><i class="fas fa-file-alt"></i><span>Documentos</span></a>
       <a href="#" data-page="motoristas"><i class="fas fa-user-tie"></i><span>Motoristas</span></a>
       <a href="#" data-page="tecnicos"><i class="fas fa-user-cog"></i><span>Técnicos</span></a>
     </nav>
-    <div class="sidebar-footer">
-      <i class="fas fa-circle" style="color:#27ae60;font-size:.5rem;"></i>
-      <span id="sideStatus">Sistema operacional</span>
-    </div>
+    <div class="sidebar-footer"><i class="fas fa-circle" style="color:#27ae60;font-size:.5rem;"></i><span id="sideStatus">Sistema operacional</span></div>
   </aside>
 
   <div id="main">
     <header id="topbar">
       <div class="topbar-left">
-        <button id="mobileMenuToggle" style="background:transparent;border:none;color:rgba(255,255,255,.8);font-size:1.2rem;display:none;cursor:pointer;">
-          <i class="fas fa-bars"></i>
-        </button>
+        <button id="mobileMenuToggle" style="background:transparent;border:none;color:rgba(255,255,255,.8);font-size:1.2rem;display:none;cursor:pointer;"><i class="fas fa-bars"></i></button>
       </div>
       <div class="topbar-right">
         <div class="user-avatar">
@@ -77,75 +61,99 @@
 
     <div id="page-content">
 
-      <!-- DASHBOARD -->
       <section id="page-dashboard" class="page-section active">
         <h2 class="section-title">Dashboard</h2>
         <p class="section-subtitle">Visão geral da operação</p>
-
         <div class="filters-bar">
-          <div class="filter-group">
-            <label>Data início</label>
-            <input type="date" id="dbDataInicio">
-          </div>
-          <div class="filter-group">
-            <label>Data fim</label>
-            <input type="date" id="dbDataFim">
-          </div>
-          <div class="filter-group">
-            <label>Veículo</label>
-            <select id="dbVeiculo"><option value="">Todos</option></select>
-          </div>
+          <div class="filter-group"><label>Data início</label><input type="date" id="dbDataInicio"></div>
+          <div class="filter-group"><label>Data fim</label><input type="date" id="dbDataFim"></div>
+          <div class="filter-group"><label>Veículo</label><select id="dbVeiculo"><option value="">Todos</option></select></div>
           <div class="filter-actions">
             <button class="btn btn-primary" id="dbAplicar"><i class="fas fa-filter"></i> Aplicar</button>
             <button class="btn btn-outline" id="dbLimpar"><i class="fas fa-undo"></i> Limpar</button>
           </div>
         </div>
-
         <div class="kpi-grid">
           <div class="kpi-card"><div class="kpi-icon"><i class="fas fa-route"></i></div><div class="kpi-label">Fretes</div><div class="kpi-value" id="kpiFretes">0</div></div>
           <div class="kpi-card red"><div class="kpi-icon"><i class="fas fa-dollar-sign"></i></div><div class="kpi-label">Faturamento</div><div class="kpi-value" id="kpiFaturamento">R$ 0</div></div>
           <div class="kpi-card purple"><div class="kpi-icon"><i class="fas fa-weight-hanging"></i></div><div class="kpi-label">Toneladas</div><div class="kpi-value" id="kpiToneladas">0</div></div>
           <div class="kpi-card orange"><div class="kpi-icon"><i class="fas fa-gas-pump"></i></div><div class="kpi-label">Litros abastecidos</div><div class="kpi-value" id="kpiLitros">0</div></div>
           <div class="kpi-card"><div class="kpi-icon"><i class="fas fa-tools"></i></div><div class="kpi-label">Manutenções</div><div class="kpi-value" id="kpiManutencoes">0</div></div>
-          <div class="kpi-card green"><div class="kpi-icon"><i class="fas fa-clipboard-check"></i></div><div class="kpi-label">Checklists</div><div class="kpi-value" id="kpiChecklists">0</div></div>
+          <div class="kpi-card green">
+            <div class="kpi-icon"><i class="fas fa-clipboard-check"></i></div>
+            <div class="kpi-label">Checklists</div>
+            <div class="kpi-value" id="kpiChecklists">0</div>
+            <div id="kpiChecklistsFalhas" style="font-size:.72rem;color:var(--text-muted);margin-top:4px;font-weight:600;"></div>
+          </div>
         </div>
-
         <div class="charts-grid">
           <div class="chart-card"><div class="chart-header"><h4>Fretes por status</h4></div><canvas id="chartFretesStatus"></canvas></div>
           <div class="chart-card"><div class="chart-header"><h4>Abastecimentos por veículo</h4></div><canvas id="chartAbastVeiculo"></canvas></div>
           <div class="chart-card"><div class="chart-header"><h4>Manutenções por veículo</h4></div><canvas id="chartManutVeiculo"></canvas></div>
           <div class="chart-card"><div class="chart-header"><h4>Fretes por mês</h4></div><canvas id="chartFretesMes"></canvas></div>
         </div>
-
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;margin-top:16px;">
+          <div class="card">
+            <div class="card-header"><h3><i class="fas fa-tachometer-alt" style="color:#2e86c1;"></i> Consumo médio (km/L)</h3></div>
+            <div class="table-wrapper"><table><thead><tr><th>Placa</th><th>Abast.</th><th>Km rodados</th><th>Litros</th><th>Média</th></tr></thead><tbody id="consumoBody"></tbody></table></div>
+            <div style="padding:8px 14px;font-size:.72rem;color:var(--text-muted);border-top:1px solid var(--border-color);">
+              <i class="fas fa-info-circle"></i> Δkm ÷ litros consumidos (exclui o 1º abastecimento do veículo).
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+              <h3><i class="fas fa-chart-line" style="color:#27ae60;"></i> Lucratividade por veículo</h3>
+              <div style="display:flex;align-items:center;gap:6px;font-size:.78rem;">
+                <label style="color:var(--text-muted);">R$/L</label>
+                <input type="number" id="precoDiesel" step="0.01" min="0" value="6.00" style="width:70px;padding:4px 6px;border:1px solid var(--border-color);border-radius:6px;font-size:.78rem;">
+              </div>
+            </div>
+            <div class="table-wrapper"><table><thead><tr><th>Placa</th><th>Fretes</th><th>Receita</th><th>Litros</th><th>Custo est.</th><th>Resultado</th></tr></thead><tbody id="lucroBody"></tbody></table></div>
+            <div style="padding:8px 14px;font-size:.72rem;color:var(--text-muted);border-top:1px solid var(--border-color);">
+              <i class="fas fa-info-circle"></i> Resultado = Receita (fretes) − Litros × preço do diesel.
+            </div>
+          </div>
+        </div>
+        <div class="card mt-16">
+          <div class="card-header"><h3><i class="fas fa-trophy" style="color:#f39c12;"></i> Ranking de motoristas</h3></div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px;padding:4px 14px 14px;">
+            <div>
+              <div style="font-size:.72rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;padding:6px 0;border-bottom:1px solid var(--border-color);">
+                <i class="fas fa-road" style="color:#2e86c1;"></i> Top 5 — Mais km rodados
+              </div>
+              <div class="table-wrapper"><table style="margin:0;"><thead><tr><th style="width:44px;">#</th><th>Motorista</th><th>Km</th><th>Fretes</th></tr></thead><tbody id="rankKmBody"></tbody></table></div>
+            </div>
+            <div>
+              <div style="font-size:.72rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;padding:6px 0;border-bottom:1px solid var(--border-color);">
+                <i class="fas fa-dollar-sign" style="color:#27ae60;"></i> Top 5 — Mais faturamento
+              </div>
+              <div class="table-wrapper"><table style="margin:0;"><thead><tr><th style="width:44px;">#</th><th>Motorista</th><th>Receita</th><th>Fretes</th></tr></thead><tbody id="rankReceitaBody"></tbody></table></div>
+            </div>
+          </div>
+        </div>
         <div class="card mt-16">
           <div class="card-header"><h3>Documentos a vencer (próximos 30 dias)</h3></div>
-          <div class="table-wrapper"><table><thead><tr><th>Placa</th><th>Documento</th><th>Validade</th><th>Status</th></tr></thead><tbody id="docsAVencerBody"></tbody></table></div>
+          <div class="table-wrapper"><table>
+            <thead><tr><th>Placa</th><th>Documento</th><th>Validade</th><th>Status</th><th>Anexo</th></tr></thead>
+            <tbody id="docsAVencerBody"></tbody>
+          </table></div>
+        </div>
+        <div class="card mt-16">
+          <div class="card-header"><h3>Checklists não conformes recentes</h3></div>
+          <div class="table-wrapper"><table>
+            <thead><tr><th>Data/Hora</th><th>Placa</th><th>Motorista</th><th>Tipo</th><th>Itens em falta</th><th>Ações</th></tr></thead>
+            <tbody id="chkNCBody"></tbody>
+          </table></div>
         </div>
       </section>
 
-      <!-- FRETES -->
       <section id="page-fretes" class="page-section">
         <h2 class="section-title">Fretes</h2>
         <p class="section-subtitle">Gestão de fretes</p>
         <div class="filters-bar">
-          <div class="filter-group">
-            <label>Status</label>
-            <select id="freteStatus">
-              <option value="">Todos</option>
-              <option>Agendado</option>
-              <option>Em andamento</option>
-              <option>Concluído</option>
-              <option>Cancelado</option>
-            </select>
-          </div>
-          <div class="filter-group">
-            <label>Veículo</label>
-            <select id="fretePlaca"><option value="">Todos</option></select>
-          </div>
-          <div class="filter-group">
-            <label>Motorista</label>
-            <select id="freteMotorista"><option value="">Todos</option></select>
-          </div>
+          <div class="filter-group"><label>Status</label><select id="freteStatus"><option value="">Todos</option><option>Agendado</option><option>Em andamento</option><option>Concluído</option><option>Cancelado</option></select></div>
+          <div class="filter-group"><label>Veículo</label><select id="fretePlaca"><option value="">Todos</option></select></div>
+          <div class="filter-group"><label>Motorista</label><select id="freteMotorista"><option value="">Todos</option></select></div>
           <div class="filter-actions">
             <button class="btn btn-primary" id="freteFiltrar"><i class="fas fa-filter"></i> Filtrar</button>
             <button class="btn btn-success" id="freteNovo"><i class="fas fa-plus"></i> Novo Frete</button>
@@ -154,19 +162,12 @@
         <div class="table-wrapper"><table><thead><tr><th>ID</th><th>Data</th><th>Placa</th><th>Motorista</th><th>Origem</th><th>Destino</th><th>Peso</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead><tbody id="fretesBody"></tbody></table></div>
       </section>
 
-      <!-- ABASTECIMENTOS -->
       <section id="page-abastecimentos" class="page-section">
         <h2 class="section-title">Abastecimentos</h2>
         <p class="section-subtitle">Registro de abastecimentos</p>
         <div class="filters-bar">
-          <div class="filter-group">
-            <label>Veículo</label>
-            <select id="abastPlaca"><option value="">Todos</option></select>
-          </div>
-          <div class="filter-group">
-            <label>Motorista</label>
-            <select id="abastMotorista"><option value="">Todos</option></select>
-          </div>
+          <div class="filter-group"><label>Veículo</label><select id="abastPlaca"><option value="">Todos</option></select></div>
+          <div class="filter-group"><label>Motorista</label><select id="abastMotorista"><option value="">Todos</option></select></div>
           <div class="filter-actions">
             <button class="btn btn-primary" id="abastFiltrar"><i class="fas fa-filter"></i> Filtrar</button>
             <button class="btn btn-success" id="abastNovo"><i class="fas fa-plus"></i> Novo</button>
@@ -175,47 +176,25 @@
         <div class="table-wrapper"><table><thead><tr><th>ID</th><th>Placa</th><th>Motorista</th><th>Km</th><th>Litros</th><th>Ações</th></tr></thead><tbody id="abastBody"></tbody></table></div>
       </section>
 
-      <!-- CHECKLISTS -->
       <section id="page-checklists" class="page-section">
         <h2 class="section-title">Checklists</h2>
         <p class="section-subtitle">Checklists diários dos veículos</p>
         <div class="filters-bar">
-          <div class="filter-group">
-            <label>Veículo</label>
-            <select id="chkPlaca"><option value="">Todos</option></select>
-          </div>
-          <div class="filter-group">
-            <label>Motorista</label>
-            <select id="chkMotorista"><option value="">Todos</option></select>
-          </div>
-          <div class="filter-actions">
-            <button class="btn btn-primary" id="chkFiltrar"><i class="fas fa-filter"></i> Filtrar</button>
-          </div>
+          <div class="filter-group"><label>Veículo</label><select id="chkPlaca"><option value="">Todos</option></select></div>
+          <div class="filter-group"><label>Motorista</label><select id="chkMotorista"><option value="">Todos</option></select></div>
+          <div class="filter-group"><label>Conformidade</label><select id="chkConformidade"><option value="">Todos</option><option value="conforme">Conforme</option><option value="nao_conforme">Não Conforme</option></select></div>
+          <div class="filter-actions"><button class="btn btn-primary" id="chkFiltrar"><i class="fas fa-filter"></i> Filtrar</button></div>
         </div>
-        <div class="table-wrapper"><table><thead><tr><th>Data/Hora</th><th>Placa</th><th>Motorista</th><th>Resumo</th><th>Ações</th></tr></thead><tbody id="chkBody"></tbody></table></div>
+        <div class="table-wrapper"><table><thead><tr><th>Data/Hora</th><th>Placa</th><th>Motorista</th><th>Tipo</th><th>Status</th><th>Resumo</th><th>Ações</th></tr></thead><tbody id="chkBody"></tbody></table></div>
       </section>
 
-      <!-- MANUTENÇÕES -->
       <section id="page-manutencoes" class="page-section">
         <h2 class="section-title">Manutenções</h2>
         <p class="section-subtitle">Ordens de manutenção</p>
         <div class="filters-bar">
-          <div class="filter-group">
-            <label>Status</label>
-            <select id="manutStatus">
-              <option value="">Todas</option>
-              <option value="aberta">Aberta</option>
-              <option value="concluida">Concluída</option>
-            </select>
-          </div>
-          <div class="filter-group">
-            <label>Veículo</label>
-            <select id="manutPlaca"><option value="">Todos</option></select>
-          </div>
-          <div class="filter-group">
-            <label>Técnico</label>
-            <select id="manutTecnico"><option value="">Todos</option></select>
-          </div>
+          <div class="filter-group"><label>Status</label><select id="manutStatus"><option value="">Todas</option><option value="aberta">Aberta</option><option value="concluida">Concluída</option></select></div>
+          <div class="filter-group"><label>Veículo</label><select id="manutPlaca"><option value="">Todos</option></select></div>
+          <div class="filter-group"><label>Técnico</label><select id="manutTecnico"><option value="">Todos</option></select></div>
           <div class="filter-actions">
             <button class="btn btn-primary" id="manutFiltrar"><i class="fas fa-filter"></i> Filtrar</button>
             <button class="btn btn-success" id="manutNovo"><i class="fas fa-plus"></i> Nova</button>
@@ -224,15 +203,11 @@
         <div class="table-wrapper"><table><thead><tr><th>ID</th><th>Placa</th><th>Técnico</th><th>Início</th><th>Fim</th><th>Descrição</th><th>Ações</th></tr></thead><tbody id="manutBody"></tbody></table></div>
       </section>
 
-      <!-- ARQUIVOS -->
       <section id="page-arquivos" class="page-section">
         <h2 class="section-title">Arquivos de Manutenção</h2>
         <p class="section-subtitle">Anexos vinculados às manutenções</p>
         <div class="filters-bar">
-          <div class="filter-group">
-            <label>Manutenção</label>
-            <select id="arqManutId"><option value="">Selecione uma manutenção...</option></select>
-          </div>
+          <div class="filter-group"><label>Manutenção</label><select id="arqManutId"><option value="">Selecione uma manutenção...</option></select></div>
           <div class="filter-actions">
             <button class="btn btn-primary" id="arqBuscar"><i class="fas fa-search"></i> Buscar</button>
             <button class="btn btn-success" id="arqNovo"><i class="fas fa-plus"></i> Novo Arquivo</button>
@@ -241,7 +216,6 @@
         <div class="table-wrapper"><table><thead><tr><th>ID</th><th>Manutenção</th><th>Descrição</th><th>Link</th><th>Blob</th><th>Ações</th></tr></thead><tbody id="arqBody"></tbody></table></div>
       </section>
 
-      <!-- VEÍCULOS -->
       <section id="page-veiculos" class="page-section">
         <h2 class="section-title">Veículos</h2>
         <p class="section-subtitle">Frota cadastrada</p>
@@ -249,44 +223,37 @@
         <div class="table-wrapper"><table><thead><tr><th>Placa</th><th>Modelo</th><th>Ano</th><th>Tipo</th><th>Capacidade</th><th>Ações</th></tr></thead><tbody id="veicBody"></tbody></table></div>
       </section>
 
-      <!-- DOCUMENTOS -->
       <section id="page-documentos" class="page-section">
         <h2 class="section-title">Documentos de Veículos</h2>
         <p class="section-subtitle">CRLV, seguros, tacógrafo, etc.</p>
         <div class="filters-bar">
-          <div class="filter-group">
-            <label>Veículo</label>
-            <select id="docPlaca"><option value="">Todos</option></select>
-          </div>
+          <div class="filter-group"><label>Veículo</label><select id="docPlaca"><option value="">Todos</option></select></div>
           <div class="filter-actions">
             <button class="btn btn-primary" id="docFiltrar"><i class="fas fa-filter"></i> Filtrar</button>
             <button class="btn btn-success" id="docNovo"><i class="fas fa-plus"></i> Novo</button>
           </div>
         </div>
-        <div class="table-wrapper"><table><thead><tr><th>Placa</th><th>Documento</th><th>Validade</th><th>Status</th><th>Ações</th></tr></thead><tbody id="docBody"></tbody></table></div>
+        <div class="table-wrapper"><table><thead><tr><th>Placa</th><th>Documento</th><th>Validade</th><th>Status</th><th>Anexo</th><th>Ações</th></tr></thead><tbody id="docBody"></tbody></table></div>
       </section>
 
-      <!-- MOTORISTAS -->
       <section id="page-motoristas" class="page-section">
         <h2 class="section-title">Motoristas</h2>
         <p class="section-subtitle">Motoristas cadastrados</p>
         <button class="btn btn-success" id="motNovo"><i class="fas fa-plus"></i> Novo Motorista</button>
-        <div class="table-wrapper"><table><thead><tr><th>ID</th><th>Nome</th><th>CPF</th><th>Status</th><th>Funções</th><th>Ações</th></tr></thead><tbody id="motBody"></tbody></table></div>
+        <div class="table-wrapper"><table><thead><tr><th>ID</th><th>Nome</th><th>CPF</th><th>Login</th><th>Status</th><th>Funções</th><th>Ações</th></tr></thead><tbody id="motBody"></tbody></table></div>
       </section>
 
-      <!-- TÉCNICOS -->
       <section id="page-tecnicos" class="page-section">
         <h2 class="section-title">Técnicos</h2>
         <p class="section-subtitle">Técnicos cadastrados</p>
         <button class="btn btn-success" id="tecNovo"><i class="fas fa-plus"></i> Novo Técnico</button>
-        <div class="table-wrapper"><table><thead><tr><th>ID</th><th>Nome</th><th>CPF</th><th>Tipo</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tecBody"></tbody></table></div>
+        <div class="table-wrapper"><table><thead><tr><th>ID</th><th>Nome</th><th>CPF</th><th>Login</th><th>Tipo</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tecBody"></tbody></table></div>
       </section>
 
     </div>
   </div>
 </div>
 
-<!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div class="modal-header">
@@ -301,13 +268,9 @@
 
 <script>
 /* =========================================================
-   CONFIG
+   CONFIG & AUTH
    ========================================================= */
 const API_BASE = 'http://127.0.0.1/Transportes/fleetcontrol/api/v1';
-
-/* =========================================================
-   AUTH STATE
-   ========================================================= */
 const TOKEN_KEY = 'canaControlToken';
 const USER_KEY = 'canaControlUser';
 function getToken() { return localStorage.getItem(TOKEN_KEY); }
@@ -316,9 +279,6 @@ function clearToken() { localStorage.removeItem(TOKEN_KEY); localStorage.removeI
 function getUser() { try { return JSON.parse(localStorage.getItem(USER_KEY) || 'null'); } catch { return null; } }
 function setUser(u) { localStorage.setItem(USER_KEY, JSON.stringify(u)); }
 
-/* =========================================================
-   HTTP
-   ========================================================= */
 async function api(method, path, body = null) {
   const headers = { 'Content-Type': 'application/json' };
   const tk = getToken();
@@ -351,7 +311,6 @@ async function api(method, path, body = null) {
    CACHE
    ========================================================= */
 const _cache = { veiculos: null, motoristas: null, tecnicos: null, manutencoes: null };
-
 async function getVeiculos(force = false) {
   if (_cache.veiculos && !force) return _cache.veiculos;
   const r = await api('GET', '/veiculos');
@@ -381,7 +340,7 @@ function invalidarCache(...nomes) {
 }
 
 /* =========================================================
-   BUILDERS DE <select>
+   BUILDERS
    ========================================================= */
 function buildVeiculoOptions(lista, selecionado = '', placeholder = 'Selecione um veículo...') {
   let html = `<option value="">${placeholder}</option>`;
@@ -445,7 +404,6 @@ async function popularFiltros() {
   const veicOpts = buildVeiculoFilterOptions(veiculos);
   const motOpts = buildMotoristaFilterOptions(motoristas);
   const tecOpts = buildTecnicoFilterOptions(tecnicos);
-
   ['dbVeiculo','fretePlaca','abastPlaca','chkPlaca','manutPlaca','docPlaca'].forEach(id => {
     const el = document.getElementById(id);
     if (el) { const atual = el.value; el.innerHTML = veicOpts; el.value = atual; }
@@ -471,7 +429,6 @@ function toast(message, type = 'info') {
   div.querySelector('.toast-close').addEventListener('click', () => div.remove());
   setTimeout(() => div.remove(), 5000);
 }
-
 function openModal(title, bodyHTML, onConfirm) {
   document.getElementById('modalTitle').textContent = title;
   document.getElementById('modalBody').innerHTML = bodyHTML + `
@@ -499,6 +456,33 @@ function statusBadge(s) {
                 'Cancelado': 'danger', 'Vencido': 'danger', 'Reprovado': 'danger' };
   const cls = map[s] || 'info';
   return `<span class="badge badge-${cls}">${esc(s || '-')}</span>`;
+}
+
+/* =========================================================
+   CHECKLIST
+   ========================================================= */
+const CHECKLIST_LABELS = {
+  nivel_oleo:'Nível do óleo', nivel_agua:'Nível da água', pneus:'Pneus', freios:'Freios',
+  luzes_farois:'Luzes / faróis', documentos:'Documentos', extintor:'Extintor',
+  triangulo:'Triângulo', limpadores:'Limpadores', bateria:'Bateria'
+};
+function labelChecklistItem(key) {
+  if (CHECKLIST_LABELS[key]) return CHECKLIST_LABELS[key];
+  return String(key).replace(/_/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase());
+}
+function parseDadosCheck(raw) {
+  if (!raw) return {};
+  if (typeof raw === 'object') return raw;
+  try { return JSON.parse(raw); } catch { return {}; }
+}
+function classificarChecklist(dados) {
+  const itens = (dados && dados.itens) || {};
+  const chaves = Object.keys(itens);
+  const total = chaves.length;
+  const falhas = chaves.filter(k => itens[k] === false);
+  const ok = chaves.filter(k => itens[k] === true).length;
+  const semItens = total === 0;
+  return { total, ok, falhas, semItens, conforme: !semItens && falhas.length === 0 };
 }
 
 /* =========================================================
@@ -530,28 +514,19 @@ function isImageMime(mime) { return /^image\//.test(mime); }
 
 window.baixarArquivoBlob = async function(idArq) {
   const r = await api('GET', '/arquivos-manutencao/' + idArq);
-  if (!r.ok || !r.data || !r.data.arq_blob) {
-    toast('Não foi possível obter o arquivo.', 'error');
-    return;
-  }
+  if (!r.ok || !r.data || !r.data.arq_blob) { toast('Não foi possível obter o arquivo.', 'error'); return; }
   const mime = detectMimeFromBase64(r.data.arq_blob);
   const blob = base64ToBlob(r.data.arq_blob, mime);
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
   a.download = r.data.descricao || ('arquivo_' + idArq);
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
 };
-
 window.visualizarArquivoBlob = async function(idArq) {
   const r = await api('GET', '/arquivos-manutencao/' + idArq);
-  if (!r.ok || !r.data || !r.data.arq_blob) {
-    toast('Não foi possível obter o arquivo.', 'error');
-    return;
-  }
+  if (!r.ok || !r.data || !r.data.arq_blob) { toast('Não foi possível obter o arquivo.', 'error'); return; }
   const mime = detectMimeFromBase64(r.data.arq_blob);
   let preview = '';
   if (isImageMime(mime)) {
@@ -563,78 +538,83 @@ window.visualizarArquivoBlob = async function(idArq) {
   }
   openModal('Arquivo — ' + (r.data.descricao || ('#' + idArq)), preview, null);
 };
+window.visualizarArquivoDoc = async function(placa, descricao) {
+  const url = `/documentos-veiculo?placa=${encodeURIComponent(placa)}&descricao=${encodeURIComponent(descricao)}`;
+  const r = await api('GET', url);
+  if (!r.ok || !r.data || !r.data.arq_blob) { toast('Não foi possível obter o arquivo.', 'error'); return; }
+  const mime = detectMimeFromBase64(r.data.arq_blob);
+  let preview = '';
+  if (isImageMime(mime)) {
+    preview = `<img src="data:${mime};base64,${r.data.arq_blob}" class="file-preview-img" alt="Pré-visualização">`;
+  } else if (mime === 'application/pdf') {
+    preview = `<iframe src="data:application/pdf;base64,${r.data.arq_blob}" style="width:100%;height:500px;border:none;border-radius:8px;margin-top:8px;"></iframe>`;
+  } else {
+    preview = `<p class="text-muted mt-16">Pré-visualização não disponível para este tipo. Use "Baixar".</p>`;
+  }
+  openModal(`${descricao} — ${placa}`, preview, null);
+};
+window.baixarArquivoDoc = async function(placa, descricao) {
+  const url = `/documentos-veiculo?placa=${encodeURIComponent(placa)}&descricao=${encodeURIComponent(descricao)}`;
+  const r = await api('GET', url);
+  if (!r.ok || !r.data || !r.data.arq_blob) { toast('Não foi possível obter o arquivo.', 'error'); return; }
+  const mime = detectMimeFromBase64(r.data.arq_blob);
+  const blob = base64ToBlob(r.data.arq_blob, mime);
+  const urlBlob = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = urlBlob; a.download = `${placa}_${descricao}`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(urlBlob);
+};
+function renderAnexoDocumento(d) {
+  const temLink = !!d.arq_link;
+  const temBlob = Number(d.tem_blob) === 1;
+  if (!temLink && !temBlob) return '<span class="text-muted">—</span>';
+  const partes = [];
+  if (temLink) partes.push(`<button title="Abrir link" onclick="window.open('${esc(d.arq_link)}', '_blank')"><i class="fas fa-external-link-alt"></i></button>`);
+  if (temBlob) {
+    partes.push(`<button title="Visualizar" onclick="visualizarArquivoDoc('${esc(d.placa)}','${esc(d.descricao)}')"><i class="fas fa-eye"></i></button>`);
+    partes.push(`<button title="Baixar" onclick="baixarArquivoDoc('${esc(d.placa)}','${esc(d.descricao)}')"><i class="fas fa-download"></i></button>`);
+  }
+  return `<div class="actions">${partes.join('')}</div>`;
+}
 
 /* =========================================================
-   ===== NOVO: VALIDAÇÕES CENTRALIZADAS =====
-   Espelha as regras aplicadas no motorista.html
+   VALIDAÇÕES
    ========================================================= */
-
-/* Faixas razoáveis para detectar valores absurdos */
 const LIMITES = {
-  km:         { min: 0, max: 3_000_000 },
-  litros:     { min: 0, max: 2_000 },
-  distancia:  { min: 0, max: 10_000 },
-  peso:       { min: 0, max: 100 },
-  valor:      { min: 0, max: 500_000 },
-  ano:        { min: 1900, max: new Date().getFullYear() + 1 },
-  capacidade: { min: 0, max: 100 },
+  km:{min:0,max:3000000}, litros:{min:0,max:2000}, distancia:{min:0,max:10000},
+  peso:{min:0,max:100}, valor:{min:0,max:500000}, ano:{min:1900,max:new Date().getFullYear()+1},
+  capacidade:{min:0,max:100}
 };
-
-function rotuloCampo(campo) {
-  return ({
-    km: 'KM',
-    litros: 'Litros',
-    distancia: 'Distância',
-    peso: 'Peso',
-    valor: 'Valor',
-    ano: 'Ano',
-    capacidade: 'Capacidade'
-  })[campo] || campo;
-}
-
+function rotuloCampo(c) { return ({km:'KM',litros:'Litros',distancia:'Distância',peso:'Peso',valor:'Valor',ano:'Ano',capacidade:'Capacidade'})[c]||c; }
 function validarFaixa(valor, campo) {
-  const lim = LIMITES[campo];
-  if (!lim) return { ok: true };
-  if (!Number.isFinite(valor)) {
-    return { ok: false, msg: `Valor inválido para ${rotuloCampo(campo)}.` };
+  const lim = LIMITES[campo]; if (!lim) return {ok:true};
+  if (!Number.isFinite(valor)) return {ok:false,msg:`Valor inválido para ${rotuloCampo(campo)}.`};
+  if (valor < lim.min) return {ok:false,msg:`${rotuloCampo(campo)} não pode ser menor que ${lim.min}.`};
+  if (valor > lim.max) return {ok:false,msg:`${rotuloCampo(campo)} acima do limite razoável (máx: ${lim.max.toLocaleString('pt-BR')}).`};
+  return {ok:true};
+}
+function validarCPFBasico(cpf) { return String(cpf||'').replace(/\D/g,'').length === 11; }
+function validarPlaca(placa) { return placa && /^[A-Z]{3}-?\d[A-Z0-9]\d{2}$/i.test(String(placa).trim()); }
+function validarCredenciais(login, senha, cpf, senhaOpcional = false) {
+  const loginFinal = (login && login.trim()) ? login.trim() : (cpf || '').trim();
+  if (!loginFinal) return {ok:false,msg:'Informe o login (ou o CPF, que será usado como login).'};
+  if (loginFinal.length < 4) return {ok:false,msg:'Login muito curto (mín. 4 caracteres).'};
+  if (!/^[A-Za-z0-9._@-]+$/.test(loginFinal)) return {ok:false,msg:'Login inválido. Use letras, números, ponto, hífen, underline ou @.'};
+  if (senhaOpcional) {
+    if (senha && senha.length < 6) return {ok:false,msg:'Senha muito curta (mín. 6 caracteres).'};
+  } else {
+    if (!senha || senha.length < 6) return {ok:false,msg:'Senha muito curta (mín. 6 caracteres).'};
   }
-  if (valor < lim.min) {
-    return { ok: false, msg: `${rotuloCampo(campo)} não pode ser menor que ${lim.min}.` };
-  }
-  if (valor > lim.max) {
-    return {
-      ok: false,
-      msg: `${rotuloCampo(campo)} acima do limite razoável (máx: ${lim.max.toLocaleString('pt-BR')}). Confira o valor digitado.`
-    };
-  }
-  return { ok: true };
+  return {ok:true, login: loginFinal};
 }
 
-/* --- CPF / Placa --- */
-function validarCPFBasico(cpf) {
-  const limpo = String(cpf || '').replace(/\D/g, '');
-  return limpo.length === 11;
-}
-
-function validarPlaca(placa) {
-  if (!placa) return false;
-  // Aceita ABC-1234, ABC1234 ou formato Mercosul ABC1D23
-  return /^[A-Z]{3}-?\d[A-Z0-9]\d{2}$/i.test(String(placa).trim());
-}
-
-/* --- KM: cache do último valor por placa (via servidor) --- */
 const _kmCache = { mapa: null, timestamp: 0 };
-const KM_CACHE_TTL = 5 * 60 * 1000; // 5 minutos
-
+const KM_CACHE_TTL = 5 * 60 * 1000;
 async function carregarKmCache(force = false) {
   const agora = Date.now();
-  if (!force && _kmCache.mapa && (agora - _kmCache.timestamp) < KM_CACHE_TTL) {
-    return _kmCache.mapa;
-  }
-  const [rAbast, rCheck] = await Promise.all([
-    api('GET', '/abastecimentos'),
-    api('GET', '/checklists')
-  ]);
+  if (!force && _kmCache.mapa && (agora - _kmCache.timestamp) < KM_CACHE_TTL) return _kmCache.mapa;
+  const [rAbast, rCheck] = await Promise.all([api('GET', '/abastecimentos'), api('GET', '/checklists')]);
   const mapa = {};
   const processar = (items, extractor) => {
     (items || []).forEach(item => {
@@ -645,59 +625,157 @@ async function carregarKmCache(force = false) {
     });
   };
   processar(rAbast.data, a => Number(a.km));
-  processar(rCheck.data, c => {
-    const dc = (typeof c.dados_check === 'object' && c.dados_check) ? c.dados_check : {};
-    return Number(dc.km_atual);
-  });
-  _kmCache.mapa = mapa;
-  _kmCache.timestamp = agora;
+  processar(rCheck.data, c => Number(parseDadosCheck(c.dados_check).km_atual));
+  _kmCache.mapa = mapa; _kmCache.timestamp = agora;
   return mapa;
 }
-
-function invalidarKmCache() {
-  _kmCache.mapa = null;
-  _kmCache.timestamp = 0;
-}
-
+function invalidarKmCache() { _kmCache.mapa = null; _kmCache.timestamp = 0; }
 async function validarKmVeiculo(placa, km) {
-  if (!placa) return { ok: false, msg: 'Informe a placa.' };
-  if (!Number.isFinite(km) || km < 0) return { ok: false, msg: 'Informe um KM válido.' };
-
-  const faixa = validarFaixa(km, 'km');
-  if (!faixa.ok) return faixa;
-
+  if (!placa) return {ok:false,msg:'Informe a placa.'};
+  if (!Number.isFinite(km) || km < 0) return {ok:false,msg:'Informe um KM válido.'};
+  const faixa = validarFaixa(km,'km'); if (!faixa.ok) return faixa;
   const mapa = await carregarKmCache();
   const ultimo = mapa[placa];
   if (ultimo !== undefined && km < ultimo) {
-    return {
-      ok: false,
-      ultimoKm: ultimo,
-      msg: `KM (${km.toLocaleString('pt-BR')}) é menor que o último registrado para este veículo (${ultimo.toLocaleString('pt-BR')} km).`
-    };
+    return {ok:false,ultimoKm:ultimo,msg:`KM (${km.toLocaleString('pt-BR')}) é menor que o último registrado (${ultimo.toLocaleString('pt-BR')} km).`};
   }
-  return { ok: true, ultimoKm: ultimo ?? null };
+  return {ok:true,ultimoKm:ultimo??null};
 }
-
-/* --- Descrição mínima --- */
-function validarDescricaoMinima(texto, minimo = 10) {
-  const t = String(texto || '').trim();
-  if (t.length === 0) return { ok: false, msg: 'Preencha a descrição.' };
-  if (t.length < minimo) {
-    return { ok: false, msg: `Descrição muito curta (mín. ${minimo} caracteres).` };
-  }
-  return { ok: true };
+function validarDescricaoMinima(t, min=10) {
+  t = String(t||'').trim();
+  if (t.length === 0) return {ok:false,msg:'Preencha a descrição.'};
+  if (t.length < min) return {ok:false,msg:`Descrição muito curta (mín. ${min} caracteres).`};
+  return {ok:true};
 }
-
-/* --- Data de validade de documento --- */
 function validarValidadeDocumento(dataISO) {
-  if (!dataISO) return { ok: false, msg: 'Informe a validade.' };
-  const d = new Date(dataISO + 'T00:00:00');
-  if (isNaN(d.getTime())) return { ok: false, msg: 'Data inválida.' };
-  const anoMin = new Date().getFullYear() - 5;
-  if (d.getFullYear() < anoMin) {
-    return { ok: false, msg: `Data muito antiga (antes de ${anoMin}). Confira o valor.` };
+  if (!dataISO) return {ok:false,msg:'Informe a validade.'};
+  const d = new Date(dataISO+'T00:00:00');
+  if (isNaN(d.getTime())) return {ok:false,msg:'Data inválida.'};
+  const anoMin = new Date().getFullYear()-5;
+  if (d.getFullYear() < anoMin) return {ok:false,msg:`Data muito antiga (antes de ${anoMin}).`};
+  return {ok:true};
+}
+
+/* =========================================================
+   MÉTRICAS DASHBOARD
+   ========================================================= */
+const PRECO_DIESEL_KEY = 'canaControlPrecoDiesel';
+const PRECO_DIESEL_PADRAO = 6.00;
+function getPrecoDiesel() {
+  const v = parseFloat(localStorage.getItem(PRECO_DIESEL_KEY));
+  return Number.isFinite(v) && v > 0 ? v : PRECO_DIESEL_PADRAO;
+}
+function setPrecoDiesel(v) { localStorage.setItem(PRECO_DIESEL_KEY, String(v)); }
+let _lastDashData = { fretes: [], abast: [] };
+
+function calcularConsumoPorVeiculo(abastecimentos) {
+  const byPlaca = {};
+  (abastecimentos||[]).forEach(a => {
+    const km = Number(a.km), litros = Number(a.litros);
+    if (!a.placa || !Number.isFinite(km) || !Number.isFinite(litros)) return;
+    if (!byPlaca[a.placa]) byPlaca[a.placa] = [];
+    byPlaca[a.placa].push({km,litros});
+  });
+  const result = [];
+  Object.keys(byPlaca).forEach(placa => {
+    const list = byPlaca[placa].slice().sort((a,b)=>a.km-b.km);
+    const n = list.length;
+    const litrosTotal = list.reduce((s,a)=>s+a.litros,0);
+    if (n < 2) { result.push({placa,n,kmRodados:0,litrosConsumidos:litrosTotal,media:null}); return; }
+    const kmIni = list[0].km, kmFim = list[n-1].km;
+    const kmRodados = kmFim - kmIni;
+    const litrosConsumidos = list.slice(1).reduce((s,a)=>s+a.litros,0);
+    const media = (kmRodados>0 && litrosConsumidos>0) ? kmRodados/litrosConsumidos : null;
+    result.push({placa,n,kmRodados,litrosConsumidos,media});
+  });
+  return result.sort((a,b)=>{
+    if (a.media==null && b.media==null) return 0;
+    if (a.media==null) return 1;
+    if (b.media==null) return -1;
+    return b.media-a.media;
+  });
+}
+function renderConsumoPorVeiculo(abast) {
+  const tbody = document.getElementById('consumoBody'); if (!tbody) return;
+  const rows = calcularConsumoPorVeiculo(abast);
+  tbody.innerHTML = '';
+  if (rows.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-muted text-center">Sem dados de abastecimento.</td></tr>'; return; }
+  rows.forEach(r => {
+    const mediaHtml = r.media != null
+      ? `<strong style="color:#2e86c1;font-size:.95rem;">${r.media.toFixed(2).replace('.',',')}</strong> <span class="text-muted" style="font-size:.72rem;">km/L</span>`
+      : `<span class="text-muted" style="font-size:.78rem;">— (dados insuficientes)</span>`;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>${esc(r.placa)}</strong></td><td>${r.n}</td><td>${r.kmRodados.toLocaleString('pt-BR')}</td><td>${fmtNum(r.litrosConsumidos)} L</td><td>${mediaHtml}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+function calcularLucratividadePorVeiculo(fretes, abastecimentos, precoDiesel) {
+  const byPlaca = {};
+  const g = p => (byPlaca[p] || (byPlaca[p]={receita:0,nFretes:0,litros:0}));
+  (fretes||[]).forEach(f => { if (!f.placa) return; const d=g(f.placa); d.receita+=Number(f.valor||0); d.nFretes++; });
+  (abastecimentos||[]).forEach(a => { if (!a.placa) return; const d=g(a.placa); d.litros+=Number(a.litros||0); });
+  return Object.keys(byPlaca).map(placa => {
+    const d = byPlaca[placa];
+    const custo = d.litros*precoDiesel;
+    return {placa, nFretes:d.nFretes, receita:d.receita, litros:d.litros, custo, resultado:d.receita-custo};
+  }).sort((a,b)=>b.resultado-a.resultado);
+}
+function renderLucratividadePorVeiculo(fretes, abast) {
+  const tbody = document.getElementById('lucroBody'); if (!tbody) return;
+  const rows = calcularLucratividadePorVeiculo(fretes, abast, getPrecoDiesel());
+  tbody.innerHTML = '';
+  if (rows.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center">Sem dados no período.</td></tr>'; return; }
+  rows.forEach(r => {
+    const resultHtml = r.resultado >= 0
+      ? `<span style="color:#27ae60;font-weight:700;">+${fmtMoney(r.resultado)}</span>`
+      : `<span style="color:#e74c3c;font-weight:700;">${fmtMoney(r.resultado)}</span>`;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>${esc(r.placa)}</strong></td><td>${r.nFretes}</td><td>${fmtMoney(r.receita)}</td><td>${fmtNum(r.litros)} L</td><td>${fmtMoney(r.custo)}</td><td>${resultHtml}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+function calcularRankingMotoristas(fretes) {
+  const byMot = {};
+  (fretes||[]).forEach(f => {
+    const id = f.id_motorista; if (id==null) return;
+    if (!byMot[id]) byMot[id] = {id, nome: f.nome_motorista||('ID '+id), nFretes:0, km:0, receita:0};
+    byMot[id].nFretes++;
+    byMot[id].km += Number(f.distancia||0);
+    byMot[id].receita += Number(f.valor||0);
+  });
+  return Object.values(byMot);
+}
+function rankBadge(idx) {
+  const style = idx===0 ? 'background:linear-gradient(135deg,#ffd700,#f5b800);color:#5a4500;'
+              : idx===1 ? 'background:linear-gradient(135deg,#e8e8e8,#b8b8b8);color:#333;'
+              : idx===2 ? 'background:linear-gradient(135deg,#e8a87c,#cd7f32);color:#fff;'
+              : 'background:var(--bg-body);color:var(--text-muted);';
+  return `<span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;font-size:.75rem;font-weight:700;${style}">${idx+1}</span>`;
+}
+function renderRankingMotoristas(fretes) {
+  const list = calcularRankingMotoristas(fretes);
+  const tbodyKm = document.getElementById('rankKmBody');
+  const tbodyRec = document.getElementById('rankReceitaBody');
+  if (tbodyKm) {
+    tbodyKm.innerHTML = '';
+    const top = list.slice().sort((a,b)=>b.km-a.km).slice(0,5);
+    if (!top.length) tbodyKm.innerHTML = '<tr><td colspan="4" class="text-muted text-center">Sem dados.</td></tr>';
+    else top.forEach((m,i)=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${rankBadge(i)}</td><td>${esc(m.nome)}</td><td><strong>${m.km.toLocaleString('pt-BR')}</strong> <span class="text-muted" style="font-size:.72rem;">km</span></td><td>${m.nFretes}</td>`;
+      tbodyKm.appendChild(tr);
+    });
   }
-  return { ok: true };
+  if (tbodyRec) {
+    tbodyRec.innerHTML = '';
+    const top = list.slice().sort((a,b)=>b.receita-a.receita).slice(0,5);
+    if (!top.length) tbodyRec.innerHTML = '<tr><td colspan="4" class="text-muted text-center">Sem dados.</td></tr>';
+    else top.forEach((m,i)=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${rankBadge(i)}</td><td>${esc(m.nome)}</td><td><strong style="color:#27ae60;">${fmtMoney(m.receita)}</strong></td><td>${m.nFretes}</td>`;
+      tbodyRec.appendChild(tr);
+    });
+  }
 }
 
 /* =========================================================
@@ -708,19 +786,15 @@ document.querySelectorAll('#sidebar .menu a').forEach(a => {
     e.preventDefault();
     const page = a.dataset.page;
     document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-    document.getElementById('page-' + page).classList.add('active');
+    document.getElementById('page-'+page).classList.add('active');
     document.querySelectorAll('#sidebar .menu a').forEach(x => x.classList.remove('active'));
     a.classList.add('active');
     if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('mobile-open');
     loadPage(page);
   });
 });
-document.getElementById('sidebarToggle').addEventListener('click', () => {
-  document.getElementById('sidebar').classList.toggle('collapsed');
-});
-document.getElementById('mobileMenuToggle').addEventListener('click', () => {
-  document.getElementById('sidebar').classList.toggle('mobile-open');
-});
+document.getElementById('sidebarToggle').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('collapsed'));
+document.getElementById('mobileMenuToggle').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('mobile-open'));
 
 async function loadPage(page) {
   await popularFiltros();
@@ -761,8 +835,7 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
   if (!cpf || !senha) { toast('Informe CPF e senha.', 'error'); return; }
   const r = await api('POST', '/auth/login', { cpf, senha });
   if (!r.ok) { toast(r.message || 'Falha no login.', 'error'); return; }
-  setToken(r.data.token);
-  setUser({ tipo_usuario: r.data.tipo_usuario });
+  setToken(r.data.token); setUser({ tipo_usuario: r.data.tipo_usuario });
   toast('Login realizado!', 'success');
   await showApp();
   loadDashboard();
@@ -793,94 +866,134 @@ async function refreshDashboard() {
   const filtroIni = document.getElementById('dbDataInicio').value;
   const filtroFim = document.getElementById('dbDataFim').value;
   const [rFretes, rAbast, rManut, rCheck, rDocs] = await Promise.all([
-    api('GET', '/fretes'), api('GET', '/abastecimentos'),
-    api('GET', '/manutencoes'), api('GET', '/checklists'),
-    api('GET', '/documentos-veiculo'),
+    api('GET','/fretes'), api('GET','/abastecimentos'), api('GET','/manutencoes'),
+    api('GET','/checklists'), api('GET','/documentos-veiculo')
   ]);
-  const fretes = (rFretes.data || []).filter(f => matchesFilter(f, 'placa', filtroPlaca, 'data_frete', filtroIni, filtroFim));
-  const abast = (rAbast.data || []).filter(f => matchesFilter(f, 'placa', filtroPlaca, null, null, null));
-  const manut = (rManut.data || []).filter(m => matchesFilter(m, 'placa', filtroPlaca, 'data_ini_manutencao', filtroIni, filtroFim));
-  const check = (rCheck.data || []).filter(c => matchesFilter(c, 'placa', filtroPlaca, 'data_hora', filtroIni, filtroFim));
+  const fretes = (rFretes.data||[]).filter(f => matchesFilter(f,'placa',filtroPlaca,'data_frete',filtroIni,filtroFim));
+  const abast = (rAbast.data||[]).filter(f => matchesFilter(f,'placa',filtroPlaca,null,null,null));
+  const manut = (rManut.data||[]).filter(m => matchesFilter(m,'placa',filtroPlaca,'data_ini_manutencao',filtroIni,filtroFim));
+  const check = (rCheck.data||[]).filter(c => matchesFilter(c,'placa',filtroPlaca,'data_hora',filtroIni,filtroFim));
   const docs = rDocs.data || [];
-  const totalTon = fretes.reduce((s, f) => s + Number(f.peso || 0), 0);
-  const totalValor = fretes.reduce((s, f) => s + Number(f.valor || 0), 0);
-  const totalLitros = abast.reduce((s, f) => s + Number(f.litros || 0), 0);
+  _lastDashData = { fretes, abast };
+
+  const totalTon = fretes.reduce((s,f)=>s+Number(f.peso||0),0);
+  const totalValor = fretes.reduce((s,f)=>s+Number(f.valor||0),0);
+  const totalLitros = abast.reduce((s,f)=>s+Number(f.litros||0),0);
+
   document.getElementById('kpiFretes').textContent = fretes.length;
   document.getElementById('kpiFaturamento').textContent = fmtMoney(totalValor);
   document.getElementById('kpiToneladas').textContent = fmtNum(totalTon) + ' t';
   document.getElementById('kpiLitros').textContent = fmtNum(totalLitros) + ' L';
   document.getElementById('kpiManutencoes').textContent = manut.length;
   document.getElementById('kpiChecklists').textContent = check.length;
+
+  const falhas = check.filter(c => {
+    const cls = classificarChecklist(parseDadosCheck(c.dados_check));
+    return !cls.semItens && !cls.conforme;
+  }).length;
+  const elKpiF = document.getElementById('kpiChecklistsFalhas');
+  if (elKpiF) {
+    if (check.length === 0) elKpiF.innerHTML = '';
+    else if (falhas > 0) elKpiF.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:#e74c3c;"></i> ${falhas} não conforme${falhas>1?'s':''}`;
+    else elKpiF.innerHTML = '<i class="fas fa-check" style="color:#27ae60;"></i> Todos conformes';
+  }
+
   renderChartStatus(fretes);
   renderChartAbastPorVeiculo(abast);
   renderChartManutPorVeiculo(manut);
   renderChartFretesMes(fretes);
+  renderConsumoPorVeiculo(abast);
+  renderLucratividadePorVeiculo(fretes, abast);
+  renderRankingMotoristas(fretes);
+
   const hoje = new Date(); hoje.setHours(0,0,0,0);
-  const limite = new Date(hoje); limite.setDate(limite.getDate() + 30);
+  const limite = new Date(hoje); limite.setDate(limite.getDate()+30);
   const aVencer = docs.filter(d => { const dt = new Date(d.validade); return dt >= hoje && dt <= limite; });
   const tbody = document.getElementById('docsAVencerBody');
   tbody.innerHTML = '';
   if (aVencer.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4" class="text-muted text-center">Nenhum documento a vencer nos próximos 30 dias.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="text-muted text-center">Nenhum documento a vencer nos próximos 30 dias.</td></tr>';
   } else {
     aVencer.forEach(d => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${esc(d.placa)}</td><td>${esc(d.descricao)}</td><td>${esc(d.validade)}</td><td>${statusBadge(d.status_documento)}</td>`;
+      tr.innerHTML = `<td>${esc(d.placa)}</td><td>${esc(d.descricao)}</td><td>${esc(d.validade)}</td><td>${statusBadge(d.status_documento)}</td><td>${renderAnexoDocumento(d)}</td>`;
       tbody.appendChild(tr);
+    });
+  }
+
+  const nc = check
+    .map(c => ({c, d: parseDadosCheck(c.dados_check)}))
+    .map(x => ({...x, cls: classificarChecklist(x.d)}))
+    .filter(x => !x.cls.semItens && !x.cls.conforme)
+    .sort((a,b) => (b.c.data_hora||'').localeCompare(a.c.data_hora||''))
+    .slice(0,5);
+
+  const tbodyNC = document.getElementById('chkNCBody');
+  if (tbodyNC) {
+    tbodyNC.innerHTML = '';
+    if (!nc.length) tbodyNC.innerHTML = '<tr><td colspan="6" class="text-muted text-center">Nenhum checklist não conforme no período.</td></tr>';
+    else nc.forEach(({c,d,cls}) => {
+      const falhas = cls.falhas.map(labelChecklistItem).join(', ');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${esc((c.data_hora||'').replace('T',' ').substring(0,16))}</td>
+        <td>${esc(c.placa)}</td>
+        <td>${esc(c.nome_motorista || c.id_motorista)}</td>
+        <td>${esc(d.tipo||'—')}</td>
+        <td><span style="color:#e74c3c;font-weight:600;">${esc(falhas)}</span></td>
+        <td class="actions"><button title="Ver" onclick='verChecklist(${JSON.stringify(JSON.stringify(c))})'><i class="fas fa-eye"></i></button></td>`;
+      tbodyNC.appendChild(tr);
     });
   }
 }
 function matchesFilter(item, campoPlaca, valorPlaca, campoData, ini, fim) {
   if (valorPlaca && item[campoPlaca] !== valorPlaca) return false;
-  if (campoData && ini) { const d = (item[campoData] || '').substring(0, 10); if (d < ini) return false; }
-  if (campoData && fim) { const d = (item[campoData] || '').substring(0, 10); if (d > fim) return false; }
+  if (campoData && ini) { const d = (item[campoData]||'').substring(0,10); if (d < ini) return false; }
+  if (campoData && fim) { const d = (item[campoData]||'').substring(0,10); if (d > fim) return false; }
   return true;
 }
 function renderChartStatus(fretes) {
   const ctx = document.getElementById('chartFretesStatus'); if (!ctx) return;
   if (charts.status) charts.status.destroy();
-  const grouped = {}; fretes.forEach(f => { grouped[f.status_frete] = (grouped[f.status_frete] || 0) + 1; });
+  const g = {}; fretes.forEach(f => { g[f.status_frete] = (g[f.status_frete]||0)+1; });
   charts.status = new Chart(ctx, {
-    type: 'doughnut',
-    data: { labels: Object.keys(grouped), datasets: [{ data: Object.values(grouped), backgroundColor: ['#2e86c1','#e67e22','#27ae60','#e74c3c','#8e44ad'] }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#5e7a93' } } } }
+    type:'doughnut',
+    data:{labels:Object.keys(g),datasets:[{data:Object.values(g),backgroundColor:['#2e86c1','#e67e22','#27ae60','#e74c3c','#8e44ad']}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#5e7a93'}}}}
   });
 }
 function renderChartAbastPorVeiculo(abast) {
   const ctx = document.getElementById('chartAbastVeiculo'); if (!ctx) return;
   if (charts.abast) charts.abast.destroy();
-  const grouped = {}; abast.forEach(a => { grouped[a.placa] = (grouped[a.placa] || 0) + Number(a.litros || 0); });
+  const g = {}; abast.forEach(a => { g[a.placa] = (g[a.placa]||0)+Number(a.litros||0); });
   charts.abast = new Chart(ctx, {
-    type: 'bar',
-    data: { labels: Object.keys(grouped), datasets: [{ label: 'Litros', data: Object.values(grouped), backgroundColor: '#1a5276' }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#5e7a93' } }, y: { ticks: { color: '#5e7a93' } } } }
+    type:'bar', data:{labels:Object.keys(g),datasets:[{label:'Litros',data:Object.values(g),backgroundColor:'#1a5276'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#5e7a93'}},y:{ticks:{color:'#5e7a93'}}}}
   });
 }
 function renderChartManutPorVeiculo(manut) {
   const ctx = document.getElementById('chartManutVeiculo'); if (!ctx) return;
   if (charts.manut) charts.manut.destroy();
-  const grouped = {}; manut.forEach(m => { grouped[m.placa] = (grouped[m.placa] || 0) + 1; });
+  const g = {}; manut.forEach(m => { g[m.placa] = (g[m.placa]||0)+1; });
   charts.manut = new Chart(ctx, {
-    type: 'bar',
-    data: { labels: Object.keys(grouped), datasets: [{ label: 'Manutenções', data: Object.values(grouped), backgroundColor: '#e67e22' }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#5e7a93' } }, y: { ticks: { color: '#5e7a93' } } } }
+    type:'bar', data:{labels:Object.keys(g),datasets:[{label:'Manutenções',data:Object.values(g),backgroundColor:'#e67e22'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#5e7a93'}},y:{ticks:{color:'#5e7a93'}}}}
   });
 }
 function renderChartFretesMes(fretes) {
   const ctx = document.getElementById('chartFretesMes'); if (!ctx) return;
   if (charts.mes) charts.mes.destroy();
-  const grouped = {};
-  fretes.forEach(f => { const mes = (f.data_frete || '').substring(0, 7); if (mes) grouped[mes] = (grouped[mes] || 0) + 1; });
-  const labels = Object.keys(grouped).sort();
+  const g = {};
+  fretes.forEach(f => { const mes = (f.data_frete||'').substring(0,7); if (mes) g[mes]=(g[mes]||0)+1; });
+  const labels = Object.keys(g).sort();
   charts.mes = new Chart(ctx, {
-    type: 'line',
-    data: { labels, datasets: [{ label: 'Fretes', data: labels.map(l => grouped[l]), borderColor: '#2e86c1', backgroundColor: 'rgba(46,134,193,.15)', fill: true, tension: .3 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#5e7a93' } }, y: { ticks: { color: '#5e7a93' } } } }
+    type:'line', data:{labels,datasets:[{label:'Fretes',data:labels.map(l=>g[l]),borderColor:'#2e86c1',backgroundColor:'rgba(46,134,193,.15)',fill:true,tension:.3}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#5e7a93'}},y:{ticks:{color:'#5e7a93'}}}}
   });
 }
 
 /* =========================================================
-   FRETES
+   FRETES (com EDITAR)
    ========================================================= */
 document.getElementById('freteFiltrar').addEventListener('click', loadFretes);
 document.getElementById('freteNovo').addEventListener('click', novoFrete);
@@ -893,18 +1006,18 @@ async function loadFretes() {
   if (status) params.append('status', status);
   if (placa) params.append('placa', placa);
   if (idMot) params.append('id_motorista', idMot);
-  const r = await api('GET', '/fretes' + (params.toString() ? '?' + params : ''));
+  const r = await api('GET', '/fretes' + (params.toString()?'?'+params:''));
   const tbody = document.getElementById('fretesBody');
   tbody.innerHTML = '';
-  if (!r.ok) { toast(r.message || 'Erro ao carregar fretes.', 'error'); return; }
+  if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
   let list = r.data || [];
   if (idMot) list = list.filter(f => String(f.id_motorista) === String(idMot));
-  if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="10" class="text-muted text-center">Nenhum frete encontrado.</td></tr>'; return; }
+  if (!list.length) { tbody.innerHTML = '<tr><td colspan="10" class="text-muted text-center">Nenhum frete.</td></tr>'; return; }
   list.forEach(f => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${f.id_frete}</td>
-      <td>${esc((f.data_frete || '').replace('T', ' ').substring(0, 16))}</td>
+      <td>${esc((f.data_frete||'').replace('T',' ').substring(0,16))}</td>
       <td>${esc(f.placa)}</td>
       <td>${esc(f.nome_motorista || f.id_motorista)}</td>
       <td>${esc(f.origem)}</td>
@@ -912,25 +1025,27 @@ async function loadFretes() {
       <td>${fmtNum(f.peso)} t</td>
       <td>${fmtMoney(f.valor)}</td>
       <td>${statusBadge(f.status_frete)}</td>
-      <td class="actions"><button title="Excluir" onclick="excluirFrete(${f.id_frete})"><i class="fas fa-trash"></i></button></td>`;
+      <td class="actions">
+        <button title="Editar" onclick="editarFrete(${f.id_frete})"><i class="fas fa-edit"></i></button>
+        <button title="Excluir" onclick="excluirFrete(${f.id_frete})"><i class="fas fa-trash"></i></button>
+      </td>`;
     tbody.appendChild(tr);
   });
 }
 window.excluirFrete = function(id) {
-  openModal('Excluir Frete', `<p>Deseja realmente excluir o frete #${id}?</p>`, async () => {
-    const r = await api('DELETE', '/fretes/' + id);
-    if (!r.ok) { toast(r.message || 'Erro ao excluir.', 'error'); return false; }
-    toast('Frete excluído.', 'warning');
-    loadFretes();
+  openModal('Excluir Frete', `<p>Excluir frete #${id}?</p>`, async () => {
+    const r = await api('DELETE', '/fretes/'+id);
+    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
+    toast('Frete excluído.', 'warning'); loadFretes();
   });
 };
 async function novoFrete() {
   const [veiculos, motoristas] = await Promise.all([getVeiculos(), getMotoristas()]);
-  if (veiculos.length === 0) { toast('Nenhum veículo cadastrado. Cadastre um veículo primeiro.', 'warning'); return; }
-  if (motoristas.length === 0) { toast('Nenhum motorista cadastrado. Cadastre um motorista primeiro.', 'warning'); return; }
+  if (!veiculos.length) { toast('Nenhum veículo cadastrado.', 'warning'); return; }
+  if (!motoristas.length) { toast('Nenhum motorista cadastrado.', 'warning'); return; }
   const html = `
     <div class="form-row">
-      <div class="form-group"><label>Veículo (placa)</label><select id="fPlaca">${buildVeiculoOptions(veiculos)}</select></div>
+      <div class="form-group"><label>Veículo</label><select id="fPlaca">${buildVeiculoOptions(veiculos)}</select></div>
       <div class="form-group"><label>Motorista</label><select id="fMotorista">${buildMotoristaOptions(motoristas)}</select></div>
     </div>
     <div class="form-row">
@@ -943,10 +1058,7 @@ async function novoFrete() {
     </div>
     <div class="form-row">
       <div class="form-group"><label>Valor (R$)</label><input type="number" id="fValor" step="0.01" min="0"></div>
-      <div class="form-group">
-        <label>Status</label>
-        <select id="fStatus"><option>Agendado</option><option>Em andamento</option><option>Concluído</option><option>Cancelado</option></select>
-      </div>
+      <div class="form-group"><label>Status</label><select id="fStatus"><option>Agendado</option><option>Em andamento</option><option>Concluído</option><option>Cancelado</option></select></div>
     </div>`;
   openModal('Novo Frete', html, async () => {
     const body = {
@@ -954,30 +1066,76 @@ async function novoFrete() {
       id_motorista: parseInt(document.getElementById('fMotorista').value),
       origem: document.getElementById('fOrigem').value.trim(),
       destino: document.getElementById('fDestino').value.trim(),
-      distancia: parseFloat(document.getElementById('fDist').value) || 0,
-      peso: parseFloat(document.getElementById('fPeso').value) || 0,
-      valor: parseFloat(document.getElementById('fValor').value) || 0,
+      distancia: parseFloat(document.getElementById('fDist').value)||0,
+      peso: parseFloat(document.getElementById('fPeso').value)||0,
+      valor: parseFloat(document.getElementById('fValor').value)||0,
       status_frete: document.getElementById('fStatus').value
     };
     if (!body.placa) { toast('Selecione um veículo.', 'error'); return false; }
     if (!body.id_motorista) { toast('Selecione um motorista.', 'error'); return false; }
     if (!body.origem || !body.destino) { toast('Informe origem e destino.', 'error'); return false; }
-
-    // ===== NOVO: validação de faixas =====
-    for (const [campo, valor] of [['distancia', body.distancia], ['peso', body.peso], ['valor', body.valor]]) {
-      const v = validarFaixa(valor, campo);
-      if (!v.ok) { toast(v.msg, 'error'); return false; }
+    for (const [c,v] of [['distancia',body.distancia],['peso',body.peso],['valor',body.valor]]) {
+      const val = validarFaixa(v,c); if (!val.ok) { toast(val.msg,'error'); return false; }
     }
-
-    const r = await api('POST', '/fretes', body);
-    if (!r.ok) { toast(r.message || 'Erro ao criar frete.', 'error'); return false; }
-    toast('Frete criado!', 'success');
-    loadFretes();
+    const r = await api('POST','/fretes', body);
+    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
+    toast('Frete criado!', 'success'); loadFretes();
   });
 }
 
+/* NOVO: editar frete */
+window.editarFrete = async function(id) {
+  const r = await api('GET', '/fretes/' + id);
+  if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
+  const f = r.data;
+  const [veiculos, motoristas] = await Promise.all([getVeiculos(), getMotoristas()]);
+  const html = `
+    <div class="form-row">
+      <div class="form-group"><label>Veículo</label><select id="efPlaca">${buildVeiculoOptions(veiculos, f.placa)}</select></div>
+      <div class="form-group"><label>Motorista</label><select id="efMotorista" disabled>${buildMotoristaOptions(motoristas, f.id_motorista)}</select>
+        <small class="text-muted" style="font-size:.72rem;display:block;margin-top:2px;">Não editável após criação.</small>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Origem</label><input type="text" id="efOrigem" value="${esc(f.origem)}"></div>
+      <div class="form-group"><label>Destino</label><input type="text" id="efDestino" value="${esc(f.destino)}"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Distância (km)</label><input type="number" id="efDist" step="0.1" min="0" value="${f.distancia}"></div>
+      <div class="form-group"><label>Peso (t)</label><input type="number" id="efPeso" step="0.1" min="0" value="${f.peso}"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Valor (R$)</label><input type="number" id="efValor" step="0.01" min="0" value="${f.valor}"></div>
+      <div class="form-group"><label>Status</label>
+        <select id="efStatus">
+          ${['Agendado','Em andamento','Concluído','Cancelado'].map(s =>
+            `<option ${s===f.status_frete?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
+    </div>`;
+  openModal('Editar Frete #' + id, html, async () => {
+    const body = {
+      placa: document.getElementById('efPlaca').value,
+      origem: document.getElementById('efOrigem').value.trim(),
+      destino: document.getElementById('efDestino').value.trim(),
+      distancia: parseFloat(document.getElementById('efDist').value)||0,
+      peso: parseFloat(document.getElementById('efPeso').value)||0,
+      valor: parseFloat(document.getElementById('efValor').value)||0,
+      status_frete: document.getElementById('efStatus').value
+    };
+    if (!body.placa) { toast('Selecione um veículo.', 'error'); return false; }
+    if (!body.origem || !body.destino) { toast('Informe origem e destino.', 'error'); return false; }
+    for (const [c,v] of [['distancia',body.distancia],['peso',body.peso],['valor',body.valor]]) {
+      const val = validarFaixa(v,c); if (!val.ok) { toast(val.msg,'error'); return false; }
+    }
+    const resp = await api('PUT', '/fretes/'+id, body);
+    if (!resp.ok) { toast(resp.message || 'Erro.', 'error'); return false; }
+    toast('Frete atualizado!', 'success'); loadFretes();
+  });
+};
+
 /* =========================================================
-   ABASTECIMENTOS
+   ABASTECIMENTOS (com EDITAR)
    ========================================================= */
 document.getElementById('abastFiltrar').addEventListener('click', loadAbastecimentos);
 document.getElementById('abastNovo').addEventListener('click', novoAbastecimento);
@@ -987,13 +1145,13 @@ async function loadAbastecimentos() {
   const idMot = document.getElementById('abastMotorista').value;
   const params = new URLSearchParams();
   if (placa) params.append('placa', placa);
-  const r = await api('GET', '/abastecimentos' + (params.toString() ? '?' + params : ''));
+  const r = await api('GET', '/abastecimentos' + (params.toString()?'?'+params:''));
   const tbody = document.getElementById('abastBody');
   tbody.innerHTML = '';
   if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
   let list = r.data || [];
   if (idMot) list = list.filter(a => String(a.id_motorista) === String(idMot));
-  if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center">Nenhum abastecimento.</td></tr>'; return; }
+  if (!list.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center">Nenhum abastecimento.</td></tr>'; return; }
   list.forEach(a => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -1002,24 +1160,25 @@ async function loadAbastecimentos() {
       <td>${esc(a.nome_motorista || a.id_motorista)}</td>
       <td>${a.km}</td>
       <td>${fmtNum(a.litros)} L</td>
-      <td class="actions"><button onclick="excluirAbast(${a.id_abastecimento})"><i class="fas fa-trash"></i></button></td>`;
+      <td class="actions">
+        <button title="Editar" onclick="editarAbastecimento(${a.id_abastecimento})"><i class="fas fa-edit"></i></button>
+        <button title="Excluir" onclick="excluirAbast(${a.id_abastecimento})"><i class="fas fa-trash"></i></button>
+      </td>`;
     tbody.appendChild(tr);
   });
 }
 window.excluirAbast = function(id) {
   openModal('Excluir Abastecimento', `<p>Excluir abastecimento #${id}?</p>`, async () => {
-    const r = await api('DELETE', '/abastecimentos/' + id);
+    const r = await api('DELETE', '/abastecimentos/'+id);
     if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
-    // ===== NOVO: invalida cache de KM após exclusão =====
     invalidarKmCache();
-    toast('Abastecimento excluído.', 'warning');
-    loadAbastecimentos();
+    toast('Abastecimento excluído.', 'warning'); loadAbastecimentos();
   });
 };
 async function novoAbastecimento() {
   const [veiculos, motoristas] = await Promise.all([getVeiculos(), getMotoristas()]);
-  if (veiculos.length === 0) { toast('Nenhum veículo cadastrado.', 'warning'); return; }
-  if (motoristas.length === 0) { toast('Nenhum motorista cadastrado.', 'warning'); return; }
+  if (!veiculos.length) { toast('Nenhum veículo cadastrado.', 'warning'); return; }
+  if (!motoristas.length) { toast('Nenhum motorista cadastrado.', 'warning'); return; }
   const html = `
     <div class="form-row">
       <div class="form-group"><label>Veículo</label><select id="aPlaca">${buildVeiculoOptions(veiculos)}</select></div>
@@ -1028,41 +1187,60 @@ async function novoAbastecimento() {
     <div class="form-row">
       <div class="form-group"><label>Km</label><input type="number" id="aKm" min="0"></div>
       <div class="form-group"><label>Litros</label><input type="number" id="aLitros" step="0.1" min="0"></div>
-    </div>
-    <div class="obs-note" style="font-size:.8rem;color:var(--text-muted);background:var(--bg-body);padding:8px 14px;border-radius:8px;margin-top:8px;">
-      <i class="fas fa-info-circle"></i> O KM informado deve ser maior que o último KM registrado para o veículo.
     </div>`;
   openModal('Novo Abastecimento', html, async () => {
-    const placa   = document.getElementById('aPlaca').value;
-    const idMot   = parseInt(document.getElementById('aMotorista').value);
-    const km      = parseInt(document.getElementById('aKm').value);
-    const litros  = parseFloat(document.getElementById('aLitros').value);
-
+    const placa = document.getElementById('aPlaca').value;
+    const idMot = parseInt(document.getElementById('aMotorista').value);
+    const km = parseInt(document.getElementById('aKm').value);
+    const litros = parseFloat(document.getElementById('aLitros').value);
     if (!placa) { toast('Selecione um veículo.', 'error'); return false; }
     if (!idMot) { toast('Selecione um motorista.', 'error'); return false; }
-    if (!Number.isFinite(km) || km < 0) { toast('Informe o KM atual.', 'error'); return false; }
-    if (!Number.isFinite(litros) || litros <= 0) { toast('Informe os litros.', 'error'); return false; }
-
-    // ===== NOVO: faixas razoáveis =====
-    const vKm = validarFaixa(km, 'km');
-    if (!vKm.ok) { toast(vKm.msg, 'error'); return false; }
-    const vLitros = validarFaixa(litros, 'litros');
-    if (!vLitros.ok) { toast(vLitros.msg, 'error'); return false; }
-
-    // ===== NOVO: KM contra último registrado =====
-    const vKmVeic = await validarKmVeiculo(placa, km);
-    if (!vKmVeic.ok) { toast(vKmVeic.msg, 'error'); return false; }
-
-    const body = { placa, id_motorista: idMot, km, litros };
-    const r = await api('POST', '/abastecimentos', body);
+    if (!Number.isFinite(km) || km<0) { toast('Informe o KM atual.', 'error'); return false; }
+    if (!Number.isFinite(litros) || litros<=0) { toast('Informe os litros.', 'error'); return false; }
+    const vKm = validarFaixa(km,'km'); if (!vKm.ok) { toast(vKm.msg,'error'); return false; }
+    const vL = validarFaixa(litros,'litros'); if (!vL.ok) { toast(vL.msg,'error'); return false; }
+    const vKmV = await validarKmVeiculo(placa, km); if (!vKmV.ok) { toast(vKmV.msg,'error'); return false; }
+    const r = await api('POST','/abastecimentos', {placa, id_motorista: idMot, km, litros});
     if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
-
-    // ===== NOVO: invalida cache de KM após criação =====
     invalidarKmCache();
-    toast('Abastecimento criado!', 'success');
-    loadAbastecimentos();
+    toast('Abastecimento criado!', 'success'); loadAbastecimentos();
   });
 }
+
+/* NOVO: editar abastecimento */
+window.editarAbastecimento = async function(id) {
+  const r = await api('GET', '/abastecimentos/' + id);
+  if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
+  const a = r.data;
+  const veiculos = await getVeiculos();
+  const html = `
+    <div class="form-group">
+      <label>Veículo</label>
+      <select id="eaPlaca">${buildVeiculoOptions(veiculos, a.placa)}</select>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Km</label><input type="number" id="eaKm" min="0" value="${a.km}"></div>
+      <div class="form-group"><label>Litros</label><input type="number" id="eaLitros" step="0.1" min="0" value="${a.litros}"></div>
+    </div>
+    <div style="font-size:.78rem;color:var(--text-muted);background:var(--bg-body);padding:8px 12px;border-radius:6px;">
+      <i class="fas fa-info-circle"></i> Motorista original: <strong>${esc(a.nome_motorista || a.id_motorista)}</strong>
+      (não editável)
+    </div>`;
+  openModal('Editar Abastecimento #' + id, html, async () => {
+    const placa = document.getElementById('eaPlaca').value;
+    const km = parseInt(document.getElementById('eaKm').value);
+    const litros = parseFloat(document.getElementById('eaLitros').value);
+    if (!placa) { toast('Selecione um veículo.', 'error'); return false; }
+    if (!Number.isFinite(km) || km<0) { toast('Informe o KM.', 'error'); return false; }
+    if (!Number.isFinite(litros) || litros<=0) { toast('Informe os litros.', 'error'); return false; }
+    const vKm = validarFaixa(km,'km'); if (!vKm.ok) { toast(vKm.msg,'error'); return false; }
+    const vL = validarFaixa(litros,'litros'); if (!vL.ok) { toast(vL.msg,'error'); return false; }
+    const resp = await api('PUT', '/abastecimentos/'+id, {placa, km, litros});
+    if (!resp.ok) { toast(resp.message || 'Erro.', 'error'); return false; }
+    invalidarKmCache();
+    toast('Abastecimento atualizado!', 'success'); loadAbastecimentos();
+  });
+};
 
 /* =========================================================
    CHECKLISTS
@@ -1072,42 +1250,106 @@ async function loadChecklists() {
   await popularFiltros();
   const placa = document.getElementById('chkPlaca').value;
   const idMot = document.getElementById('chkMotorista').value;
+  const conformidade = document.getElementById('chkConformidade').value;
   const params = new URLSearchParams();
   if (placa) params.append('placa', placa);
-  const r = await api('GET', '/checklists' + (params.toString() ? '?' + params : ''));
+  const r = await api('GET', '/checklists' + (params.toString()?'?'+params:''));
   const tbody = document.getElementById('chkBody');
   tbody.innerHTML = '';
   if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
   let list = r.data || [];
   if (idMot) list = list.filter(c => String(c.id_motorista) === String(idMot));
-  if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-muted text-center">Nenhum checklist.</td></tr>'; return; }
+  if (conformidade) {
+    list = list.filter(c => {
+      const cls = classificarChecklist(parseDadosCheck(c.dados_check));
+      if (cls.semItens) return false;
+      return conformidade === 'conforme' ? cls.conforme : !cls.conforme;
+    });
+  }
+  if (!list.length) { tbody.innerHTML = '<tr><td colspan="7" class="text-muted text-center">Nenhum checklist.</td></tr>'; return; }
   list.forEach(c => {
-    const resumo = typeof c.dados_check === 'object'
-      ? JSON.stringify(c.dados_check).substring(0, 60) + '...'
-      : String(c.dados_check || '').substring(0, 60);
+    const d = parseDadosCheck(c.dados_check);
+    const cls = classificarChecklist(d);
+    let statusHtml;
+    if (cls.semItens) statusHtml = '<span class="badge badge-info">Sem itens</span>';
+    else if (cls.conforme) statusHtml = '<span class="badge badge-success"><i class="fas fa-check"></i> Conforme</span>';
+    else statusHtml = '<span class="badge badge-danger"><i class="fas fa-times"></i> Não Conforme</span>';
+    let resumoHtml;
+    if (cls.semItens) resumoHtml = '<span class="text-muted">—</span>';
+    else if (cls.conforme) resumoHtml = `<span style="color:#27ae60;font-weight:600;">${cls.ok}/${cls.total} itens OK</span>`;
+    else {
+      const nomes = cls.falhas.map(labelChecklistItem).join(', ');
+      resumoHtml = `<span style="color:#e74c3c;font-weight:600;">${cls.ok}/${cls.total} OK</span> <span class="text-muted">— Falha em: ${esc(nomes)}</span>`;
+    }
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>${esc((c.data_hora || '').replace('T', ' ').substring(0, 16))}</td>
+      <td>${esc((c.data_hora||'').replace('T',' ').substring(0,16))}</td>
       <td>${esc(c.placa)}</td>
       <td>${esc(c.nome_motorista || c.id_motorista)}</td>
-      <td class="text-muted" style="font-size:.78rem;">${esc(resumo)}</td>
+      <td>${esc(d.tipo||'—')}</td>
+      <td>${statusHtml}</td>
+      <td style="font-size:.8rem;">${resumoHtml}</td>
       <td class="actions"><button title="Ver" onclick='verChecklist(${JSON.stringify(JSON.stringify(c))})'><i class="fas fa-eye"></i></button></td>`;
     tbody.appendChild(tr);
   });
 }
 window.verChecklist = function(jsonStr) {
   const c = JSON.parse(jsonStr);
-  const dados = typeof c.dados_check === 'object' ? c.dados_check : (() => { try { return JSON.parse(c.dados_check); } catch { return {}; } })();
-  const html = `<pre style="background:var(--bg-body);padding:12px;border-radius:8px;font-size:.82rem;overflow:auto;max-height:400px;">${esc(JSON.stringify(dados, null, 2))}</pre>`;
-  openModal('Checklist — ' + c.placa, html, null);
+  const dados = parseDadosCheck(c.dados_check);
+  const cls = classificarChecklist(dados);
+  const itens = dados.itens || {};
+  const chaves = Object.keys(itens);
+  const statusBadgeHtml = cls.semItens
+    ? '<span class="badge badge-info">Sem itens</span>'
+    : cls.conforme
+      ? '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Conforme</span>'
+      : '<span class="badge badge-danger"><i class="fas fa-exclamation-circle"></i> Não Conforme</span>';
+  const resumoCards = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;">
+      <div style="background:var(--bg-body);border-radius:10px;padding:12px 14px;">
+        <div style="font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:4px;">Status</div>${statusBadgeHtml}
+      </div>
+      <div style="background:var(--bg-body);border-radius:10px;padding:12px 14px;">
+        <div style="font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:4px;">Itens OK</div>
+        <div style="font-weight:700;font-size:.95rem;">${cls.ok} / ${cls.total}</div>
+      </div>
+      <div style="background:var(--bg-body);border-radius:10px;padding:12px 14px;">
+        <div style="font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:4px;">KM</div>
+        <div style="font-weight:700;font-size:.95rem;">${dados.km_atual != null ? Number(dados.km_atual).toLocaleString('pt-BR') : '—'}</div>
+      </div>
+      <div style="background:var(--bg-body);border-radius:10px;padding:12px 14px;">
+        <div style="font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:4px;">Tipo</div>
+        <div style="font-weight:700;font-size:.95rem;">${esc(dados.tipo||'—')}</div>
+      </div>
+    </div>`;
+  const itensHtml = chaves.length === 0 ? '<p class="text-muted">Nenhum item.</p>' :
+    `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;">
+      ${chaves.map(k => {
+        const ok = itens[k] === true;
+        return `<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;
+          background:${ok?'rgba(39,174,96,.1)':'rgba(231,76,60,.1)'};
+          border:1px solid ${ok?'rgba(39,174,96,.3)':'rgba(231,76,60,.3)'};font-size:.85rem;">
+          <i class="fas ${ok?'fa-check-circle':'fa-times-circle'}" style="color:${ok?'#27ae60':'#e74c3c'};"></i>
+          <span>${esc(labelChecklistItem(k))}</span></div>`;
+      }).join('')}</div>`;
+  const obsHtml = dados.observacoes
+    ? `<div style="margin-top:16px;padding:12px 14px;background:rgba(230,126,34,.08);border-left:3px solid #e67e22;border-radius:8px;">
+        <div style="font-size:.7rem;color:#b9691c;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:4px;"><i class="fas fa-comment"></i> Observações</div>
+        <p style="margin:0;font-size:.88rem;">${esc(dados.observacoes)}</p></div>`
+    : '';
+  const rawHtml = `
+    <details style="margin-top:16px;">
+      <summary style="cursor:pointer;font-size:.75rem;color:var(--text-muted);user-select:none;">Ver dados brutos (JSON)</summary>
+      <pre style="background:var(--bg-body);padding:12px;border-radius:8px;font-size:.75rem;overflow:auto;max-height:280px;margin-top:8px;">${esc(JSON.stringify(dados,null,2))}</pre>
+    </details>`;
+  openModal('Checklist — ' + c.placa, `${resumoCards}<div style="margin-top:16px;"><div style="font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:8px;">Itens verificados</div>${itensHtml}</div>${obsHtml}${rawHtml}`, null);
 };
 
 /* =========================================================
-   MANUTENÇÕES
+   MANUTENÇÕES (com EDITAR)
    ========================================================= */
 document.getElementById('manutFiltrar').addEventListener('click', loadManutencoes);
 document.getElementById('manutNovo').addEventListener('click', novaManutencao);
-
 async function loadManutencoes() {
   await popularFiltros();
   const status = document.getElementById('manutStatus').value;
@@ -1117,139 +1359,105 @@ async function loadManutencoes() {
   if (status) params.append('status', status);
   if (placa) params.append('placa', placa);
   if (idTec) params.append('id_tecnico', idTec);
-  const r = await api('GET', '/manutencoes' + (params.toString() ? '?' + params : ''));
-
+  const r = await api('GET', '/manutencoes' + (params.toString()?'?'+params:''));
   if (r.ok && Array.isArray(r.data)) _cache.manutencoes = r.data;
-
   const tbody = document.getElementById('manutBody');
   tbody.innerHTML = '';
   if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
   let list = r.data || [];
   if (idTec) list = list.filter(m => String(m.id_tecnico) === String(idTec));
-
-  if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="text-muted text-center">Nenhuma manutenção.</td></tr>'; return; }
+  if (!list.length) { tbody.innerHTML = '<tr><td colspan="7" class="text-muted text-center">Nenhuma manutenção.</td></tr>'; return; }
   list.forEach(m => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${m.id_manutencao}</td>
       <td>${esc(m.placa)}</td>
       <td>${esc(m.nome_tecnico || m.id_tecnico)}</td>
-      <td>${esc((m.data_ini_manutencao || '').replace('T', ' ').substring(0, 16))}</td>
-      <td>${m.data_fim_manutencao ? esc(m.data_fim_manutencao.replace('T', ' ').substring(0, 16)) : '<span class="badge badge-warning">Em aberto</span>'}</td>
+      <td>${esc((m.data_ini_manutencao||'').replace('T',' ').substring(0,16))}</td>
+      <td>${m.data_fim_manutencao ? esc(m.data_fim_manutencao.replace('T',' ').substring(0,16)) : '<span class="badge badge-warning">Em aberto</span>'}</td>
       <td>${esc(m.descricao)}</td>
       <td class="actions">
-        <button title="Ver detalhes / arquivos" onclick="verDetalhesManutencao(${m.id_manutencao})"><i class="fas fa-eye"></i></button>
-        <button title="Anexar arquivo" onclick="anexarArquivoManut(${m.id_manutencao})"><i class="fas fa-paperclip"></i></button>
+        <button title="Editar" onclick="editarManutencao(${m.id_manutencao})"><i class="fas fa-edit"></i></button>
+        <button title="Ver/Anexos" onclick="verDetalhesManutencao(${m.id_manutencao})"><i class="fas fa-eye"></i></button>
+        <button title="Anexar" onclick="anexarArquivoManut(${m.id_manutencao})"><i class="fas fa-paperclip"></i></button>
         <button title="Finalizar" onclick="finalizarManut(${m.id_manutencao})"><i class="fas fa-check"></i></button>
         <button title="Excluir" onclick="excluirManut(${m.id_manutencao})"><i class="fas fa-trash"></i></button>
       </td>`;
     tbody.appendChild(tr);
   });
 }
-
 window.verDetalhesManutencao = async function(id) {
-  const r = await api('GET', '/manutencoes/' + id);
-  if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
+  const r = await api('GET','/manutencoes/'+id);
+  if (!r.ok) { toast(r.message||'Erro.','error'); return; }
   const m = r.data;
-
-  const rArq = await api('GET', '/arquivos-manutencao?id_manutencao=' + id);
+  const rArq = await api('GET','/arquivos-manutencao?id_manutencao='+id);
   const arquivos = (rArq.ok && Array.isArray(rArq.data)) ? rArq.data : [];
-
-  const statusHtml = m.data_fim_manutencao
-    ? `<span class="badge badge-success">Concluída</span>`
-    : `<span class="badge badge-warning">Em aberto</span>`;
-
+  const statusHtml = m.data_fim_manutencao ? `<span class="badge badge-success">Concluída</span>` : `<span class="badge badge-warning">Em aberto</span>`;
   const arquivosHtml = arquivos.length === 0
     ? `<p class="text-muted mt-16">Nenhum arquivo anexado.</p>`
-    : `<div class="file-list">
-        ${arquivos.map(a => `
-          <div class="file-item">
-            <i class="fas ${a.arq_blob ? 'fa-file' : 'fa-link'}"></i>
-            <span>${esc(a.descricao || 'Arquivo #' + a.id_arq_manu)}</span>
-            <div class="file-actions">
-              ${a.arq_link ? `<button title="Abrir link" onclick="window.open('${esc(a.arq_link)}', '_blank')"><i class="fas fa-external-link-alt"></i></button>` : ''}
-              ${a.arq_blob ? `
-                <button title="Visualizar" onclick="visualizarArquivoBlob(${a.id_arq_manu})"><i class="fas fa-eye"></i></button>
-                <button title="Baixar" onclick="baixarArquivoBlob(${a.id_arq_manu})"><i class="fas fa-download"></i></button>
-              ` : ''}
-              <button title="Excluir" onclick="excluirArquivoDeDetalhe(${a.id_arq_manu}, ${id})"><i class="fas fa-trash"></i></button>
-            </div>
-          </div>`).join('')}
-      </div>`;
-
+    : `<div class="file-list">${arquivos.map(a => `
+        <div class="file-item">
+          <i class="fas ${a.arq_blob?'fa-file':'fa-link'}"></i>
+          <span>${esc(a.descricao||'Arquivo #'+a.id_arq_manu)}</span>
+          <div class="file-actions">
+            ${a.arq_link?`<button title="Abrir" onclick="window.open('${esc(a.arq_link)}','_blank')"><i class="fas fa-external-link-alt"></i></button>`:''}
+            ${a.arq_blob?`<button title="Visualizar" onclick="visualizarArquivoBlob(${a.id_arq_manu})"><i class="fas fa-eye"></i></button>
+                          <button title="Baixar" onclick="baixarArquivoBlob(${a.id_arq_manu})"><i class="fas fa-download"></i></button>`:''}
+            <button title="Excluir" onclick="excluirArquivoDeDetalhe(${a.id_arq_manu},${id})"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>`).join('')}</div>`;
   const html = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
       <div><span class="text-muted" style="font-size:.75rem;">ID</span><br><strong>#${m.id_manutencao}</strong></div>
       <div><span class="text-muted" style="font-size:.75rem;">Status</span><br>${statusHtml}</div>
       <div><span class="text-muted" style="font-size:.75rem;">Veículo</span><br><strong>${esc(m.placa)}</strong></div>
-      <div><span class="text-muted" style="font-size:.75rem;">Técnico</span><br><strong>${esc(m.nome_tecnico || m.id_tecnico)}</strong></div>
-      <div><span class="text-muted" style="font-size:.75rem;">Início</span><br><strong>${esc((m.data_ini_manutencao || '').replace('T', ' ').substring(0, 16))}</strong></div>
-      <div><span class="text-muted" style="font-size:.75rem;">Fim</span><br><strong>${m.data_fim_manutencao ? esc(m.data_fim_manutencao.replace('T', ' ').substring(0, 16)) : '—'}</strong></div>
+      <div><span class="text-muted" style="font-size:.75rem;">Técnico</span><br><strong>${esc(m.nome_tecnico||m.id_tecnico)}</strong></div>
+      <div><span class="text-muted" style="font-size:.75rem;">Início</span><br><strong>${esc((m.data_ini_manutencao||'').replace('T',' ').substring(0,16))}</strong></div>
+      <div><span class="text-muted" style="font-size:.75rem;">Fim</span><br><strong>${m.data_fim_manutencao?esc(m.data_fim_manutencao.replace('T',' ').substring(0,16)):'—'}</strong></div>
     </div>
-    <div class="mt-16">
-      <span class="text-muted" style="font-size:.75rem;">Descrição</span>
-      <p style="margin-top:4px;">${esc(m.descricao)}</p>
-    </div>
+    <div class="mt-16"><span class="text-muted" style="font-size:.75rem;">Descrição</span><p style="margin-top:4px;">${esc(m.descricao)}</p></div>
     <div class="mt-16">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
         <span class="text-muted" style="font-size:.75rem;text-transform:uppercase;letter-spacing:.5px;font-weight:700;">Arquivos anexados</span>
-        <button class="btn btn-success btn-sm" onclick="closeModal(); anexarArquivoManut(${m.id_manutencao});">
-          <i class="fas fa-paperclip"></i> Anexar
-        </button>
+        <button class="btn btn-success btn-sm" onclick="closeModal(); anexarArquivoManut(${m.id_manutencao});"><i class="fas fa-paperclip"></i> Anexar</button>
       </div>
       ${arquivosHtml}
     </div>`;
-
-  openModal('Manutenção #' + m.id_manutencao, html, null);
+  openModal('Manutenção #'+m.id_manutencao, html, null);
 };
-
 window.excluirArquivoDeDetalhe = function(idArq, idManut) {
   openModal('Excluir Arquivo', `<p>Excluir arquivo #${idArq}?</p>`, async () => {
-    const r = await api('DELETE', '/arquivos-manutencao/' + idArq);
-    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
-    toast('Arquivo excluído.', 'warning');
-    closeModal();
-    setTimeout(() => verDetalhesManutencao(idManut), 200);
+    const r = await api('DELETE','/arquivos-manutencao/'+idArq);
+    if (!r.ok) { toast(r.message||'Erro.','error'); return false; }
+    toast('Arquivo excluído.','warning'); closeModal();
+    setTimeout(()=>verDetalhesManutencao(idManut),200);
   });
 };
-
 window.finalizarManut = function(id) {
-  const agora = new Date().toISOString().slice(0, 19).replace('T', ' ');
-  openModal('Finalizar Manutenção', `
-    <div class="form-group"><label>Data/hora de fim</label><input type="text" id="mfFim" value="${agora}"></div>`, async () => {
-    const r = await api('PUT', '/manutencoes/' + id, { data_fim_manutencao: document.getElementById('mfFim').value });
-    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
-    invalidarCache('manutencoes');
-    toast('Manutenção finalizada.', 'success');
-    loadManutencoes();
+  const agora = new Date().toISOString().slice(0,19).replace('T',' ');
+  openModal('Finalizar Manutenção', `<div class="form-group"><label>Data/hora de fim</label><input type="text" id="mfFim" value="${agora}"></div>`, async () => {
+    const r = await api('PUT','/manutencoes/'+id, {data_fim_manutencao: document.getElementById('mfFim').value});
+    if (!r.ok) { toast(r.message||'Erro.','error'); return false; }
+    invalidarCache('manutencoes'); toast('Manutenção finalizada.','success'); loadManutencoes();
   });
 };
-
 window.excluirManut = function(id) {
-  openModal('Excluir Manutenção', `<p>Excluir manutenção #${id}? Os arquivos vinculados também serão removidos.</p>`, async () => {
-    const r = await api('DELETE', '/manutencoes/' + id);
-    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
-    invalidarCache('manutencoes');
-    toast('Manutenção excluída.', 'warning');
-    loadManutencoes();
+  openModal('Excluir Manutenção', `<p>Excluir manutenção #${id}?</p>`, async () => {
+    const r = await api('DELETE','/manutencoes/'+id);
+    if (!r.ok) { toast(r.message||'Erro.','error'); return false; }
+    invalidarCache('manutencoes'); toast('Manutenção excluída.','warning'); loadManutencoes();
   });
 };
-
 async function novaManutencao() {
   const [veiculos, tecnicos] = await Promise.all([getVeiculos(), getTecnicos()]);
-  if (veiculos.length === 0) { toast('Nenhum veículo cadastrado.', 'warning'); return; }
-  if (tecnicos.length === 0) { toast('Nenhum técnico cadastrado.', 'warning'); return; }
+  if (!veiculos.length) { toast('Nenhum veículo cadastrado.', 'warning'); return; }
+  if (!tecnicos.length) { toast('Nenhum técnico cadastrado.', 'warning'); return; }
   const html = `
     <div class="form-row">
       <div class="form-group"><label>Veículo</label><select id="mPlaca">${buildVeiculoOptions(veiculos)}</select></div>
-      <div class="form-group"><label>Técnico responsável</label><select id="mTecnico">${buildTecnicoOptions(tecnicos)}</select></div>
+      <div class="form-group"><label>Técnico</label><select id="mTecnico">${buildTecnicoOptions(tecnicos)}</select></div>
     </div>
-    <div class="form-group"><label>Descrição</label><textarea id="mDesc" rows="3" placeholder="Descreva o problema ou serviço a executar (mín. 10 caracteres)"></textarea></div>
-    <div class="obs-note">
-      <i class="fas fa-info-circle"></i>
-      Após criar a manutenção, anexe arquivos (notas fiscais, fotos, laudos) pelo botão
-      <i class="fas fa-paperclip"></i> na listagem, ou abra o detalhe e clique em <strong>Anexar</strong>.
-    </div>`;
+    <div class="form-group"><label>Descrição</label><textarea id="mDesc" rows="3" placeholder="Mín. 10 caracteres"></textarea></div>`;
   openModal('Nova Manutenção', html, async () => {
     const body = {
       placa: document.getElementById('mPlaca').value,
@@ -1258,153 +1466,139 @@ async function novaManutencao() {
     };
     if (!body.placa) { toast('Selecione um veículo.', 'error'); return false; }
     if (!body.id_tecnico) { toast('Selecione um técnico.', 'error'); return false; }
-
-    // ===== NOVO: descrição mínima =====
-    const vDesc = validarDescricaoMinima(body.descricao, 10);
-    if (!vDesc.ok) { toast(vDesc.msg, 'error'); return false; }
-
-    const r = await api('POST', '/manutencoes', body);
-    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
-    invalidarCache('manutencoes');
-    toast('Manutenção criada!', 'success');
-    loadManutencoes();
+    const vD = validarDescricaoMinima(body.descricao,10); if (!vD.ok) { toast(vD.msg,'error'); return false; }
+    const r = await api('POST','/manutencoes', body);
+    if (!r.ok) { toast(r.message||'Erro.','error'); return false; }
+    invalidarCache('manutencoes'); toast('Manutenção criada!','success'); loadManutencoes();
   });
 }
 
+/* NOVO: editar manutenção */
+window.editarManutencao = async function(id) {
+  const r = await api('GET', '/manutencoes/' + id);
+  if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
+  const m = r.data;
+  const [veiculos, tecnicos] = await Promise.all([getVeiculos(), getTecnicos()]);
+  const fimAtual = m.data_fim_manutencao ? m.data_fim_manutencao.replace('T', ' ').substring(0,19) : '';
+  const html = `
+    <div class="form-row">
+      <div class="form-group"><label>Veículo</label><select id="emPlaca">${buildVeiculoOptions(veiculos, m.placa)}</select></div>
+      <div class="form-group"><label>Técnico</label><select id="emTecnico">${buildTecnicoOptions(tecnicos, m.id_tecnico)}</select></div>
+    </div>
+    <div class="form-group"><label>Descrição</label><textarea id="emDesc" rows="3">${esc(m.descricao)}</textarea></div>
+    <div class="form-group"><label>Data/hora de fim (deixe vazio se ainda em aberto)</label>
+      <input type="text" id="emFim" value="${esc(fimAtual)}" placeholder="YYYY-MM-DD HH:MM:SS">
+    </div>`;
+  openModal('Editar Manutenção #' + id, html, async () => {
+    const body = {
+      placa: document.getElementById('emPlaca').value,
+      id_tecnico: parseInt(document.getElementById('emTecnico').value),
+      descricao: document.getElementById('emDesc').value.trim(),
+      data_fim_manutencao: document.getElementById('emFim').value.trim() || null
+    };
+    if (!body.placa) { toast('Selecione um veículo.', 'error'); return false; }
+    if (!body.id_tecnico) { toast('Selecione um técnico.', 'error'); return false; }
+    const vD = validarDescricaoMinima(body.descricao, 10); if (!vD.ok) { toast(vD.msg, 'error'); return false; }
+    const resp = await api('PUT', '/manutencoes/' + id, body);
+    if (!resp.ok) { toast(resp.message || 'Erro.', 'error'); return false; }
+    invalidarCache('manutencoes'); toast('Manutenção atualizada!', 'success'); loadManutencoes();
+  });
+};
+
 /* =========================================================
-   ARQUIVOS (com upload)
+   ARQUIVOS
    ========================================================= */
 async function popularArquivoManutencoes() {
   const list = await getManutencoes(true);
-  const sel = document.getElementById('arqManutId');
-  if (!sel) return;
-  const atual = sel.value;
-  sel.innerHTML = buildManutencaoOptions(list);
-  if (atual) sel.value = atual;
+  const sel = document.getElementById('arqManutId'); if (!sel) return;
+  const atual = sel.value; sel.innerHTML = buildManutencaoOptions(list); if (atual) sel.value = atual;
 }
-
 document.getElementById('arqBuscar').addEventListener('click', carregarArquivos);
 document.getElementById('arqNovo').addEventListener('click', () => abrirModalArquivo());
-
 async function carregarArquivos() {
   const idManut = document.getElementById('arqManutId').value;
   if (!idManut) { toast('Selecione uma manutenção.', 'warning'); return; }
-  const r = await api('GET', '/arquivos-manutencao?id_manutencao=' + idManut);
-  const tbody = document.getElementById('arqBody');
-  tbody.innerHTML = '';
-  if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
+  const r = await api('GET','/arquivos-manutencao?id_manutencao='+idManut);
+  const tbody = document.getElementById('arqBody'); tbody.innerHTML = '';
+  if (!r.ok) { toast(r.message||'Erro.','error'); return; }
   const list = r.data || [];
-  if (list.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center">Nenhum arquivo anexado a esta manutenção.</td></tr>';
-    return;
-  }
+  if (!list.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center">Nenhum arquivo.</td></tr>'; return; }
   list.forEach(a => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${a.id_arq_manu}</td>
       <td>#${a.id_manutencao_veiculo}</td>
-      <td>${esc(a.descricao || '—')}</td>
-      <td>${a.arq_link ? `<a href="${esc(a.arq_link)}" target="_blank">Abrir</a>` : '—'}</td>
-      <td>${a.arq_blob ? 'Sim' : 'Não'}</td>
+      <td>${esc(a.descricao||'—')}</td>
+      <td>${a.arq_link?`<a href="${esc(a.arq_link)}" target="_blank">Abrir</a>`:'—'}</td>
+      <td>${a.arq_blob?'Sim':'Não'}</td>
       <td class="actions">
-        ${a.arq_blob ? `
-          <button title="Visualizar" onclick="visualizarArquivoBlob(${a.id_arq_manu})"><i class="fas fa-eye"></i></button>
-          <button title="Baixar" onclick="baixarArquivoBlob(${a.id_arq_manu})"><i class="fas fa-download"></i></button>
-        ` : ''}
+        ${a.arq_blob?`<button title="Visualizar" onclick="visualizarArquivoBlob(${a.id_arq_manu})"><i class="fas fa-eye"></i></button>
+                      <button title="Baixar" onclick="baixarArquivoBlob(${a.id_arq_manu})"><i class="fas fa-download"></i></button>`:''}
         <button title="Excluir" onclick="excluirArquivo(${a.id_arq_manu})"><i class="fas fa-trash"></i></button>
       </td>`;
     tbody.appendChild(tr);
   });
 }
-
-window.anexarArquivoManut = function(idManut) {
-  abrirModalArquivo(idManut);
-};
-
+window.anexarArquivoManut = function(idManut) { abrirModalArquivo(idManut); };
 async function abrirModalArquivo(idManutPreSelecionado = '') {
   const manutencoes = await getManutencoes(true);
-  if (manutencoes.length === 0) { toast('Nenhuma manutenção cadastrada.', 'warning'); return; }
+  if (!manutencoes.length) { toast('Nenhuma manutenção cadastrada.', 'warning'); return; }
   const arqFiltro = document.getElementById('arqManutId');
   const selecionada = idManutPreSelecionado || (arqFiltro ? arqFiltro.value : '');
-
   const html = `
-    <div class="form-group">
-      <label>Manutenção</label>
-      <select id="arqManutSelect">${buildManutencaoOptions(manutencoes, selecionada)}</select>
-    </div>
-    <div class="form-group">
-      <label>Descrição</label>
-      <input type="text" id="arqDescricao" placeholder="Nota fiscal, Foto, Laudo...">
-    </div>
-    <div class="form-group">
-      <label>Link (opcional)</label>
-      <input type="text" id="arqLink" placeholder="https://...">
-    </div>
+    <div class="form-group"><label>Manutenção</label><select id="arqManutSelect">${buildManutencaoOptions(manutencoes, selecionada)}</select></div>
+    <div class="form-group"><label>Descrição</label><input type="text" id="arqDescricao"></div>
+    <div class="form-group"><label>Link (opcional)</label><input type="text" id="arqLink" placeholder="https://..."></div>
     <div class="form-group">
       <label>Ou envie um arquivo (opcional, máx. 5MB)</label>
       <input type="file" id="arqFile" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.txt">
-      <small class="text-muted" style="font-size:.75rem;display:block;margin-top:4px;">
-        O arquivo será convertido em base64 e armazenado no banco.
-      </small>
     </div>`;
-
   openModal('Novo Arquivo de Manutenção', html, async () => {
     const idManut = document.getElementById('arqManutSelect').value;
     const descricao = document.getElementById('arqDescricao').value.trim();
     const link = document.getElementById('arqLink').value.trim();
-    const fileInput = document.getElementById('arqFile');
-    const file = fileInput.files[0];
-
+    const file = document.getElementById('arqFile').files[0];
     if (!idManut) { toast('Selecione uma manutenção.', 'error'); return false; }
-    if (!link && !file) { toast('Informe um link ou anexe um arquivo.', 'error'); return false; }
-
+    if (!link && !file) { toast('Informe link ou arquivo.', 'error'); return false; }
     let blobBase64 = null;
     if (file) {
-      if (file.size > 5 * 1024 * 1024) { toast('Arquivo muito grande (máx. 5MB).', 'error'); return false; }
+      if (file.size > 5*1024*1024) { toast('Arquivo muito grande (máx 5MB).', 'error'); return false; }
       const dataUrl = await fileToBase64(file);
       blobBase64 = dataUrl.split(',')[1];
     }
-
-    const body = {
+    const r = await api('POST','/arquivos-manutencao', {
       id_manutencao_veiculo: parseInt(idManut),
       descricao: descricao || null,
       arq_link: link || null,
       arq_blob: blobBase64
-    };
-
-    const r = await api('POST', '/arquivos-manutencao', body);
-    if (!r.ok) { toast(r.message || 'Erro ao anexar arquivo.', 'error'); return false; }
-    toast('Arquivo anexado!', 'success');
-
+    });
+    if (!r.ok) { toast(r.message||'Erro.','error'); return false; }
+    toast('Arquivo anexado!','success');
     if (document.getElementById('page-arquivos').classList.contains('active')) {
-      document.getElementById('arqManutId').value = idManut;
-      carregarArquivos();
+      document.getElementById('arqManutId').value = idManut; carregarArquivos();
     }
     return true;
   });
 }
-
 window.excluirArquivo = function(id) {
   openModal('Excluir Arquivo', `<p>Excluir arquivo #${id}?</p>`, async () => {
-    const r = await api('DELETE', '/arquivos-manutencao/' + id);
-    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
-    toast('Arquivo excluído.', 'warning');
-    carregarArquivos();
+    const r = await api('DELETE','/arquivos-manutencao/'+id);
+    if (!r.ok) { toast(r.message||'Erro.','error'); return false; }
+    toast('Arquivo excluído.','warning'); carregarArquivos();
   });
 };
 
 /* =========================================================
-   VEÍCULOS
+   VEÍCULOS (com EDITAR)
    ========================================================= */
 document.getElementById('veicNovo').addEventListener('click', novoVeiculo);
 async function loadVeiculos() {
-  const r = await api('GET', '/veiculos');
-  _cache.veiculos = r.ok ? (r.data || []) : [];
-  const tbody = document.getElementById('veicBody');
-  tbody.innerHTML = '';
-  if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
+  const r = await api('GET','/veiculos');
+  _cache.veiculos = r.ok ? (r.data||[]) : [];
+  const tbody = document.getElementById('veicBody'); tbody.innerHTML = '';
+  if (!r.ok) { toast(r.message||'Erro.','error'); return; }
   const list = r.data || [];
-  if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center">Nenhum veículo.</td></tr>'; return; }
+  if (!list.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center">Nenhum veículo.</td></tr>'; return; }
   list.forEach(v => {
     const d = v.dados_veiculo || {};
     const tr = document.createElement('tr');
@@ -1414,19 +1608,19 @@ async function loadVeiculos() {
       <td>${esc(d.ano)}</td>
       <td>${esc(d.tipo)}</td>
       <td>${esc(d.capacidade)}</td>
-      <td class="actions"><button onclick="excluirVeiculo('${esc(v.placa)}')"><i class="fas fa-trash"></i></button></td>`;
+      <td class="actions">
+        <button title="Editar" onclick="editarVeiculo('${esc(v.placa)}')"><i class="fas fa-edit"></i></button>
+        <button title="Excluir" onclick="excluirVeiculo('${esc(v.placa)}')"><i class="fas fa-trash"></i></button>
+      </td>`;
     tbody.appendChild(tr);
   });
 }
 window.excluirVeiculo = function(placa) {
   openModal('Excluir Veículo', `<p>Excluir veículo ${placa}?</p>`, async () => {
-    const r = await api('DELETE', '/veiculos/' + encodeURIComponent(placa));
-    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
-    invalidarCache('veiculos');
-    invalidarKmCache();
-    await popularFiltros();
-    toast('Veículo excluído.', 'warning');
-    loadVeiculos();
+    const r = await api('DELETE','/veiculos/'+encodeURIComponent(placa));
+    if (!r.ok) { toast(r.message||'Erro.','error'); return false; }
+    invalidarCache('veiculos'); invalidarKmCache();
+    await popularFiltros(); toast('Veículo excluído.','warning'); loadVeiculos();
   });
 };
 function novoVeiculo() {
@@ -1444,42 +1638,57 @@ function novoVeiculo() {
     const placa = document.getElementById('vPlaca').value.trim().toUpperCase();
     const ano = parseInt(document.getElementById('vAno').value) || null;
     const capacidade = parseFloat(document.getElementById('vCap').value) || null;
-
-    // ===== NOVO: validações de placa, ano e capacidade =====
     if (!placa) { toast('Informe a placa.', 'error'); return false; }
-    if (!validarPlaca(placa)) {
-      toast('Placa inválida. Use o formato ABC-1234 ou ABC1234 (Mercosul: ABC1D23).', 'error');
-      return false;
-    }
-    if (ano !== null) {
-      const vAno = validarFaixa(ano, 'ano');
-      if (!vAno.ok) { toast(vAno.msg, 'error'); return false; }
-    }
-    if (capacidade !== null) {
-      const vCap = validarFaixa(capacidade, 'capacidade');
-      if (!vCap.ok) { toast(vCap.msg, 'error'); return false; }
-    }
-
+    if (!validarPlaca(placa)) { toast('Placa inválida.', 'error'); return false; }
+    if (ano !== null) { const vA = validarFaixa(ano,'ano'); if (!vA.ok) { toast(vA.msg,'error'); return false; } }
+    if (capacidade !== null) { const vC = validarFaixa(capacidade,'capacidade'); if (!vC.ok) { toast(vC.msg,'error'); return false; } }
     const body = {
       placa,
       dados_veiculo: {
         modelo: document.getElementById('vModelo').value.trim(),
-        ano,
-        tipo: document.getElementById('vTipo').value.trim(),
-        capacidade
+        ano, tipo: document.getElementById('vTipo').value.trim(), capacidade
       }
     };
-    const r = await api('POST', '/veiculos', body);
-    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
-    invalidarCache('veiculos');
-    await popularFiltros();
-    toast('Veículo criado!', 'success');
-    loadVeiculos();
+    const r = await api('POST','/veiculos', body);
+    if (!r.ok) { toast(r.message||'Erro.','error'); return false; }
+    invalidarCache('veiculos'); await popularFiltros(); toast('Veículo criado!','success'); loadVeiculos();
   });
 }
 
+/* NOVO: editar veículo */
+window.editarVeiculo = async function(placa) {
+  const r = await api('GET','/veiculos/' + encodeURIComponent(placa));
+  if (!r.ok) { toast(r.message||'Erro.','error'); return; }
+  const v = r.data; const d = v.dados_veiculo || {};
+  const html = `
+    <div class="form-group"><label>Placa (não editável)</label><input type="text" value="${esc(v.placa)}" disabled></div>
+    <div class="form-row">
+      <div class="form-group"><label>Modelo</label><input type="text" id="evModelo" value="${esc(d.modelo||'')}"></div>
+      <div class="form-group"><label>Ano</label><input type="number" id="evAno" min="1900" value="${d.ano||''}"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Tipo</label><input type="text" id="evTipo" value="${esc(d.tipo||'')}"></div>
+      <div class="form-group"><label>Capacidade (t)</label><input type="number" id="evCap" step="0.1" min="0" value="${d.capacidade||''}"></div>
+    </div>`;
+  openModal('Editar Veículo ' + placa, html, async () => {
+    const ano = parseInt(document.getElementById('evAno').value) || null;
+    const capacidade = parseFloat(document.getElementById('evCap').value) || null;
+    if (ano !== null) { const vA = validarFaixa(ano,'ano'); if (!vA.ok) { toast(vA.msg,'error'); return false; } }
+    if (capacidade !== null) { const vC = validarFaixa(capacidade,'capacidade'); if (!vC.ok) { toast(vC.msg,'error'); return false; } }
+    const body = {
+      dados_veiculo: {
+        modelo: document.getElementById('evModelo').value.trim(),
+        ano, tipo: document.getElementById('evTipo').value.trim(), capacidade
+      }
+    };
+    const resp = await api('PUT','/veiculos/' + encodeURIComponent(placa), body);
+    if (!resp.ok) { toast(resp.message||'Erro.','error'); return false; }
+    invalidarCache('veiculos'); await popularFiltros(); toast('Veículo atualizado!','success'); loadVeiculos();
+  });
+};
+
 /* =========================================================
-   DOCUMENTOS
+   DOCUMENTOS (com EDITAR)
    ========================================================= */
 document.getElementById('docFiltrar').addEventListener('click', loadDocumentos);
 document.getElementById('docNovo').addEventListener('click', novoDocumento);
@@ -1487,12 +1696,11 @@ async function loadDocumentos() {
   await popularFiltros();
   const placa = document.getElementById('docPlaca').value;
   const params = placa ? '?placa=' + encodeURIComponent(placa) : '';
-  const r = await api('GET', '/documentos-veiculo' + params);
-  const tbody = document.getElementById('docBody');
-  tbody.innerHTML = '';
-  if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
+  const r = await api('GET','/documentos-veiculo' + params);
+  const tbody = document.getElementById('docBody'); tbody.innerHTML = '';
+  if (!r.ok) { toast(r.message||'Erro.','error'); return; }
   const list = r.data || [];
-  if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-muted text-center">Nenhum documento.</td></tr>'; return; }
+  if (!list.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center">Nenhum documento.</td></tr>'; return; }
   list.forEach(d => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -1500,99 +1708,170 @@ async function loadDocumentos() {
       <td>${esc(d.descricao)}</td>
       <td>${esc(d.validade)}</td>
       <td>${statusBadge(d.status_documento)}</td>
-      <td class="actions"><button onclick="excluirDocumento('${esc(d.placa)}','${esc(d.descricao)}')"><i class="fas fa-trash"></i></button></td>`;
+      <td>${renderAnexoDocumento(d)}</td>
+      <td class="actions">
+        <button title="Editar" onclick="editarDocumento('${esc(d.placa)}','${esc(d.descricao)}')"><i class="fas fa-edit"></i></button>
+        <button title="Excluir" onclick="excluirDocumento('${esc(d.placa)}','${esc(d.descricao)}')"><i class="fas fa-trash"></i></button>
+      </td>`;
     tbody.appendChild(tr);
   });
 }
 window.excluirDocumento = function(placa, desc) {
   openModal('Excluir Documento', `<p>Excluir ${desc} de ${placa}?</p>`, async () => {
-    const r = await api('DELETE', `/documentos-veiculo/${encodeURIComponent(placa)}/${encodeURIComponent(desc)}`);
-    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
-    toast('Documento excluído.', 'warning');
-    loadDocumentos();
+    const r = await api('DELETE',`/documentos-veiculo/${encodeURIComponent(placa)}/${encodeURIComponent(desc)}`);
+    if (!r.ok) { toast(r.message||'Erro.','error'); return false; }
+    toast('Documento excluído.','warning'); loadDocumentos();
   });
 };
 async function novoDocumento() {
   const veiculos = await getVeiculos();
-  if (veiculos.length === 0) { toast('Nenhum veículo cadastrado.', 'warning'); return; }
+  if (!veiculos.length) { toast('Nenhum veículo cadastrado.', 'warning'); return; }
   const html = `
     <div class="form-row">
       <div class="form-group"><label>Veículo</label><select id="dPlaca">${buildVeiculoOptions(veiculos)}</select></div>
-      <div class="form-group"><label>Descrição</label><input type="text" id="dDesc" placeholder="CRLV, Seguro, Tacógrafo..."></div>
+      <div class="form-group"><label>Descrição</label><input type="text" id="dDesc" placeholder="CRLV, Seguro..."></div>
     </div>
     <div class="form-row">
       <div class="form-group"><label>Validade</label><input type="date" id="dVal"></div>
-      <div class="form-group">
-        <label>Status</label>
-        <select id="dStatus"><option>Válido</option><option>A vencer</option><option>Vencido</option></select>
-      </div>
+      <div class="form-group"><label>Status</label><select id="dStatus"><option>Válido</option><option>A vencer</option><option>Vencido</option></select></div>
+    </div>
+    <div class="form-group"><label>Link (opcional)</label><input type="text" id="dLink" placeholder="https://..."></div>
+    <div class="form-group">
+      <label>Ou arquivo (opcional, máx 5MB)</label>
+      <input type="file" id="dFile" accept="image/*,application/pdf,.doc,.docx,.txt">
     </div>`;
   openModal('Novo Documento', html, async () => {
-    const body = {
-      placa: document.getElementById('dPlaca').value,
-      descricao: document.getElementById('dDesc').value.trim(),
-      validade: document.getElementById('dVal').value,
-      status_documento: document.getElementById('dStatus').value
-    };
-    if (!body.placa || !body.descricao) { toast('Preencha todos os campos.', 'error'); return false; }
-
-    // ===== NOVO: validação de data =====
-    const vVal = validarValidadeDocumento(body.validade);
-    if (!vVal.ok) { toast(vVal.msg, 'error'); return false; }
-
-    const r = await api('POST', '/documentos-veiculo', body);
-    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
-    toast('Documento criado!', 'success');
-    loadDocumentos();
+    const placa = document.getElementById('dPlaca').value;
+    const descricao = document.getElementById('dDesc').value.trim();
+    const validade = document.getElementById('dVal').value;
+    const status = document.getElementById('dStatus').value;
+    const link = document.getElementById('dLink').value.trim();
+    const file = document.getElementById('dFile').files[0];
+    if (!placa || !descricao) { toast('Preencha os campos.', 'error'); return false; }
+    const vV = validarValidadeDocumento(validade); if (!vV.ok) { toast(vV.msg,'error'); return false; }
+    let blobBase64 = null;
+    if (file) {
+      if (file.size > 5*1024*1024) { toast('Arquivo muito grande (máx 5MB).', 'error'); return false; }
+      const dataUrl = await fileToBase64(file); blobBase64 = dataUrl.split(',')[1];
+    }
+    const body = { placa, descricao, validade, status_documento: status, arq_link: link||null, arq_blob: blobBase64 };
+    const r = await api('POST','/documentos-veiculo', body);
+    if (!r.ok) { toast(r.message||'Erro.','error'); return false; }
+    toast('Documento criado!','success'); loadDocumentos();
   });
 }
 
+/* NOVO: editar documento */
+window.editarDocumento = async function(placa, descricao) {
+  const url = `/documentos-veiculo?placa=${encodeURIComponent(placa)}&descricao=${encodeURIComponent(descricao)}`;
+  const r = await api('GET', url);
+  if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
+  const d = r.data;
+  const temBlob = !!d.arq_blob;
+  const html = `
+    <div class="form-group"><label>Veículo</label><input type="text" value="${esc(d.placa)}" disabled></div>
+    <div class="form-group"><label>Documento</label><input type="text" value="${esc(d.descricao)}" disabled></div>
+    <div class="form-row">
+      <div class="form-group"><label>Validade</label><input type="date" id="edVal" value="${esc(d.validade)}"></div>
+      <div class="form-group"><label>Status</label>
+        <select id="edStatus">
+          ${['Válido','A vencer','Vencido'].map(s => `<option ${s===d.status_documento?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Link (deixe vazio para remover)</label>
+      <input type="text" id="edLink" value="${esc(d.arq_link||'')}" placeholder="https://...">
+    </div>
+    <div class="form-group">
+      <label>Substituir arquivo (opcional${temBlob ? ' — já existe um anexo' : ''})</label>
+      <input type="file" id="edFile" accept="image/*,application/pdf,.doc,.docx,.txt">
+      <small class="text-muted" style="font-size:.72rem;display:block;margin-top:4px;">
+        Deixe vazio para manter o anexo atual. Selecione um arquivo para substituir.
+      </small>
+    </div>`;
+  openModal(`Editar ${descricao} — ${placa}`, html, async () => {
+    const validade = document.getElementById('edVal').value;
+    const status = document.getElementById('edStatus').value;
+    const link = document.getElementById('edLink').value.trim();
+    const file = document.getElementById('edFile').files[0];
+    const vV = validarValidadeDocumento(validade);
+    if (!vV.ok) { toast(vV.msg, 'error'); return false; }
+    const body = {
+      validade,
+      status_documento: status,
+      arq_link: link || ''
+    };
+    if (file) {
+      if (file.size > 5*1024*1024) { toast('Arquivo muito grande (máx 5MB).', 'error'); return false; }
+      const dataUrl = await fileToBase64(file);
+      body.arq_blob = dataUrl.split(',')[1];
+    }
+    const resp = await api('PUT',
+      `/documentos-veiculo?placa=${encodeURIComponent(placa)}&descricao=${encodeURIComponent(descricao)}`,
+      body);
+    if (!resp.ok) { toast(resp.message || 'Erro.', 'error'); return false; }
+    toast('Documento atualizado!', 'success');
+    loadDocumentos();
+  });
+};
+
 /* =========================================================
-   MOTORISTAS
+   MOTORISTAS (com EDITAR e login/senha)
    ========================================================= */
 document.getElementById('motNovo').addEventListener('click', novoMotorista);
 async function loadMotoristas() {
-  const r = await api('GET', '/motoristas');
-  _cache.motoristas = r.ok ? (r.data || []) : [];
-  const tbody = document.getElementById('motBody');
-  tbody.innerHTML = '';
-  if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
+  const r = await api('GET','/motoristas');
+  _cache.motoristas = r.ok ? (r.data||[]) : [];
+  const tbody = document.getElementById('motBody'); tbody.innerHTML = '';
+  if (!r.ok) { toast(r.message||'Erro.','error'); return; }
   const list = r.data || [];
-  if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center">Nenhum motorista.</td></tr>'; return; }
+  if (!list.length) { tbody.innerHTML = '<tr><td colspan="7" class="text-muted text-center">Nenhum motorista.</td></tr>'; return; }
   list.forEach(m => {
     const status = m.status_motorista == 1 ? '<span class="badge badge-success">Ativo</span>' : '<span class="badge badge-danger">Inativo</span>';
+    const login = m.login || m.cpf || '—';
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${m.id_motorista}</td>
       <td>${esc(m.nome)}</td>
       <td>${esc(m.cpf)}</td>
+      <td>${esc(login)}</td>
       <td>${status}</td>
       <td>${esc(m.funcoes_motorista)}</td>
-      <td class="actions"><button onclick="excluirMotorista(${m.id_motorista})"><i class="fas fa-trash"></i></button></td>`;
+      <td class="actions">
+        <button title="Editar" onclick="editarMotorista(${m.id_motorista})"><i class="fas fa-edit"></i></button>
+        <button title="Excluir" onclick="excluirMotorista(${m.id_motorista})"><i class="fas fa-trash"></i></button>
+      </td>`;
     tbody.appendChild(tr);
   });
 }
 window.excluirMotorista = function(id) {
   openModal('Excluir Motorista', `<p>Excluir motorista #${id}?</p>`, async () => {
-    const r = await api('DELETE', '/motoristas/' + id);
-    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
-    invalidarCache('motoristas');
-    await popularFiltros();
-    toast('Motorista excluído.', 'warning');
-    loadMotoristas();
+    const r = await api('DELETE','/motoristas/'+id);
+    if (!r.ok) { toast(r.message||'Erro.','error'); return false; }
+    invalidarCache('motoristas'); await popularFiltros(); toast('Motorista excluído.','warning'); loadMotoristas();
   });
 };
 function novoMotorista() {
   const html = `
     <div class="form-row">
-      <div class="form-group"><label>Nome</label><input type="text" id="moNome" placeholder="Nome completo"></div>
+      <div class="form-group"><label>Nome</label><input type="text" id="moNome"></div>
       <div class="form-group"><label>CPF</label><input type="text" id="moCpf" placeholder="000.000.000-00"></div>
     </div>
     <div class="form-row">
       <div class="form-group"><label>Telefone</label><input type="text" id="moTel"></div>
-      <div class="form-group">
-        <label>Status</label>
-        <select id="moStatus"><option value="1">Ativo</option><option value="0">Inativo</option></select>
+      <div class="form-group"><label>Status</label><select id="moStatus"><option value="1">Ativo</option><option value="0">Inativo</option></select></div>
+    </div>
+    <div style="border-top:1px solid var(--border-color);margin:14px 0 12px;padding-top:12px;">
+      <div style="font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:10px;">
+        <i class="fas fa-key"></i> Credenciais de acesso (definidas pelo admin)
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Login</label><input type="text" id="moLogin" placeholder="Deixe vazio = CPF" autocomplete="off"></div>
+        <div class="form-group"><label>Senha inicial</label><input type="password" id="moSenha" placeholder="Mín. 6 caracteres" autocomplete="new-password"></div>
+      </div>
+      <div style="font-size:.72rem;color:var(--text-muted);background:var(--bg-body);padding:8px 12px;border-radius:6px;">
+        <i class="fas fa-info-circle"></i> O motorista usará esse login/senha no APP.
       </div>
     </div>
     <div class="form-group"><label>Funções</label><input type="text" id="moFuncoes"></div>
@@ -1600,74 +1879,137 @@ function novoMotorista() {
   openModal('Novo Motorista', html, async () => {
     const nome = document.getElementById('moNome').value.trim();
     const cpf = document.getElementById('moCpf').value.trim();
-
-    // ===== NOVO: nome mínimo e CPF com 11 dígitos =====
-    if (nome.length < 3) { toast('Nome muito curto (mín. 3 caracteres).', 'error'); return false; }
-    if (!validarCPFBasico(cpf)) { toast('CPF inválido. Informe 11 dígitos.', 'error'); return false; }
-
+    const login = document.getElementById('moLogin').value.trim();
+    const senha = document.getElementById('moSenha').value;
+    if (nome.length < 3) { toast('Nome muito curto.', 'error'); return false; }
+    if (!validarCPFBasico(cpf)) { toast('CPF inválido.', 'error'); return false; }
+    const vC = validarCredenciais(login, senha, cpf); if (!vC.ok) { toast(vC.msg,'error'); return false; }
     const body = {
-      nome,
-      cpf,
+      nome, cpf, login: vC.login, senha,
       telefone: document.getElementById('moTel').value.trim(),
       status_motorista: parseInt(document.getElementById('moStatus').value),
       funcoes_motorista: document.getElementById('moFuncoes').value.trim(),
       observacoes: document.getElementById('moObs').value.trim()
     };
-    const r = await api('POST', '/motoristas', body);
-    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
-    invalidarCache('motoristas');
-    await popularFiltros();
-    toast('Motorista cadastrado!', 'success');
-    loadMotoristas();
+    const r = await api('POST','/motoristas', body);
+    if (!r.ok) { toast(r.message||'Erro.','error'); return false; }
+    invalidarCache('motoristas'); await popularFiltros(); toast('Motorista cadastrado!','success'); loadMotoristas();
   });
 }
 
+/* NOVO: editar motorista (com senha opcional) */
+window.editarMotorista = async function(id) {
+  const r = await api('GET', '/motoristas/' + id);
+  if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
+  const m = r.data;
+  const df = m.dados_funcionario || {};
+  const nome = m.nome || df.nome || '';
+  const cpf = m.cpf || df.cpf || '';
+  const login = m.login || df.login || cpf || '';
+  const tel = m.telefone || df.telefone || '';
+  const statusVal = m.status_motorista == 1 ? '1' : '0';
+  const html = `
+    <div class="form-row">
+      <div class="form-group"><label>Nome</label><input type="text" id="emNome" value="${esc(nome)}"></div>
+      <div class="form-group"><label>CPF</label><input type="text" id="emCpf" value="${esc(cpf)}"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Telefone</label><input type="text" id="emTel" value="${esc(tel)}"></div>
+      <div class="form-group"><label>Status</label>
+        <select id="emStatus"><option value="1" ${statusVal==='1'?'selected':''}>Ativo</option><option value="0" ${statusVal==='0'?'selected':''}>Inativo</option></select>
+      </div>
+    </div>
+    <div style="border-top:1px solid var(--border-color);margin:14px 0 12px;padding-top:12px;">
+      <div style="font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:10px;">
+        <i class="fas fa-key"></i> Credenciais de acesso
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Login</label><input type="text" id="emLogin" value="${esc(login)}" autocomplete="off"></div>
+        <div class="form-group"><label>Nova senha (opcional)</label><input type="password" id="emSenha" placeholder="Deixe em branco para manter" autocomplete="new-password"></div>
+      </div>
+      <div style="font-size:.72rem;color:var(--text-muted);background:var(--bg-body);padding:8px 12px;border-radius:6px;">
+        <i class="fas fa-info-circle"></i> Se preencher a senha, ela substituirá a atual.
+      </div>
+    </div>
+    <div class="form-group"><label>Funções</label><input type="text" id="emFuncoes" value="${esc(m.funcoes_motorista||'')}"></div>
+    <div class="form-group"><label>Observações</label><input type="text" id="emObs" value="${esc(m.observacoes||'')}"></div>`;
+  openModal('Editar Motorista #' + id, html, async () => {
+    const nome = document.getElementById('emNome').value.trim();
+    const cpf = document.getElementById('emCpf').value.trim();
+    const login = document.getElementById('emLogin').value.trim();
+    const senha = document.getElementById('emSenha').value;
+    if (nome.length < 3) { toast('Nome muito curto.', 'error'); return false; }
+    if (!validarCPFBasico(cpf)) { toast('CPF inválido.', 'error'); return false; }
+    const vC = validarCredenciais(login, senha, cpf, /*senhaOpcional*/ true);
+    if (!vC.ok) { toast(vC.msg, 'error'); return false; }
+    const body = {
+      nome, cpf, login: vC.login,
+      telefone: document.getElementById('emTel').value.trim(),
+      status_motorista: parseInt(document.getElementById('emStatus').value),
+      funcoes_motorista: document.getElementById('emFuncoes').value.trim(),
+      observacoes: document.getElementById('emObs').value.trim()
+    };
+    if (senha) body.senha = senha;
+    const resp = await api('PUT', '/motoristas/' + id, body);
+    if (!resp.ok) { toast(resp.message || 'Erro.', 'error'); return false; }
+    invalidarCache('motoristas'); await popularFiltros();
+    toast('Motorista atualizado!', 'success'); loadMotoristas();
+  });
+};
+
 /* =========================================================
-   TÉCNICOS
+   TÉCNICOS (com EDITAR e login/senha)
    ========================================================= */
 document.getElementById('tecNovo').addEventListener('click', novoTecnico);
 async function loadTecnicos() {
-  const r = await api('GET', '/tecnicos');
-  _cache.tecnicos = r.ok ? (r.data || []) : [];
-  const tbody = document.getElementById('tecBody');
-  tbody.innerHTML = '';
-  if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
+  const r = await api('GET','/tecnicos');
+  _cache.tecnicos = r.ok ? (r.data||[]) : [];
+  const tbody = document.getElementById('tecBody'); tbody.innerHTML = '';
+  if (!r.ok) { toast(r.message||'Erro.','error'); return; }
   const list = r.data || [];
-  if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center">Nenhum técnico.</td></tr>'; return; }
+  if (!list.length) { tbody.innerHTML = '<tr><td colspan="7" class="text-muted text-center">Nenhum técnico.</td></tr>'; return; }
   list.forEach(t => {
     const status = t.status_tecnico == 1 ? '<span class="badge badge-success">Ativo</span>' : '<span class="badge badge-danger">Inativo</span>';
+    const login = t.login || t.cpf || '—';
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${t.id_tecnico}</td>
       <td>${esc(t.nome)}</td>
       <td>${esc(t.cpf)}</td>
+      <td>${esc(login)}</td>
       <td>${esc(t.tipo_tecnico)}</td>
       <td>${status}</td>
-      <td class="actions"><button onclick="excluirTecnico(${t.id_tecnico})"><i class="fas fa-trash"></i></button></td>`;
+      <td class="actions">
+        <button title="Editar" onclick="editarTecnico(${t.id_tecnico})"><i class="fas fa-edit"></i></button>
+        <button title="Excluir" onclick="excluirTecnico(${t.id_tecnico})"><i class="fas fa-trash"></i></button>
+      </td>`;
     tbody.appendChild(tr);
   });
 }
 window.excluirTecnico = function(id) {
   openModal('Excluir Técnico', `<p>Excluir técnico #${id}?</p>`, async () => {
-    const r = await api('DELETE', '/tecnicos/' + id);
-    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
-    invalidarCache('tecnicos');
-    await popularFiltros();
-    toast('Técnico excluído.', 'warning');
-    loadTecnicos();
+    const r = await api('DELETE','/tecnicos/'+id);
+    if (!r.ok) { toast(r.message||'Erro.','error'); return false; }
+    invalidarCache('tecnicos'); await popularFiltros(); toast('Técnico excluído.','warning'); loadTecnicos();
   });
 };
 function novoTecnico() {
   const html = `
     <div class="form-row">
-      <div class="form-group"><label>Nome</label><input type="text" id="tNome" placeholder="Nome completo"></div>
+      <div class="form-group"><label>Nome</label><input type="text" id="tNome"></div>
       <div class="form-group"><label>CPF</label><input type="text" id="tCpf" placeholder="000.000.000-00"></div>
     </div>
     <div class="form-row">
       <div class="form-group"><label>Telefone</label><input type="text" id="tTel"></div>
-      <div class="form-group">
-        <label>Status</label>
-        <select id="tStatus"><option value="1">Ativo</option><option value="0">Inativo</option></select>
+      <div class="form-group"><label>Status</label><select id="tStatus"><option value="1">Ativo</option><option value="0">Inativo</option></select></div>
+    </div>
+    <div style="border-top:1px solid var(--border-color);margin:14px 0 12px;padding-top:12px;">
+      <div style="font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:10px;">
+        <i class="fas fa-key"></i> Credenciais de acesso
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Login</label><input type="text" id="tLogin" placeholder="Deixe vazio = CPF" autocomplete="off"></div>
+        <div class="form-group"><label>Senha inicial</label><input type="password" id="tSenha" placeholder="Mín. 6 caracteres" autocomplete="new-password"></div>
       </div>
     </div>
     <div class="form-row">
@@ -1677,27 +2019,82 @@ function novoTecnico() {
   openModal('Novo Técnico', html, async () => {
     const nome = document.getElementById('tNome').value.trim();
     const cpf = document.getElementById('tCpf').value.trim();
-
-    // ===== NOVO: nome mínimo e CPF com 11 dígitos =====
-    if (nome.length < 3) { toast('Nome muito curto (mín. 3 caracteres).', 'error'); return false; }
-    if (!validarCPFBasico(cpf)) { toast('CPF inválido. Informe 11 dígitos.', 'error'); return false; }
-
+    const login = document.getElementById('tLogin').value.trim();
+    const senha = document.getElementById('tSenha').value;
+    if (nome.length < 3) { toast('Nome muito curto.', 'error'); return false; }
+    if (!validarCPFBasico(cpf)) { toast('CPF inválido.', 'error'); return false; }
+    const vC = validarCredenciais(login, senha, cpf); if (!vC.ok) { toast(vC.msg,'error'); return false; }
     const body = {
-      nome,
-      cpf,
+      nome, cpf, login: vC.login, senha,
       telefone: document.getElementById('tTel').value.trim(),
       status_tecnico: parseInt(document.getElementById('tStatus').value),
       tipo_tecnico: document.getElementById('tTipo').value.trim(),
       observacoes: document.getElementById('tObs').value.trim()
     };
-    const r = await api('POST', '/tecnicos', body);
-    if (!r.ok) { toast(r.message || 'Erro.', 'error'); return false; }
-    invalidarCache('tecnicos');
-    await popularFiltros();
-    toast('Técnico cadastrado!', 'success');
-    loadTecnicos();
+    const r = await api('POST','/tecnicos', body);
+    if (!r.ok) { toast(r.message||'Erro.','error'); return false; }
+    invalidarCache('tecnicos'); await popularFiltros(); toast('Técnico cadastrado!','success'); loadTecnicos();
   });
 }
+
+/* NOVO: editar técnico (com senha opcional) */
+window.editarTecnico = async function(id) {
+  const r = await api('GET', '/tecnicos/' + id);
+  if (!r.ok) { toast(r.message || 'Erro.', 'error'); return; }
+  const t = r.data;
+  const df = t.dados_funcionario || {};
+  const nome = t.nome || df.nome || '';
+  const cpf = t.cpf || df.cpf || '';
+  const login = t.login || df.login || cpf || '';
+  const tel = t.telefone || df.telefone || '';
+  const statusVal = t.status_tecnico == 1 ? '1' : '0';
+  const html = `
+    <div class="form-row">
+      <div class="form-group"><label>Nome</label><input type="text" id="etNome" value="${esc(nome)}"></div>
+      <div class="form-group"><label>CPF</label><input type="text" id="etCpf" value="${esc(cpf)}"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Telefone</label><input type="text" id="etTel" value="${esc(tel)}"></div>
+      <div class="form-group"><label>Status</label>
+        <select id="etStatus"><option value="1" ${statusVal==='1'?'selected':''}>Ativo</option><option value="0" ${statusVal==='0'?'selected':''}>Inativo</option></select>
+      </div>
+    </div>
+    <div style="border-top:1px solid var(--border-color);margin:14px 0 12px;padding-top:12px;">
+      <div style="font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:10px;">
+        <i class="fas fa-key"></i> Credenciais de acesso
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Login</label><input type="text" id="etLogin" value="${esc(login)}" autocomplete="off"></div>
+        <div class="form-group"><label>Nova senha (opcional)</label><input type="password" id="etSenha" placeholder="Deixe em branco para manter" autocomplete="new-password"></div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Tipo</label><input type="text" id="etTipo" value="${esc(t.tipo_tecnico||'')}"></div>
+      <div class="form-group"><label>Observações</label><input type="text" id="etObs" value="${esc(t.observacoes||'')}"></div>
+    </div>`;
+  openModal('Editar Técnico #' + id, html, async () => {
+    const nome = document.getElementById('etNome').value.trim();
+    const cpf = document.getElementById('etCpf').value.trim();
+    const login = document.getElementById('etLogin').value.trim();
+    const senha = document.getElementById('etSenha').value;
+    if (nome.length < 3) { toast('Nome muito curto.', 'error'); return false; }
+    if (!validarCPFBasico(cpf)) { toast('CPF inválido.', 'error'); return false; }
+    const vC = validarCredenciais(login, senha, cpf, true);
+    if (!vC.ok) { toast(vC.msg, 'error'); return false; }
+    const body = {
+      nome, cpf, login: vC.login,
+      telefone: document.getElementById('etTel').value.trim(),
+      status_tecnico: parseInt(document.getElementById('etStatus').value),
+      tipo_tecnico: document.getElementById('etTipo').value.trim(),
+      observacoes: document.getElementById('etObs').value.trim()
+    };
+    if (senha) body.senha = senha;
+    const resp = await api('PUT', '/tecnicos/' + id, body);
+    if (!resp.ok) { toast(resp.message || 'Erro.', 'error'); return false; }
+    invalidarCache('tecnicos'); await popularFiltros();
+    toast('Técnico atualizado!', 'success'); loadTecnicos();
+  });
+};
 
 /* =========================================================
    INIT
@@ -1708,19 +2105,25 @@ function novoTecnico() {
     document.getElementById('sidebar').classList.add('collapsed');
   }
   window.addEventListener('resize', () => {
-    if (window.innerWidth <= 768) {
-      document.getElementById('mobileMenuToggle').style.display = 'block';
-    } else {
+    if (window.innerWidth <= 768) document.getElementById('mobileMenuToggle').style.display = 'block';
+    else {
       document.getElementById('mobileMenuToggle').style.display = 'none';
       document.getElementById('sidebar').classList.remove('mobile-open');
     }
   });
-  if (getToken()) {
-    await showApp();
-    loadDashboard();
-  } else {
-    showLogin();
+  const pdEl = document.getElementById('precoDiesel');
+  if (pdEl) {
+    pdEl.value = getPrecoDiesel().toFixed(2);
+    pdEl.addEventListener('change', () => {
+      const v = parseFloat(pdEl.value);
+      if (Number.isFinite(v) && v > 0) {
+        setPrecoDiesel(v);
+        renderLucratividadePorVeiculo(_lastDashData.fretes, _lastDashData.abast);
+      }
+    });
   }
+  if (getToken()) { await showApp(); loadDashboard(); }
+  else { showLogin(); }
 })();
 </script>
 </body>
